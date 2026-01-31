@@ -45,6 +45,9 @@ export default function Process() {
         offset: ["start center", "end center"],
     });
 
+    // Ensure animation doesn't block render on mobile
+    const isMobile = useIsMobile();
+
     const scaleY = useSpring(scrollYProgress, {
         stiffness: 100,
         damping: 30,
@@ -57,10 +60,10 @@ export default function Process() {
                 <h1 className="text-4xl md:text-5xl font-bold">How the Coaching Works</h1>
                 <p className="text-brand-muted mt-6 text-lg max-w-3xl">A clear, structured process designed to fit your real life — not disrupt it. Every step is personalized, intentional, and results-driven.</p>
 
-                <div ref={ref} className="relative mt-10 md:mt-20">
+                <div ref={ref} className="relative mt-10 md:mt-20 min-h-[500px]">
                     {/* Progress Line (Desktop) */}
                     <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-800/50 hidden md:block">
-                        <motion.div className="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accent to-purple-500 origin-top" style={{ height: "100%", scaleY }} />
+                        <motion.div className="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accent to-purple-500 origin-top" style={!isMobile ? { height: "100%", scaleY } : undefined} />
                     </div>
 
                     <div className="space-y-16">

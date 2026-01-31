@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -18,11 +18,18 @@ export default function Pricing() {
     // Animation Logic
     const activeRingIndex = hoveredIndex !== null ? hoveredIndex : 1; // Default to 1 (Best Value) when no hover
 
+    // Mobile-safe initial check: if mobile, assume entered to skip entrance delay
+    useEffect(() => {
+        if (isMobile) {
+            setHasEntered(true);
+        }
+    }, [isMobile]);
+
     const getCardStyle = (index) => {
         const isCenter = index === 1;
 
-        // Base hidden state
-        if (!hasEntered) {
+        // Base hidden state (ONLY on desktop if not yet in view)
+        if (!hasEntered && !isMobile) {
             return {
                 opacity: 0,
                 y: 24,
