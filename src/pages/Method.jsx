@@ -37,7 +37,7 @@ export default function Method() {
 
     return (
         <div className="px-4">
-            <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
+            <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-10 md:py-20">
                 {/* 1️⃣ Top Section (Full Width) */}
                 <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, ease: "easeOut" }} className="max-w-4xl">
                     <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">The Triple R Method</h1>
@@ -46,7 +46,7 @@ export default function Method() {
                 </motion.div>
 
                 {/* 2️⃣ Cards Section (Grid Layout) */}
-                <motion.div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
+                <motion.div className="mt-10 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
                     {/* RESET */}
                     <MethodCard Icon={IconResetMetabolism} title="RESET" description="We start by restoring metabolic balance. This phase focuses on reducing inflammation, improving digestion, regulating stress, and preparing your body for efficient fat loss." variants={itemVariants} />
 

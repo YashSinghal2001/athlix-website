@@ -139,7 +139,7 @@ export default function Pricing() {
                                     <Button
                                         to="/apply"
                                         variant={plan.ctaVariant}
-                                        className="w-full relative overflow-hidden group"
+                                        className="w-full relative overflow-hidden group justify-center"
                                         // Synchronized Button Animation
                                         animate={{
                                             opacity: activeRingIndex === index ? 1 : 0.6, // Active ring determines opacity
@@ -174,7 +174,7 @@ export default function Pricing() {
                                         whileTap={{ scale: 0.98 }}
                                         transition={{ duration: 0.3, ease: "easeInOut" }} // Smooth luxury feel
                                     >
-                                        <span className="inline-flex items-center justify-center gap-2">
+                                        <span className={`inline-flex items-center gap-2 ${isMobile ? "justify-center w-full" : "justify-center"}`}>
                                             <span>Apply Now</span>
                                             <span className="transform-gpu transition-transform duration-300 group-hover:translate-x-1">
                                                 <IconArrowRight className="h-5 w-5" />
@@ -200,7 +200,7 @@ export default function Pricing() {
                 </div>
 
                 {/* Note */}
-                <motion.p className="text-gray-500 text-center mt-16 text-sm" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }}>
+                <motion.p className="text-gray-500 text-center mt-8 md:mt-16 text-sm" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }}>
                     All plans are fully customized. Pricing is discussed after application to ensure the right fit.
                 </motion.p>
             </Section>

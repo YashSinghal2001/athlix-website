@@ -103,7 +103,7 @@ export default function Home() {
                     The Triple R Method
                 </motion.h2>
 
-                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} transition={{ staggerChildren: isMobile ? 0.1 : 0.15 }} className="grid md:grid-cols-3 gap-8 mt-12">
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} transition={{ staggerChildren: isMobile ? 0.1 : 0.15 }} className="grid md:grid-cols-3 gap-8 mt-6 md:mt-12">
                     {[
                         { title: "RESET", desc: "Restore metabolic balance, reduce inflammation, and prime your body for sustainable fat loss.", Icon: IconResetMetabolism },
                         { title: "REBUILD", desc: "Build strength, habits, and nutrition around your real lifestyle — not rigid plans.", Icon: IconRebuildStrength },

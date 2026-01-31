@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -19,6 +19,19 @@ export default function Success() {
     const isMobile = useIsMobile();
     const [activeIndex, setActiveIndex] = useState(0);
     const scrollRef = useRef(null);
+    const contentRef = useRef(null);
+    const hasScrolled = useRef(false);
+
+    useEffect(() => {
+        if (isMobile && contentRef.current && !hasScrolled.current) {
+            // Small delay to ensure render is complete
+            const timer = setTimeout(() => {
+                contentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+                hasScrolled.current = true;
+            }, 500); // 500ms delay to let the user see the hero first, then glide down
+            return () => clearTimeout(timer);
+        }
+    }, [isMobile]);
 
     const handleScroll = () => {
         if (!scrollRef.current) return;
@@ -45,7 +58,7 @@ export default function Success() {
                         {/* Transformations Display */}
                         {isMobile ? (
                             // Mobile Swipe Carousel
-                            <div className="mt-12 relative">
+                            <div className="mt-6 md:mt-12 relative">
                                 <div ref={scrollRef} onScroll={handleScroll} className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 scrollbar-hide" style={{ scrollBehavior: "smooth" }}>
                                     {transformations.map((item, i) => (
                                         <div key={i} className="min-w-[85vw] snap-center">
@@ -78,7 +91,7 @@ export default function Success() {
                             </div>
                         ) : (
                             // Desktop Grid
-                            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12">
+                            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8 mt-6 md:mt-12">
                                 {transformations.map((item, i) => (
                                     <Card key={i} className="p-0 overflow-hidden border border-gray-800 hover:border-brand-accent/30 transition-colors duration-300 group">
                                         <div className="h-64 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-gray-500 relative">

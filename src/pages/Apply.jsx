@@ -92,7 +92,7 @@ export default function Apply() {
 
                 {/* Form Container */}
                 <motion.div
-                    className="mt-16 bg-brand-surface p-8 md:p-12 rounded-xl shadow-2xl relative overflow-hidden"
+                    className="mt-8 md:mt-16 bg-brand-surface p-8 md:p-12 rounded-xl shadow-2xl relative overflow-hidden"
                     initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}

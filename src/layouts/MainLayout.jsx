@@ -18,7 +18,7 @@ export default function MainLayout() {
             {isMobile && <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand-accent origin-left z-[60]" style={{ scaleX }} />}
             <Navbar />
 
-            <main className="flex-grow pt-6">
+            <main className="flex-grow pt-3 md:pt-6">
                 <Outlet />
             </main>
 

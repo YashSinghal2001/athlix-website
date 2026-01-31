@@ -53,11 +53,11 @@ export default function Process() {
 
     return (
         <div className="px-4">
-            <Section className="max-w-7xl mx-auto py-20">
+            <Section className="max-w-7xl mx-auto py-10 md:py-20">
                 <h1 className="text-4xl md:text-5xl font-bold">How the Coaching Works</h1>
                 <p className="text-brand-muted mt-6 text-lg max-w-3xl">A clear, structured process designed to fit your real life — not disrupt it. Every step is personalized, intentional, and results-driven.</p>
 
-                <div ref={ref} className="relative mt-20">
+                <div ref={ref} className="relative mt-10 md:mt-20">
                     {/* Progress Line (Desktop) */}
                     <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-800/50 hidden md:block">
                         <motion.div className="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accent to-purple-500 origin-top" style={{ height: "100%", scaleY }} />
@@ -89,12 +89,23 @@ function StepCard({ step }) {
     const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.5, 1, 0.5]);
     const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.98, 1, 0.98]);
 
+    // Mobile-specific animation variants
+    const mobileVariants = {
+        hidden: { opacity: 0, y: 14 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.3, ease: "easeOut" },
+        },
+    };
+
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, y: isMobile ? 10 : 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            initial={isMobile ? "hidden" : { opacity: 0, y: 30 }}
+            whileInView={isMobile ? "visible" : { opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: isMobile ? "-20px" : "-50px" }}
+            variants={isMobile ? mobileVariants : undefined}
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="relative flex flex-col md:flex-row gap-10 md:items-start group"
             style={{

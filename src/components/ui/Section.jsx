@@ -15,7 +15,7 @@ export default function Section({ children, className = "", delay = 0, id = "" }
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2, margin: "-100px" }}
             transition={transition} // cubic-bezier for smooth reveal
-            className={`py-20 relative snap-section ${className}`}
+            className={`py-10 md:py-20 relative snap-section ${className}`}
         >
             {children}
         </motion.section>

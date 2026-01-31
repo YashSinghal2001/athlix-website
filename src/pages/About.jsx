@@ -50,7 +50,7 @@ export default function About() {
 
     return (
         <div className="px-4">
-            <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-20">
+            <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-10 md:py-20">
                 <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={containerVariants}>
                     {/* 1️⃣ Top Section (Full Width) */}
                     <motion.div variants={itemVariants} className="max-w-4xl relative">
@@ -72,7 +72,7 @@ export default function About() {
                     </motion.div>
 
                     {/* 2️⃣ Cards Section (Certificates + Philosophy) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8 md:mt-16">
                         {/* Card 1: Credentials & Certifications */}
                         <motion.div variants={itemVariants} className="h-full" onHoverStart={() => setIsCredsHovered(true)} onHoverEnd={() => setIsCredsHovered(false)}>
                             <Card

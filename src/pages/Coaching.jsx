@@ -110,7 +110,7 @@ export default function Coaching() {
                     </div>
 
                     {/* CTA */}
-                    <motion.div variants={itemVariants} className="mt-24 text-center">
+                    <motion.div variants={itemVariants} className="mt-12 md:mt-24 text-center">
                         <h2 className="text-3xl md:text-4xl font-bold">Ready to Start Your Transformation?</h2>
 
                         <p className="text-brand-muted mt-4">Apply now and let's see if this program is the right fit for you.</p>
