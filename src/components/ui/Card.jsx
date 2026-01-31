@@ -1,9 +1,11 @@
 import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
+import useIsMobile from "../../hooks/useIsMobile";
 
 export default function Card({ children, className = "", hoverEffect = true, depth = 20, ...props }) {
     const ref = useRef(null);
     const shouldReduceMotion = useReducedMotion();
+    const isMobile = useIsMobile();
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -16,7 +18,7 @@ export default function Card({ children, className = "", hoverEffect = true, dep
     const rotateY = useTransform(mouseX, [-0.5, 0.5], [-5, 5]);
 
     const handleMouseMove = (e) => {
-        if (!hoverEffect || shouldReduceMotion) return;
+        if (!hoverEffect || shouldReduceMotion || isMobile) return;
 
         // Disable on touch devices (simple check)
         if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
@@ -48,21 +50,29 @@ export default function Card({ children, className = "", hoverEffect = true, dep
             style={{
                 perspective: 1000,
                 transformStyle: "preserve-3d",
-                rotateX: hoverEffect ? rotateX : 0,
-                rotateY: hoverEffect ? rotateY : 0,
+                rotateX: hoverEffect && !isMobile ? rotateX : 0,
+                rotateY: hoverEffect && !isMobile ? rotateY : 0,
             }}
             whileHover={
-                hoverEffect
+                hoverEffect && !isMobile
                     ? {
                           y: -5,
                           boxShadow: "0 20px 40px -10px rgba(0,0,0,0.4)",
                       }
                     : {}
             }
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            whileTap={
+                isMobile
+                    ? {
+                          scale: 0.98,
+                          filter: "brightness(0.95)",
+                      }
+                    : {}
+            }
+            transition={isMobile ? { duration: 0.08, ease: "easeOut" } : { type: "spring", stiffness: 300, damping: 25 }}
             {...props}
         >
-            <div style={{ transform: `translateZ(${depth}px)` }}>{children}</div>
+            <div style={{ transform: `translateZ(${isMobile ? 0 : depth}px)` }}>{children}</div>
         </motion.div>
     );
 }

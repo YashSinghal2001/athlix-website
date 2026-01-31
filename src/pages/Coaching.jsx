@@ -2,11 +2,13 @@ import { motion, useReducedMotion } from "framer-motion";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Section from "../components/ui/Section";
+import useIsMobile from "../hooks/useIsMobile";
 import { useState } from "react";
 import { FitnessSystemVector } from "../components/illustrations/PremiumSvgs";
 
 export default function Coaching() {
     const prefersReducedMotion = useReducedMotion();
+    const isMobile = useIsMobile();
     const [isLeftHovered, setIsLeftHovered] = useState(false);
 
     const containerVariants = {
@@ -14,7 +16,7 @@ export default function Coaching() {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.12, // 120ms stagger
+                staggerChildren: isMobile ? 0.08 : 0.12, // 120ms stagger
                 delayChildren: 0.1,
             },
         },
@@ -23,13 +25,13 @@ export default function Coaching() {
     const itemVariants = {
         hidden: {
             opacity: 0,
-            y: prefersReducedMotion ? 0 : 12,
+            y: prefersReducedMotion ? 0 : isMobile ? 10 : 12,
         },
         visible: {
             opacity: 1,
             y: 0,
             transition: {
-                duration: 0.4, // 400ms
+                duration: isMobile ? 0.3 : 0.4, // 400ms
                 ease: "easeOut",
             },
         },
@@ -69,7 +71,7 @@ export default function Coaching() {
                                             animate={{
                                                 opacity: isLeftHovered ? 1 : 0.7,
                                                 color: isLeftHovered ? "#FFFFFF" : "#9CA3AF",
-                                                x: isLeftHovered && !prefersReducedMotion ? 4 : 0,
+                                                x: isLeftHovered && !prefersReducedMotion && !isMobile ? 4 : 0,
                                             }}
                                             transition={{
                                                 duration: 0.3,
@@ -90,8 +92,8 @@ export default function Coaching() {
                                 <motion.div
                                     aria-hidden="true"
                                     className="hidden md:block pointer-events-none absolute right-3 top-3 w-[240px] text-white opacity-[0.08]"
-                                    animate={prefersReducedMotion ? undefined : { y: [0, -5, 0], x: [0, 3, 0] }}
-                                    transition={prefersReducedMotion ? undefined : { duration: 26, ease: "easeInOut", repeat: Infinity }}
+                                    animate={prefersReducedMotion || isMobile ? undefined : { y: [0, -5, 0], x: [0, 3, 0] }}
+                                    transition={prefersReducedMotion || isMobile ? undefined : { duration: 26, ease: "easeInOut", repeat: Infinity }}
                                 >
                                     <FitnessSystemVector className="w-full h-auto" />
                                 </motion.div>
@@ -117,13 +119,13 @@ export default function Coaching() {
                             <Button
                                 to="/apply"
                                 className="relative overflow-hidden group"
-                                whileHover={{ y: 2 }} // Press down effect
-                                whileTap={{ scale: 0.98 }} // Active compression
+                                whileHover={!isMobile ? { y: 2 } : {}} // Press down effect only on desktop
+                                whileTap={isMobile ? { scale: 0.98 } : { scale: 0.98 }} // Active compression
                                 transition={{ duration: 0.2, ease: "easeOut" }}
                             >
                                 <span className="relative z-10">Apply for Coaching</span>
                                 {/* Sliding Accent Line */}
-                                <motion.div className="absolute bottom-0 left-0 w-full h-[3px] bg-white/30" initial={{ x: "-100%" }} whileHover={{ x: "0%" }} transition={{ duration: 0.3, ease: "easeOut" }} />
+                                <motion.div className="absolute bottom-0 left-0 w-full h-[3px] bg-white/30" initial={{ x: "-100%" }} whileHover={!isMobile ? { x: "0%" } : {}} transition={{ duration: 0.3, ease: "easeOut" }} />
                             </Button>
                         </div>
                     </motion.div>

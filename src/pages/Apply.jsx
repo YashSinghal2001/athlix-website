@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "../components/ui/Button";
 import Section from "../components/ui/Section";
+import useIsMobile from "../hooks/useIsMobile";
 import { FormAbstractLines, IconArrowRight, IconCalendarClock, IconProfileId, IconTargetFlag } from "../components/illustrations/PremiumSvgs";
 
 const PaperInput = ({ label, type = "text", placeholder, className = "" }) => {
@@ -62,12 +63,13 @@ const FormSection = ({ title, Icon, children }) => {
 
 export default function Apply() {
     const prefersReducedMotion = useReducedMotion();
+    const isMobile = useIsMobile();
 
     return (
         <div className="px-4">
             <Section className="max-w-3xl mx-auto">
                 {/* Heading */}
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+                <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
                     <h1 className="text-4xl md:text-5xl font-bold text-center">Apply for Coaching</h1>
                     <p className="text-brand-muted text-center mt-6 text-lg">This application helps us understand your goals, lifestyle, and expectations so we can determine if this coaching is the right fit for you.</p>
                 </motion.div>
@@ -75,7 +77,7 @@ export default function Apply() {
                 {/* Form Container */}
                 <motion.div
                     className="mt-16 bg-brand-surface p-8 md:p-12 rounded-xl shadow-2xl relative overflow-hidden"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     style={{
@@ -85,8 +87,8 @@ export default function Apply() {
                     <motion.div
                         aria-hidden="true"
                         className="pointer-events-none absolute -right-28 -top-24 w-[420px] text-white opacity-[0.035]"
-                        animate={prefersReducedMotion ? undefined : { y: [0, -6, 0], x: [0, 4, 0] }}
-                        transition={prefersReducedMotion ? undefined : { duration: 28, ease: "easeInOut", repeat: Infinity }}
+                        animate={prefersReducedMotion || isMobile ? undefined : { y: [0, -6, 0], x: [0, 4, 0] }}
+                        transition={prefersReducedMotion || isMobile ? undefined : { duration: 28, ease: "easeInOut", repeat: Infinity }}
                     >
                         <FormAbstractLines className="w-full h-auto" />
                     </motion.div>

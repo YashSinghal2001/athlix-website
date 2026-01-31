@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 import Section from "../components/ui/Section";
+import useIsMobile from "../hooks/useIsMobile";
 import { IconArrowRight, IconCheckSmall, IconPlanChecklist, IconPlanCrown, IconPlanLayers } from "../components/illustrations/PremiumSvgs";
 
 const BRAND_ACCENT = "#6366F1";
@@ -11,15 +12,8 @@ const BRAND_BORDER = "#1F2937";
 export default function Pricing() {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const prefersReducedMotion = useReducedMotion();
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useIsMobile();
     const [hasEntered, setHasEntered] = useState(false);
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener("resize", checkMobile);
-        return () => window.removeEventListener("resize", checkMobile);
-    }, []);
 
     // Animation Logic
     const activeRingIndex = hoveredIndex !== null ? hoveredIndex : 1; // Default to 1 (Best Value) when no hover
@@ -97,7 +91,7 @@ export default function Pricing() {
         <div className="px-4">
             <Section className="max-w-7xl mx-auto">
                 {/* Heading */}
-                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: "easeOut" }}>
+                <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: "easeOut" }}>
                     <h1 className="text-4xl md:text-5xl font-bold text-center">Coaching Plans & Investment</h1>
                     <p className="text-brand-muted text-center max-w-3xl mx-auto mt-6 text-lg">Choose the level of coaching that aligns with your goals, commitment, and desired level of support.</p>
                 </motion.div>
@@ -129,7 +123,7 @@ export default function Pricing() {
                                             initial={{ opacity: 0.7, x: 0 }}
                                             animate={{
                                                 opacity: hoveredIndex === index ? 1 : 0.7,
-                                                x: hoveredIndex === index && !prefersReducedMotion ? 6 : 0, // Slide right slightly (cleaner than up)
+                                                x: hoveredIndex === index && !prefersReducedMotion && !isMobile ? 6 : 0, // Slide right slightly (cleaner than up)
                                             }}
                                             transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.05 }} // Staggered reveal
                                             className="text-brand-muted"
@@ -166,13 +160,17 @@ export default function Pricing() {
                                             color: activeRingIndex === index ? "#ffffff" : "#9CA3AF", // White text on active, muted on inactive
                                             filter: "none",
                                         }}
-                                        whileHover={{
-                                            scale: 1,
-                                            backgroundColor: "#4338CA", // Slightly darker on direct button hover for tactile feel
-                                            borderColor: "transparent",
-                                            opacity: 1,
-                                            color: "#ffffff",
-                                        }}
+                                        whileHover={
+                                            !isMobile
+                                                ? {
+                                                      scale: 1,
+                                                      backgroundColor: "#4338CA", // Slightly darker on direct button hover for tactile feel
+                                                      borderColor: "transparent",
+                                                      opacity: 1,
+                                                      color: "#ffffff",
+                                                  }
+                                                : {}
+                                        }
                                         whileTap={{ scale: 0.98 }}
                                         transition={{ duration: 0.3, ease: "easeInOut" }} // Smooth luxury feel
                                     >

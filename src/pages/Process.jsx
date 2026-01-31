@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { UserCheck, ClipboardList, Brain, LineChart, MessageCircle } from "lucide-react";
 import Section from "../components/ui/Section";
 import Card from "../components/ui/Card";
+import useIsMobile from "../hooks/useIsMobile";
 
 const steps = [
     {
@@ -59,10 +60,7 @@ export default function Process() {
                 <div ref={ref} className="relative mt-20">
                     {/* Progress Line (Desktop) */}
                     <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-800/50 hidden md:block">
-                        <motion.div 
-                            className="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accent to-purple-500 origin-top" 
-                            style={{ height: "100%", scaleY }} 
-                        />
+                        <motion.div className="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accent to-purple-500 origin-top" style={{ height: "100%", scaleY }} />
                     </div>
 
                     <div className="space-y-16">
@@ -79,7 +77,8 @@ export default function Process() {
 function StepCard({ step }) {
     const Icon = step.icon;
     const ref = useRef(null);
-    
+    const isMobile = useIsMobile();
+
     // Smooth opacity/focus transition based on viewport position
     const { scrollYProgress } = useScroll({
         target: ref,
@@ -91,35 +90,38 @@ function StepCard({ step }) {
     const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.98, 1, 0.98]);
 
     return (
-        <motion.div 
+        <motion.div
             ref={ref}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: isMobile ? 10 : 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="relative flex flex-col md:flex-row gap-10 md:items-start group"
-            style={{ opacity, scale }} // Dynamic focus state
+            style={{
+                opacity: isMobile ? 1 : opacity,
+                scale: isMobile ? 1 : scale,
+            }} // Dynamic focus state only on desktop
         >
             {/* Timeline Node (Desktop) */}
             <div className="hidden md:flex flex-col items-center z-10 sticky top-32">
-                <motion.div 
+                <motion.div
                     className="w-16 h-16 rounded-full bg-brand-surface border border-gray-700 flex items-center justify-center shadow-md relative overflow-hidden transition-colors duration-500"
-                    whileInView={{ 
+                    whileInView={{
                         borderColor: "rgba(99,102,241,0.5)",
-                        backgroundColor: "#1F1F26"
+                        backgroundColor: "#1F1F26",
                     }}
                     viewport={{ margin: "-100px" }}
                 >
                     {/* Soft Accent Ring */}
                     <div className="absolute inset-0 rounded-full border border-brand-accent/20 scale-110" />
-                    
+
                     <Icon className="w-7 h-7 text-gray-400 group-hover:text-brand-accent transition-colors duration-500" />
                 </motion.div>
             </div>
 
             {/* Card Content */}
             <div className="flex-1">
-                <Card 
+                <Card
                     className="p-8 md:p-10 border border-brand-border/50 bg-brand-surface/50 backdrop-blur-sm rounded-2xl transition-all duration-500 hover:border-brand-accent/30 hover:bg-brand-surface"
                     hoverEffect={false} // Disable default tilt
                 >
