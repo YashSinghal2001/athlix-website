@@ -3,23 +3,38 @@
 @tailwind utilities;
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
+}
+
+/* Mobile Soft Scroll Snap */
+@media (max-width: 768px) {
+    html {
+        scroll-snap-type: y proximity;
+        scroll-padding-top: 80px; /* Offset for sticky navbar */
+    }
+
+    /* Apply to direct children of layout or major sections */
+    section,
+    .snap-section {
+        scroll-snap-align: start;
+        scroll-margin-top: 80px;
+    }
 }
 
 /* Global Typography Improvements */
 @layer base {
-  p {
-    @apply leading-relaxed;
-  }
+    p {
+        @apply leading-relaxed;
+    }
 }
 
 /* Content utility class for long-form sections */
 @layer components {
-  .content {
-    @apply max-w-4xl leading-relaxed;
-  }
-  
-  .content-narrow {
-    @apply max-w-3xl leading-relaxed;
-  }
+    .content {
+        @apply max-w-4xl leading-relaxed;
+    }
+
+    .content-narrow {
+        @apply max-w-3xl leading-relaxed;
+    }
 }

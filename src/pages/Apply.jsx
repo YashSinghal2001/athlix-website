@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import Button from "../components/ui/Button";
 import Section from "../components/ui/Section";
 import useIsMobile from "../hooks/useIsMobile";
@@ -64,6 +64,22 @@ const FormSection = ({ title, Icon, children }) => {
 export default function Apply() {
     const prefersReducedMotion = useReducedMotion();
     const isMobile = useIsMobile();
+    const [currentStep, setCurrentStep] = useState(1);
+    const totalSteps = 4;
+
+    const nextStep = () => {
+        if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
+    };
+
+    const prevStep = () => {
+        if (currentStep > 1) setCurrentStep(currentStep - 1);
+    };
+
+    const stepVariants = {
+        hidden: { opacity: 0, x: 20 },
+        visible: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: -20 },
+    };
 
     return (
         <div className="px-4">
@@ -93,42 +109,120 @@ export default function Apply() {
                         <FormAbstractLines className="w-full h-auto" />
                     </motion.div>
 
-                    <form className="space-y-12">
-                        {/* Basic Info */}
-                        <FormSection title="Basic Information" Icon={IconProfileId}>
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <PaperInput placeholder="Full Name" />
-                                <PaperInput type="email" placeholder="Email Address" />
+                    {isMobile ? (
+                        // Mobile Stepper Form
+                        <div className="relative">
+                            {/* Progress Indicator */}
+                            <div className="flex justify-center gap-2 mb-8">
+                                {[...Array(totalSteps)].map((_, i) => (
+                                    <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i + 1 === currentStep ? "w-8 bg-brand-accent" : "w-2 bg-gray-700"}`} />
+                                ))}
                             </div>
-                        </FormSection>
 
-                        {/* Goals */}
-                        <FormSection title="Your Goals" Icon={IconTargetFlag}>
-                            <PaperTextarea placeholder="Describe your fitness goals... What do you want to achieve in the next 6 months?" />
-                        </FormSection>
+                            <form onSubmit={(e) => e.preventDefault()}>
+                                <AnimatePresence mode="wait">
+                                    {currentStep === 1 && (
+                                        <motion.div key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit">
+                                            <FormSection title="Basic Information" Icon={IconProfileId}>
+                                                <div className="space-y-6">
+                                                    <PaperInput placeholder="Full Name" />
+                                                    <PaperInput type="email" placeholder="Email Address" />
+                                                </div>
+                                            </FormSection>
+                                        </motion.div>
+                                    )}
 
-                        {/* Lifestyle */}
-                        <FormSection title="Lifestyle & Availability" Icon={IconCalendarClock}>
-                            <PaperTextarea placeholder="Tell us about your daily routine, work schedule, and stress levels..." />
-                        </FormSection>
+                                    {currentStep === 2 && (
+                                        <motion.div key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit">
+                                            <FormSection title="Your Goals" Icon={IconTargetFlag}>
+                                                <PaperTextarea placeholder="Describe your fitness goals... What do you want to achieve in the next 6 months?" />
+                                            </FormSection>
+                                        </motion.div>
+                                    )}
 
-                        {/* Disclaimer */}
-                        <motion.div className="border-l-2 border-brand-muted/30 pl-6 py-2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
-                            <p className="text-brand-muted text-sm italic">By submitting this application, you confirm that all information provided is accurate and that you understand this is not medical advice. Final acceptance is subject to review.</p>
-                        </motion.div>
+                                    {currentStep === 3 && (
+                                        <motion.div key="step3" variants={stepVariants} initial="hidden" animate="visible" exit="exit">
+                                            <FormSection title="Lifestyle & Availability" Icon={IconCalendarClock}>
+                                                <PaperTextarea placeholder="Tell us about your daily routine, work schedule, and stress levels..." />
+                                            </FormSection>
+                                        </motion.div>
+                                    )}
 
-                        {/* Submit */}
-                        <div className="pt-4">
-                            <Button type="submit" className="w-full text-lg py-4 group">
-                                <span className="inline-flex items-center justify-center gap-2">
-                                    <span>Submit Application</span>
-                                    <span className="transform-gpu transition-transform duration-300 group-hover:translate-x-1">
-                                        <IconArrowRight className="h-5 w-5 text-brand-muted/80 group-hover:text-brand-accent transition-colors duration-300" />
-                                    </span>
-                                </span>
-                            </Button>
+                                    {currentStep === 4 && (
+                                        <motion.div key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit">
+                                            <FormSection title="Review & Submit" Icon={IconProfileId}>
+                                                <div className="border-l-2 border-brand-muted/30 pl-6 py-2 mb-6">
+                                                    <p className="text-brand-muted text-sm italic">By submitting this application, you confirm that all information provided is accurate and that you understand this is not medical advice. Final acceptance is subject to review.</p>
+                                                </div>
+                                                <Button type="submit" className="w-full text-lg py-4 group">
+                                                    <span className="inline-flex items-center justify-center gap-2">
+                                                        <span>Submit Application</span>
+                                                        <span className="transform-gpu transition-transform duration-300 group-hover:translate-x-1">
+                                                            <IconArrowRight className="h-5 w-5 text-brand-muted/80 group-hover:text-brand-accent transition-colors duration-300" />
+                                                        </span>
+                                                    </span>
+                                                </Button>
+                                            </FormSection>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Navigation Buttons */}
+                                <div className="flex justify-between mt-8">
+                                    {currentStep > 1 && (
+                                        <button type="button" onClick={prevStep} className="px-4 py-2 text-brand-muted hover:text-white transition-colors">
+                                            Back
+                                        </button>
+                                    )}
+                                    {currentStep < totalSteps && (
+                                        <div className="ml-auto">
+                                            <Button type="button" onClick={nextStep} className="px-6 py-2">
+                                                Next
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    ) : (
+                        // Desktop Full Form
+                        <form className="space-y-12">
+                            {/* Basic Info */}
+                            <FormSection title="Basic Information" Icon={IconProfileId}>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <PaperInput placeholder="Full Name" />
+                                    <PaperInput type="email" placeholder="Email Address" />
+                                </div>
+                            </FormSection>
+
+                            {/* Goals */}
+                            <FormSection title="Your Goals" Icon={IconTargetFlag}>
+                                <PaperTextarea placeholder="Describe your fitness goals... What do you want to achieve in the next 6 months?" />
+                            </FormSection>
+
+                            {/* Lifestyle */}
+                            <FormSection title="Lifestyle & Availability" Icon={IconCalendarClock}>
+                                <PaperTextarea placeholder="Tell us about your daily routine, work schedule, and stress levels..." />
+                            </FormSection>
+
+                            {/* Disclaimer */}
+                            <motion.div className="border-l-2 border-brand-muted/30 pl-6 py-2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.4 }}>
+                                <p className="text-brand-muted text-sm italic">By submitting this application, you confirm that all information provided is accurate and that you understand this is not medical advice. Final acceptance is subject to review.</p>
+                            </motion.div>
+
+                            {/* Submit */}
+                            <div className="pt-4">
+                                <Button type="submit" className="w-full text-lg py-4 group">
+                                    <span className="inline-flex items-center justify-center gap-2">
+                                        <span>Submit Application</span>
+                                        <span className="transform-gpu transition-transform duration-300 group-hover:translate-x-1">
+                                            <IconArrowRight className="h-5 w-5 text-brand-muted/80 group-hover:text-brand-accent transition-colors duration-300" />
+                                        </span>
+                                    </span>
+                                </Button>
+                            </div>
+                        </form>
+                    )}
                 </motion.div>
             </Section>
         </div>
