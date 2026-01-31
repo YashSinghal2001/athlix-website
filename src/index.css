@@ -7,19 +7,18 @@ html {
 }
 
 /* Mobile Soft Scroll Snap */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     html {
         scroll-snap-type: y proximity;
-        scroll-padding-top: 80px; /* Offset for sticky navbar */
+        scroll-padding-top: 80px;
     }
 
-    /* Apply to direct children of layout or major sections */
     section,
     .snap-section {
         scroll-snap-align: start;
         scroll-margin-top: 80px;
     }
-}
+} */
 
 /* Global Typography Improvements */
 @layer base {

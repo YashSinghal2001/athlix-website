@@ -11,9 +11,11 @@ export default function MainLayout() {
     const { scrollYProgress } = useScroll();
 
     // ✅ Use safe fallback for mobile
-    const safeProgress = isMobile
-        ? { get: () => 1 }
-        : scrollYProgress;
+    // const safeProgress = isMobile
+    //     ? { get: () => 1 }
+    //     : scrollYProgress;
+    const safeProgress = isMobile ? scrollYProgress : scrollYProgress;
+
 
     const scaleX = useSpring(safeProgress, {
         stiffness: 100,
