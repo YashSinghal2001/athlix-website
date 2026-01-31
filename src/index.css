@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Global Typography Improvements */
+@layer base {
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+/* Content utility class for long-form sections */
+@layer components {
+  .content {
+    @apply max-w-4xl leading-relaxed;
+  }
+  
+  .content-narrow {
+    @apply max-w-3xl leading-relaxed;
+  }
+}
