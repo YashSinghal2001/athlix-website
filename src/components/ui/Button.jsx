@@ -10,7 +10,7 @@ export default function Button({ children, onClick, href, to, variant = "primary
 
     const baseStyles = "inline-flex items-center justify-center px-6 py-3 rounded-md font-semibold transition-colors duration-300 cursor-pointer";
     const primaryStyles = "bg-brand-accent text-white shadow-md hover:shadow-brand-accent/25";
-    const secondaryStyles = "border border-brand-border text-brand-text hover:border-brand-text/50 hover:bg-white/5";
+    const secondaryStyles = "border border-brand-border text-brand-text hover:border-brand-text hover:bg-brand-muted/10";
 
     const styles = `${baseStyles} ${isPrimary ? primaryStyles : secondaryStyles} ${className}`;
 
@@ -33,7 +33,7 @@ export default function Button({ children, onClick, href, to, variant = "primary
               transition: { duration: 0.08, ease: "easeOut" }, // Fast, tactile response
           }
         : {
-              whileHover: { y: -2, scale: 1.02, filter: "brightness(1.1)" },
+              whileHover: { y: -2, scale: 1.02, filter: "brightness(0.9)" },
               whileTap: { scale: 0.96, y: 0 },
               transition: { type: "spring", stiffness: 400, damping: 15 },
           };

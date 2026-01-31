@@ -57,7 +57,7 @@ export default function Card({ children, className = "", hoverEffect = true, dep
                 hoverEffect && !isMobile
                     ? {
                           y: -5,
-                          boxShadow: "0 20px 40px -10px rgba(0,0,0,0.4)",
+                          boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)",
                       }
                     : {}
             }

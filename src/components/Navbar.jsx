@@ -3,18 +3,36 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./ui/Button";
 
+const WHATSAPP_LINK = "https://wa.me/919872028656";
+
 const navLinks = [
-    { name: "About", path: "/about" },
-    { name: "Method", path: "/method" },
-    { name: "Success", path: "/success" },
-    { name: "Process", path: "/process" },
-    { name: "Coaching", path: "/coaching" },
-    { name: "Pricing", path: "/pricing" },
+    { name: "Method", path: "/method", id: "method" },
+    { name: "About", path: "/about", id: "about" },
+    { name: "Success", path: "/success", id: "success" },
+    { name: "Process", path: "/process", id: "process" },
+    { name: "Coaching", path: "/coaching", id: "coaching" },
+    { name: "Pricing", path: "/pricing", id: "pricing" },
+    { name: "Testimonials", path: "/testimonials", id: "testimonials" },
 ];
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const location = useLocation();
+
+    const handleNavClick = (e, link) => {
+        // If on homepage, scroll to section
+        if (location.pathname === "/") {
+            e.preventDefault();
+            const element = document.getElementById(link.id);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+            setOpen(false);
+        } else {
+            // If not on homepage, let Link handle navigation to the separate page
+            setOpen(false);
+        }
+    };
 
     const menuVariants = {
         hidden: { y: "100%" },
@@ -44,11 +62,11 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 bg-black border-b border-gray-800">
+        <nav className="sticky top-0 z-50 bg-brand-bg border-b border-brand-border">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - Links to / */}
-                    <Link to="/" className="text-white text-2xl font-bold tracking-wide">
+                    <Link to="/" className="text-brand-text text-2xl font-bold tracking-wide" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
                         ATHLIX
                     </Link>
 
@@ -57,20 +75,20 @@ export default function Navbar() {
                         {navLinks.map((link) => {
                             const isActive = location.pathname === link.path;
                             return (
-                                <Link key={link.name} to={link.path} className={`relative text-sm font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-gray-300 hover:text-white"}`}>
+                                <Link key={link.name} to={link.path} onClick={(e) => handleNavClick(e, link)} className={`relative text-sm font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-brand-muted hover:text-brand-text"}`}>
                                     {link.name}
                                     {isActive && <motion.div layoutId="desktop-underline" className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-accent rounded-full" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
                                 </Link>
                             );
                         })}
 
-                        <Button to="/apply" className="px-5 py-2">
+                        <Button href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" className="px-5 py-2">
                             Apply Now
                         </Button>
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <button className="md:hidden text-white text-2xl" onClick={() => setOpen(!open)}>
+                    <button className="md:hidden text-brand-text text-2xl" onClick={() => setOpen(!open)}>
                         ☰
                     </button>
                 </div>
@@ -81,11 +99,11 @@ export default function Navbar() {
                 {open && (
                     <>
                         {/* Backdrop */}
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] md:hidden" onClick={() => setOpen(false)} />
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] md:hidden" onClick={() => setOpen(false)} />
 
                         {/* Bottom Sheet Menu */}
-                        <motion.div variants={menuVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-0 left-0 right-0 z-[100] bg-[#111] border-t border-gray-800 rounded-t-2xl p-6 md:hidden pb-12 shadow-2xl">
-                            <div className="mx-auto w-12 h-1.5 bg-gray-700 rounded-full mb-8 opacity-50" />
+                        <motion.div variants={menuVariants} initial="hidden" animate="visible" exit="exit" className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-brand-border rounded-t-2xl p-6 md:hidden pb-12 shadow-2xl">
+                            <div className="mx-auto w-12 h-1.5 bg-gray-300 rounded-full mb-8 opacity-50" />
 
                             <div className="flex flex-col space-y-6">
                                 {navLinks.map((link) => {
@@ -93,7 +111,7 @@ export default function Navbar() {
                                     return (
                                         <motion.div key={link.name} variants={itemVariants}>
                                             <motion.div whileTap={{ scale: 0.98, opacity: 0.8 }}>
-                                                <Link to={link.path} onClick={() => setOpen(false)} className={`text-xl block font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-gray-300 hover:text-white"}`}>
+                                                <Link to={link.path} onClick={(e) => handleNavClick(e, link)} className={`text-xl block font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-brand-muted hover:text-brand-text"}`}>
                                                     <span className="flex items-center gap-3">
                                                         {link.name}
                                                         {isActive && <motion.div layoutId="mobile-indicator" className="w-1.5 h-1.5 rounded-full bg-brand-accent" initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} />}
@@ -105,7 +123,7 @@ export default function Navbar() {
                                 })}
 
                                 <motion.div variants={itemVariants} className="pt-2">
-                                    <Button to="/apply" onClick={() => setOpen(false)} className="w-full justify-center text-lg">
+                                    <Button href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" onClick={() => setOpen(false)} className="w-full justify-center text-lg">
                                         Apply Now
                                     </Button>
                                 </motion.div>

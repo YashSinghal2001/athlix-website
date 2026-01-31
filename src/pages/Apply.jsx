@@ -15,10 +15,10 @@ const PaperInput = ({ label, type = "text", placeholder, className = "" }) => {
                 <input
                     type={type}
                     placeholder={placeholder}
-                    className="w-full bg-transparent border-b border-gray-800 py-3 text-brand-text placeholder-gray-600 focus:outline-none transition-colors duration-300 caret-brand-accent"
+                    className="w-full bg-transparent border-b border-brand-border py-3 text-brand-text placeholder-gray-400 focus:outline-none transition-colors duration-300 caret-brand-accent"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    style={{ textShadow: isFocused ? "0 0 8px rgba(99,102,241,0.3)" : "none" }} // Subtle text glow
+                    style={{ textShadow: isFocused ? "0 0 8px rgba(2, 171, 255, 0.3)" : "none" }} // Subtle text glow
                 />
                 {/* Animated Bottom Line */}
                 <motion.div className="absolute bottom-0 left-0 h-[1px] bg-brand-accent w-full" initial={{ scaleX: 0 }} animate={{ scaleX: isFocused ? 1 : 0 }} transition={{ duration: 0.4, ease: "easeOut" }} style={{ originX: 0 }} />
@@ -97,12 +97,12 @@ export default function Apply() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     style={{
-                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)", // Deep shadow + subtle border
+                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)", // Deep shadow + subtle border
                     }}
                 >
                     <motion.div
                         aria-hidden="true"
-                        className="pointer-events-none absolute -right-28 -top-24 w-[420px] text-white opacity-[0.035]"
+                        className="pointer-events-none absolute -right-28 -top-24 w-[420px] text-brand-text opacity-[0.03]"
                         animate={prefersReducedMotion || isMobile ? undefined : { y: [0, -6, 0], x: [0, 4, 0] }}
                         transition={prefersReducedMotion || isMobile ? undefined : { duration: 28, ease: "easeInOut", repeat: Infinity }}
                     >
@@ -115,7 +115,7 @@ export default function Apply() {
                             {/* Progress Indicator */}
                             <div className="flex justify-center gap-2 mb-8">
                                 {[...Array(totalSteps)].map((_, i) => (
-                                    <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i + 1 === currentStep ? "w-8 bg-brand-accent" : "w-2 bg-gray-700"}`} />
+                                    <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i + 1 === currentStep ? "w-8 bg-brand-accent" : "w-2 bg-gray-300"}`} />
                                 ))}
                             </div>
 

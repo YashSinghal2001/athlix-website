@@ -24,7 +24,7 @@ export default function MainLayout() {
     });
 
     return (
-        <div className="min-h-[100svh] flex flex-col bg-black text-white">
+        <div className="min-h-[100svh] flex flex-col bg-brand-bg text-brand-text">
             {isMobile && (
                 <motion.div
                     className="fixed top-0 left-0 right-0 h-[2px] bg-brand-accent origin-left z-[60]"

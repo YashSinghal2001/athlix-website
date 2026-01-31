@@ -8,12 +8,12 @@ export default {
     extend: {
       colors: {
         brand: {
-          bg: "#0B0D10",        // main background
-          surface: "#11141A",   // cards / sections
-          border: "#1F2937",    // dividers
-          text: "#FFFFFF",      // primary text
-          muted: "#9CA3AF",     // secondary text
-          accent: "#6366F1",    // indigo accent (CTA, highlights)
+          bg: "#FFFFFF",        // main background
+          surface: "#FFFFFF",   // cards / sections
+          border: "#E5E7EB",    // light gray border
+          text: "#111827",      // dark neutral text
+          muted: "#6B7280",     // medium gray muted text
+          accent: "#02ABFF",    // bright blue accent
         },
       },
     },

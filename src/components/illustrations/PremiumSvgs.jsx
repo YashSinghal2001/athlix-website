@@ -4,7 +4,7 @@ export function HeroAbstractLines({ className = "", ...props }) {
             <path d="M68 398c92-76 140-184 260-232 88-35 156-14 238 36 50 30 96 70 140 120" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
             <path d="M92 430c76-66 108-144 212-204 78-45 150-48 240-16 70 25 132 70 184 126" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.28" vectorEffect="non-scaling-stroke" />
             <path d="M120 120c70 20 116 58 156 114 34 48 50 108 54 170" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.22" vectorEffect="non-scaling-stroke" />
-            <path d="M520 90c-64 34-114 82-150 144-30 52-40 108-36 170" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.65" vectorEffect="non-scaling-stroke" />
+            <path d="M520 90c-64 34-114 82-150 144-30 52-40 108-36 170" stroke="#02ABFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.65" vectorEffect="non-scaling-stroke" />
             <path d="M614 160c-44 26-78 60-106 106-22 36-32 74-34 120" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.2" vectorEffect="non-scaling-stroke" />
         </svg>
     );
@@ -16,8 +16,8 @@ export function IconResetMetabolism({ className = "", ...props }) {
             <path d="M7 9a5 5 0 0 1 10 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
             <path d="M5.5 11.5h13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.35" vectorEffect="non-scaling-stroke" />
             <path d="M8.2 16.2a5.2 5.2 0 0 0 7.6 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
-            <path d="M19 8.2V5.8h-2.4" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <path d="M5 15.8v2.4h2.4" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M19 8.2V5.8h-2.4" stroke="#02ABFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M5 15.8v2.4h2.4" stroke="#02ABFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -29,8 +29,8 @@ export function IconRebuildStrength({ className = "", ...props }) {
             <path d="M17.5 9.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.5" vectorEffect="non-scaling-stroke" />
             <path d="M8.5 10.5h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.35" vectorEffect="non-scaling-stroke" />
             <path d="M9.2 15.8h5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.35" vectorEffect="non-scaling-stroke" />
-            <path d="M5 8.5h2.2a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <path d="M19 8.5h-2.2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1H19" stroke="#6366F1" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M5 8.5h2.2a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5" stroke="#02ABFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M19 8.5h-2.2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1H19" stroke="#02ABFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -40,8 +40,8 @@ export function IconRiseGrowth({ className = "", ...props }) {
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
             <path d="M5.5 17.5v-7.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.45" vectorEffect="non-scaling-stroke" />
             <path d="M5.5 17.5h13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.35" vectorEffect="non-scaling-stroke" />
-            <path d="M7.2 14.2l4-4 3 3 4.2-4.2" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <path d="M17.6 9h1.6v1.6" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M7.2 14.2l4-4 3 3 4.2-4.2" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M17.6 9h1.6v1.6" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -50,7 +50,7 @@ export function IconNoGimmicks({ className = "", ...props }) {
     return (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
             <path d="M12 3.5l7 3.6v6.3c0 4.1-3 7.7-7 8.9-4-1.2-7-4.8-7-8.9V7.1l7-3.6Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
-            <path d="M8.2 12.1 10.6 14.5 15.8 9.3" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M8.2 12.1 10.6 14.5 15.8 9.3" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -61,8 +61,8 @@ export function IconPersonalized({ className = "", ...props }) {
             <path d="M6.5 7.5h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.5" vectorEffect="non-scaling-stroke" />
             <path d="M6.5 12h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.35" vectorEffect="non-scaling-stroke" />
             <path d="M6.5 16.5h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.5" vectorEffect="non-scaling-stroke" />
-            <path d="M10 7.5a1.6 1.6 0 1 0 0.01 0Z" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <path d="M14.5 16.5a1.6 1.6 0 1 0 0.01 0Z" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M10 7.5a1.6 1.6 0 1 0 0.01 0Z" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M14.5 16.5a1.6 1.6 0 1 0 0.01 0Z" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -72,7 +72,7 @@ export function IconScienceBacked({ className = "", ...props }) {
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
             <path d="M10 3.5h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.5" vectorEffect="non-scaling-stroke" />
             <path d="M10 3.5v5.2l-3.2 5.6A5.2 5.2 0 0 0 11.3 22h1.4a5.2 5.2 0 0 0 4.5-7.7L14 8.7V3.5" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
-            <path d="M8.4 13.2h7.2" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            <path d="M8.4 13.2h7.2" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -82,8 +82,8 @@ export function IconLongTerm({ className = "", ...props }) {
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
             <path d="M7.5 12a4.5 4.5 0 0 1 4.5-4.5h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
             <path d="M16.5 12a4.5 4.5 0 0 1-4.5 4.5h-2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" opacity="0.55" vectorEffect="non-scaling-stroke" />
-            <path d="M14 7.5h2.8V4.7" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-            <path d="M10 16.5H7.2v2.8" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M14 7.5h2.8V4.7" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+            <path d="M10 16.5H7.2v2.8" stroke="#02ABFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -128,6 +128,33 @@ export function IconArrowRight({ className = "", ...props }) {
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
             <path d="M5.5 12h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" opacity="0.5" vectorEffect="non-scaling-stroke" />
             <path d="M14.5 8.5 18 12l-3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" vectorEffect="non-scaling-stroke" />
+        </svg>
+    );
+}
+
+export function IconWhatsApp({ className = "", ...props }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M9.3 9.3c.4-.7 1.1-.9 1.7-.5l.8.5c.3.2.4.6.3.9a9.1 9.1 0 0 1 3 3c.3.1.7.1 1-.2l.5-.8c.4-.6.3-1.4-.5-1.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+        </svg>
+    );
+}
+
+export function IconPlay({ className = "", ...props }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.5" />
+            <path d="M10 8.5l6 3.5-6 3.5V8.5z" fill="currentColor" />
+        </svg>
+    );
+}
+
+export function IconQuote({ className = "", ...props }) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
+            <path d="M10 11h-4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6c0 2.6-1.6 4.6-3.7 5.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+            <path d="M20 11h-4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v6c0 2.6-1.6 4.6-3.7 5.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
         </svg>
     );
 }
@@ -366,12 +393,12 @@ export function HeroFitnessSilhouette({ className = "", ...props }) {
             <defs>
                 <linearGradient id="athlix-hero-sil-grad" x1="180" y1="120" x2="520" y2="520" gradientUnits="userSpaceOnUse">
                     <stop offset="0" stopColor="#60A5FA" stopOpacity="0.9" />
-                    <stop offset="0.55" stopColor="#6366F1" stopOpacity="0.9" />
-                    <stop offset="1" stopColor="#8B8CFF" stopOpacity="0.9" />
+                    <stop offset="0.55" stopColor="#02ABFF" stopOpacity="0.9" />
+                    <stop offset="1" stopColor="#BAE6FD" stopOpacity="0.9" />
                 </linearGradient>
                 <radialGradient id="athlix-hero-halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 310) rotate(90) scale(220)">
-                    <stop offset="0" stopColor="#6366F1" stopOpacity="0.22" />
-                    <stop offset="1" stopColor="#6366F1" stopOpacity="0" />
+                    <stop offset="0" stopColor="#02ABFF" stopOpacity="0.22" />
+                    <stop offset="1" stopColor="#02ABFF" stopOpacity="0" />
                 </radialGradient>
                 <filter id="athlix-hero-glow" x="-40%" y="-40%" width="180%" height="180%" colorInterpolationFilters="sRGB">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur" />
@@ -387,17 +414,17 @@ export function HeroFitnessSilhouette({ className = "", ...props }) {
             <circle cx="420" cy="310" r="220" fill="url(#athlix-hero-halo)" opacity="0.35" />
 
             <circle cx="292" cy="150" r="44" fill="url(#athlix-hero-sil-grad)" opacity="0.28" />
-            <circle cx="292" cy="150" r="44" fill="#11141A" opacity="0.85" />
-            <circle cx="292" cy="150" r="44" stroke="#6366F1" strokeWidth="2" opacity="0.28" vectorEffect="non-scaling-stroke" filter="url(#athlix-hero-glow)" />
+            <circle cx="292" cy="150" r="44" fill="#111827" opacity="0.85" />
+            <circle cx="292" cy="150" r="44" stroke="#02ABFF" strokeWidth="2" opacity="0.28" vectorEffect="non-scaling-stroke" filter="url(#athlix-hero-glow)" />
 
             <path
                 d="M270 198c18 12 36 18 58 18 22 0 38-6 52-18 18 14 28 34 30 58 2 28-6 48-22 64l-12 12 22 44c6 12 6 22 0 34l-28 52c-8 14-24 20-40 16l-22-6-10 62c-2 16-14 28-30 30l-22 2c-18 2-34-10-38-28l-14-66-30 20c-14 10-34 8-46-6l-16-18c-12-14-10-36 4-48l56-46-18-38c-10-22-8-42 6-60l18-24c10-14 22-22 34-24Z"
-                fill="#11141A"
+                fill="#111827"
                 opacity="0.9"
             />
             <path
                 d="M270 198c18 12 36 18 58 18 22 0 38-6 52-18 18 14 28 34 30 58 2 28-6 48-22 64l-12 12 22 44c6 12 6 22 0 34l-28 52c-8 14-24 20-40 16l-22-6-10 62c-2 16-14 28-30 30l-22 2c-18 2-34-10-38-28l-14-66-30 20c-14 10-34 8-46-6l-16-18c-12-14-10-36 4-48l56-46-18-38c-10-22-8-42 6-60l18-24c10-14 22-22 34-24Z"
-                stroke="#6366F1"
+                stroke="#02ABFF"
                 strokeWidth="2"
                 strokeLinejoin="round"
                 opacity="0.3"
@@ -405,8 +432,8 @@ export function HeroFitnessSilhouette({ className = "", ...props }) {
                 filter="url(#athlix-hero-glow)"
             />
 
-            <path d="M330 318l38 18" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" opacity="0.12" vectorEffect="non-scaling-stroke" />
-            <path d="M240 324l-40 30" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" opacity="0.1" vectorEffect="non-scaling-stroke" />
+            <path d="M330 318l38 18" stroke="#02ABFF" strokeWidth="2" strokeLinecap="round" opacity="0.12" vectorEffect="non-scaling-stroke" />
+            <path d="M240 324l-40 30" stroke="#02ABFF" strokeWidth="2" strokeLinecap="round" opacity="0.1" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }
@@ -417,7 +444,7 @@ export function TripleRJourneyVector({ className = "", ...props }) {
             <defs>
                 <linearGradient id="athlix-journey-grad" x1="90" y1="190" x2="690" y2="70" gradientUnits="userSpaceOnUse">
                     <stop offset="0" stopColor="#9CA3AF" stopOpacity="0.25" />
-                    <stop offset="0.5" stopColor="#6366F1" stopOpacity="0.55" />
+                    <stop offset="0.5" stopColor="#02ABFF" stopOpacity="0.55" />
                     <stop offset="1" stopColor="#60A5FA" stopOpacity="0.35" />
                 </linearGradient>
             </defs>
@@ -429,17 +456,17 @@ export function TripleRJourneyVector({ className = "", ...props }) {
             <circle cx="376" cy="88" r="18" stroke="currentColor" strokeWidth="2" opacity="0.22" />
             <circle cx="658" cy="166" r="18" stroke="currentColor" strokeWidth="2" opacity="0.22" />
 
-            <circle className="athlix-journey__node athlix-journey__node--1" cx="140" cy="176" r="7" fill="#6366F1" opacity="0.28" />
-            <circle className="athlix-journey__node athlix-journey__node--2" cx="376" cy="88" r="7" fill="#6366F1" opacity="0.22" />
-            <circle className="athlix-journey__node athlix-journey__node--3" cx="658" cy="166" r="7" fill="#6366F1" opacity="0.22" />
+            <circle className="athlix-journey__node athlix-journey__node--1" cx="140" cy="176" r="7" fill="#02ABFF" opacity="0.28" />
+            <circle className="athlix-journey__node athlix-journey__node--2" cx="376" cy="88" r="7" fill="#02ABFF" opacity="0.22" />
+            <circle className="athlix-journey__node athlix-journey__node--3" cx="658" cy="166" r="7" fill="#02ABFF" opacity="0.22" />
 
             <path d="M132 176h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.14" vectorEffect="non-scaling-stroke" />
             <path d="M368 88h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.14" vectorEffect="non-scaling-stroke" />
             <path d="M650 166h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.14" vectorEffect="non-scaling-stroke" />
 
             <path d="M662 150v30" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.12" vectorEffect="non-scaling-stroke" />
-            <path d="M662 150l10 10" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" opacity="0.16" vectorEffect="non-scaling-stroke" />
-            <path d="M662 150l-10 10" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" opacity="0.16" vectorEffect="non-scaling-stroke" />
+            <path d="M662 150l10 10" stroke="#02ABFF" strokeWidth="2" strokeLinecap="round" opacity="0.16" vectorEffect="non-scaling-stroke" />
+            <path d="M662 150l-10 10" stroke="#02ABFF" strokeWidth="2" strokeLinecap="round" opacity="0.16" vectorEffect="non-scaling-stroke" />
         </svg>
     );
 }

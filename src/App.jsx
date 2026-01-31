@@ -9,6 +9,7 @@ import Success from "./pages/Success";
 import Process from "./pages/Process";
 import Coaching from "./pages/Coaching";
 import Pricing from "./pages/Pricing";
+import Testimonials from "./pages/Testimonials";
 import Apply from "./pages/Apply";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                     <Route path="/process" element={<Process />} />
                     <Route path="/coaching" element={<Coaching />} />
                     <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/apply" element={<Apply />} />
                 </Route>
             </Routes>
