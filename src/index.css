@@ -13,7 +13,7 @@ body {
 /* Navbar scroll padding for sticky desktop header */
 @media (min-width: 768px) {
     html {
-        scroll-padding-top: 4rem; /* Matches h-16 (64px) */
+        scroll-padding-top: 100px;
     }
 }
 

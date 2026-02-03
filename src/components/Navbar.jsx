@@ -75,6 +75,16 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center space-x-8">
                         {navLinks.map((link) => {
                             const isActive = location.pathname === link.path;
+
+                            // Special case for Terms link: open in new tab
+                            if (link.name === "Terms") {
+                                return (
+                                    <a key={link.name} href={link.path} target="_blank" rel="noopener noreferrer" className={`relative text-sm font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-brand-muted hover:text-brand-text"}`}>
+                                        {link.name}
+                                    </a>
+                                );
+                            }
+
                             return (
                                 <Link key={link.name} to={link.path} onClick={(e) => handleNavClick(e, link)} className={`relative text-sm font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-brand-muted hover:text-brand-text"}`}>
                                     {link.name}
@@ -109,6 +119,20 @@ export default function Navbar() {
                             <div className="flex flex-col space-y-6">
                                 {navLinks.map((link) => {
                                     const isActive = location.pathname === link.path;
+
+                                    // Special case for Terms link: open in new tab
+                                    if (link.name === "Terms") {
+                                        return (
+                                            <motion.div key={link.name} variants={itemVariants}>
+                                                <motion.div whileTap={{ scale: 0.98, opacity: 0.8 }}>
+                                                    <a href={link.path} target="_blank" rel="noopener noreferrer" className={`text-xl block font-medium transition-colors duration-300 ${isActive ? "text-brand-accent" : "text-brand-muted hover:text-brand-text"}`}>
+                                                        <span className="flex items-center gap-3">{link.name}</span>
+                                                    </a>
+                                                </motion.div>
+                                            </motion.div>
+                                        );
+                                    }
+
                                     return (
                                         <motion.div key={link.name} variants={itemVariants}>
                                             <motion.div whileTap={{ scale: 0.98, opacity: 0.8 }}>

@@ -38,50 +38,39 @@ export default function HeroSection({ id = "hero", className = "" }) {
 
     return (
         <section id={id} className={`px-4 ${className}`}>
-            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[80vh] flex flex-col justify-center relative overflow-hidden gpu-accel">
-                <motion.h1 variants={itemVariants} className="relative z-10 text-4xl md:text-6xl font-bold leading-tight">
-                    {isMobile ? (
-                        <>
-                            Break Free From <br />
-                            <motion.span initial={{ color: "#9CA3AF" }} animate={{ color: "#02ABFF" }} transition={{ delay: 0.8, duration: 0.5 }} className="text-brand-accent">
-                                Stubborn Fat.
-                            </motion.span>
-                            <br />
-                            <motion.span variants={itemVariants} className="inline-block mt-2 text-3xl">
-                                Reclaim Confidence.
-                            </motion.span>
-                        </>
-                    ) : (
-                        <>
-                            Break Free From{" "}
-                            <motion.span
-                                initial={{ color: "#9CA3AF" }}
-                                animate={{ color: "#02ABFF" }}
-                                transition={{ delay: 0.8, duration: 0.5 }} // Subtle highlight reveal
-                                className="text-brand-accent"
-                            >
-                                Stubborn Weight Gain
-                            </motion.span>
-                            <br />
-                            <motion.span variants={itemVariants} className="inline-block mt-2">
-                                Rebuild Your Energy. Reclaim Your Confidence.
-                            </motion.span>
-                        </>
-                    )}
-                </motion.h1>
+            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[80vh] flex flex-col md:flex-row items-center relative overflow-hidden gpu-accel gap-12">
+                {/* Left Column: Content */}
+                <div className="flex-1 relative z-10">
+                    <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold leading-tight">
+                        Break Free From <span className="text-brand-accent">Stubborn Weight Gain</span>
+                    </motion.h1>
 
-                <motion.p variants={itemVariants} className="relative z-10 text-brand-muted mt-6 text-lg max-w-2xl">
-                    {isMobile ? "A science-backed 90-Day Method for real results — no gimmicks or crash diets." : "A science-backed 90-Day Lean Body Method trusted by hundreds to deliver real, lasting transformation — without gimmicks, pills, or crash diets."}
-                </motion.p>
+                    <motion.p variants={itemVariants} className="text-brand-muted mt-6 text-lg max-w-2xl">
+                        You can finally break free from stubborn weight gain, rebuild your energy, and get back the body and confidence you deserve with my 90-Day Lean Body Method, trusted by hundreds and proven to deliver real, Lasting Results.
+                    </motion.p>
 
-                <motion.div variants={itemVariants} className="relative z-10 mt-8 flex flex-wrap gap-4">
-                    <Button href="/success" variant="secondary">
-                        See Transformations
-                    </Button>
+                    <motion.p variants={itemVariants} className="text-brand-muted mt-4 text-lg max-w-2xl font-medium">
+                        No gimmicks. No pills. No crash diets. Just science backed transformation.
+                    </motion.p>
 
-                    <Button href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-                        Apply on WhatsApp
-                    </Button>
+                    <motion.p variants={itemVariants} className="text-brand-text mt-6 text-xl font-bold">
+                        Powered by Abhishek. Vk
+                    </motion.p>
+
+                    <motion.div variants={itemVariants} className="mt-8 flex flex-wrap gap-4">
+                        <Button href="/success" variant="secondary">
+                            See Transformations
+                        </Button>
+
+                        <Button href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+                            Apply on WhatsApp
+                        </Button>
+                    </motion.div>
+                </div>
+
+                {/* Right Column: Image */}
+                <motion.div variants={itemVariants} className="flex-1 relative z-10 flex justify-center md:justify-end w-full">
+                    <img src="/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative" style={{ maxHeight: "520px" }} />
                 </motion.div>
             </motion.div>
         </section>

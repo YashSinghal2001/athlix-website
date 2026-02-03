@@ -11,7 +11,7 @@ import Coaching from "./pages/Coaching";
 import Pricing from "./pages/Pricing";
 import Testimonials from "./pages/Testimonials";
 import Apply from "./pages/Apply";
-import TermsAndConditions from "./pages/TermsAndConditions";
+import Terms from "./pages/Terms";
 
 function App() {
     return (
@@ -28,7 +28,7 @@ function App() {
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/apply" element={<Apply />} />
-                    <Route path="/terms" element={<TermsAndConditions />} />
+                    <Route path="/terms" element={<Terms />} />
                 </Route>
             </Routes>
         </BrowserRouter>

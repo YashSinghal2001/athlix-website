@@ -10,14 +10,14 @@ import TestimonialsSection from "../components/sections/TestimonialsSection";
 export default function Home() {
     return (
         <div className="overflow-x-hidden">
-            <HeroSection id="hero" className="scroll-mt-28" />
-            <MethodSection id="method" className="scroll-mt-28" />
-            <AboutSection id="about" className="scroll-mt-28" />
-            <SuccessSection id="success" className="scroll-mt-28" />
-            <ProcessSection id="process" className="scroll-mt-28" />
-            <CoachingSection id="coaching" className="scroll-mt-28" />
-            <PricingSection id="pricing" className="scroll-mt-28" />
-            <TestimonialsSection id="testimonials" className="scroll-mt-28" />
+            <HeroSection id="hero" />
+            <MethodSection id="method" />
+            <AboutSection id="about" />
+            <SuccessSection id="success" />
+            <ProcessSection id="process" />
+            <CoachingSection id="coaching" />
+            <PricingSection id="pricing" />
+            <TestimonialsSection id="testimonials" />
         </div>
     );
 }

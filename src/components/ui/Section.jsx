@@ -7,7 +7,7 @@ export default function Section({ children, className = "", id = "" }) {
     // DESKTOP: Render static section without animation
     if (!isMobile) {
         return (
-            <section id={id} className={`py-16 relative ${className}`}>
+            <section id={id} className={`py-16 md:py-20 relative ${className}`}>
                 {children}
             </section>
         );
