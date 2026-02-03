@@ -26,9 +26,7 @@ export default function Button({ children, onClick, href, to, variant = "primary
     const animationProps = isMobile
         ? {
               whileTap: {
-                  scale: 0.96,
-                  filter: "brightness(0.9)", // Subtle darkening
-                  boxShadow: "0 0 0 0 rgba(0,0,0,0)", // Reduce shadow depth
+                  opacity: 0.8, // Fade only, no scale
               },
               transition: { duration: 0.08, ease: "easeOut" }, // Fast, tactile response
           }

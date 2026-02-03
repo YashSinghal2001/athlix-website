@@ -9,12 +9,13 @@ export default function HeroSection({ id = "hero", className = "" }) {
     const isMobile = useIsMobile();
 
     // 1. Hero Animation Variants
+    // Disable stagger on desktop to prevent scroll blocking
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: isMobile ? 0.05 : 0.1, // Faster stagger on mobile
+                staggerChildren: isMobile ? 0.05 : 0, // Only stagger on mobile
                 delayChildren: 0.1,
             },
         },
@@ -23,21 +24,21 @@ export default function HeroSection({ id = "hero", className = "" }) {
     const itemVariants = {
         hidden: {
             opacity: 0,
-            y: prefersReducedMotion ? 0 : isMobile ? 10 : 16,
+            y: prefersReducedMotion ? 0 : isMobile ? 10 : 0, // No Y movement on desktop
         },
         visible: {
             opacity: 1,
             y: 0,
             transition: {
-                duration: isMobile ? 0.5 : 0.7,
-                ease: isMobile ? "easeOut" : [0.215, 0.61, 0.355, 1], // easeOutCubic
+                duration: isMobile ? 0.5 : 0, // Instant on desktop
+                ease: "easeOut",
             },
         },
     };
 
     return (
         <section id={id} className={`px-4 ${className}`}>
-            <motion.div initial="hidden" animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[80vh] flex flex-col justify-center relative overflow-hidden">
+            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[80vh] flex flex-col justify-center relative overflow-hidden gpu-accel">
                 <motion.h1 variants={itemVariants} className="relative z-10 text-4xl md:text-6xl font-bold leading-tight">
                     {isMobile ? (
                         <>

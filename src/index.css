@@ -2,12 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
+html,
+body {
+    overflow-x: hidden;
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Mobile Soft Scroll Snap */
-/* @media (max-width: 768px) {
+/* Navbar scroll padding for sticky desktop header */
+@media (min-width: 768px) {
+    html {
+        scroll-padding-top: 4rem; /* Matches h-16 (64px) */
+    }
+}
+
+/* Mobile Scroll Snap */
+@media (max-width: 768px) {
     html {
         scroll-snap-type: y proximity;
         scroll-padding-top: 80px;
@@ -18,7 +29,14 @@ html {
         scroll-snap-align: start;
         scroll-margin-top: 80px;
     }
-} */
+}
+
+/* GPU Acceleration Utility */
+.gpu-accel {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
 
 /* Global Typography Improvements */
 @layer base {

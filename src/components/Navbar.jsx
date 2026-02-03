@@ -13,6 +13,7 @@ const navLinks = [
     { name: "Coaching", path: "/coaching", id: "coaching" },
     { name: "Pricing", path: "/pricing", id: "pricing" },
     { name: "Testimonials", path: "/testimonials", id: "testimonials" },
+    { name: "Terms", path: "/terms", id: "terms" },
 ];
 
 export default function Navbar() {
@@ -62,7 +63,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 bg-brand-bg border-b border-brand-border">
+        <nav className="relative md:fixed md:top-0 md:left-0 md:right-0 z-50 w-full bg-brand-bg border-b border-brand-border">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - Links to / */}

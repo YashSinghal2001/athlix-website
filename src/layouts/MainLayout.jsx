@@ -4,37 +4,30 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useIsMobile from "../hooks/useIsMobile";
 
-export default function MainLayout() {
-    const isMobile = useIsMobile();
-
-    // ✅ ALWAYS call the hook
+// Optimized: Only initialize scroll listeners on desktop
+function DesktopScrollProgress() {
     const { scrollYProgress } = useScroll();
-
-    // ✅ Use safe fallback for mobile
-    // const safeProgress = isMobile
-    //     ? { get: () => 1 }
-    //     : scrollYProgress;
-    const safeProgress = isMobile ? scrollYProgress : scrollYProgress;
-
-
-    const scaleX = useSpring(safeProgress, {
-        stiffness: 100,
-        damping: 30,
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 120,
+        damping: 40,
         restDelta: 0.001,
     });
 
+    return <motion.div className="fixed top-0 left-0 right-0 h-[2px] bg-brand-accent origin-left z-[60]" style={{ scaleX }} />;
+}
+
+export default function MainLayout() {
+    const isMobile = useIsMobile();
+
     return (
         <div className="min-h-[100svh] flex flex-col bg-brand-bg text-brand-text">
-            {isMobile && (
-                <motion.div
-                    className="fixed top-0 left-0 right-0 h-[2px] bg-brand-accent origin-left z-[60]"
-                    style={{ scaleX }}
-                />
-            )}
+            {/* Show progress bar ONLY on desktop to save main thread on mobile */}
+            {!isMobile && <DesktopScrollProgress />}
 
             <Navbar />
 
-            <main className="flex-grow pt-3 md:pt-6 min-h-[100svh]">
+            {/* Added top padding on desktop to account for fixed navbar (h-16 = 4rem) */}
+            <main className="flex-grow pt-3 md:pt-24 min-h-[100svh]">
                 <Outlet />
             </main>
 

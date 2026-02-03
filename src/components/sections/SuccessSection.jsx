@@ -62,9 +62,9 @@ export default function SuccessSection({ id = "success", className = "" }) {
                         {isMobile ? (
                             // Mobile Swipe Carousel
                             <div className="mt-6 md:mt-12 relative">
-                                <div ref={scrollRef} onScroll={handleScroll} className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 scrollbar-hide" style={{ scrollBehavior: "smooth" }}>
+                                <div ref={scrollRef} onScroll={handleScroll} className="flex overflow-x-auto gap-4 pb-8 -mx-4 px-4 scrollbar-hide" style={{ scrollBehavior: "smooth" }}>
                                     {transformations.map((item, i) => (
-                                        <div key={i} className="min-w-[85vw] snap-center">
+                                        <div key={i} className="min-w-[85vw]">
                                             <Card className="p-0 overflow-hidden border border-brand-border h-full" hoverEffect={false}>
                                                 <div className="h-80 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500 relative group">
                                                     <span className="relative z-10 font-medium">Transformation Preview</span>

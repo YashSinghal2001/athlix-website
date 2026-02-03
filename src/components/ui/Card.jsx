@@ -10,8 +10,8 @@ export default function Card({ children, className = "", hoverEffect = true, dep
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
-    const mouseX = useSpring(x, { stiffness: 200, damping: 20 });
-    const mouseY = useSpring(y, { stiffness: 200, damping: 20 });
+    const mouseX = useSpring(x, { stiffness: 120, damping: 40 });
+    const mouseY = useSpring(y, { stiffness: 120, damping: 40 });
 
     // Max tilt ±5 degrees
     const rotateX = useTransform(mouseY, [-0.5, 0.5], [5, -5]);
@@ -41,15 +41,20 @@ export default function Card({ children, className = "", hoverEffect = true, dep
         y.set(0);
     };
 
+    // Optimization: Don't attach event listeners on mobile
+    const eventHandlers = !isMobile && hoverEffect ? {
+        onMouseMove: handleMouseMove,
+        onMouseLeave: handleMouseLeave
+    } : {};
+
     return (
         <motion.div
             ref={ref}
-            className={`relative bg-brand-surface border border-brand-border rounded-lg p-6 ${className}`}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            className={`relative bg-brand-surface border border-brand-border rounded-lg p-6 ${className} gpu-accel`}
+            {...eventHandlers}
             style={{
                 perspective: 1000,
-                transformStyle: "preserve-3d",
+                transformStyle: isMobile ? "flat" : "preserve-3d", // Disable 3D on mobile
                 rotateX: hoverEffect && !isMobile ? rotateX : 0,
                 rotateY: hoverEffect && !isMobile ? rotateY : 0,
             }}
@@ -64,15 +69,14 @@ export default function Card({ children, className = "", hoverEffect = true, dep
             whileTap={
                 isMobile
                     ? {
-                          scale: 0.98,
-                          filter: "brightness(0.95)",
+                          opacity: 0.9, // Fade only, no scale
                       }
                     : {}
             }
-            transition={isMobile ? { duration: 0.08, ease: "easeOut" } : { type: "spring", stiffness: 300, damping: 25 }}
+            transition={isMobile ? { duration: 0.08, ease: "easeOut" } : { type: "spring", stiffness: 120, damping: 40 }}
             {...props}
         >
-            <div style={{ transform: `translateZ(${isMobile ? 0 : depth}px)` }}>{children}</div>
+            <div style={{ transform: isMobile ? "none" : `translateZ(${depth}px)` }}>{children}</div>
         </motion.div>
     );
 }
