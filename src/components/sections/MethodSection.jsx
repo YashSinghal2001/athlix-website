@@ -40,21 +40,26 @@ export default function MethodSection({ id = "method", className = "" }) {
             <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-10 md:py-20">
                 {/* 1️⃣ Top Section (Full Width) */}
                 <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, ease: "easeOut" }} className="max-w-4xl">
-                    <h1 className="text-4xl md:text-5xl font-bold text-brand-text leading-tight">The Triple R Method</h1>
-
-                    <p className="text-brand-muted mt-6 text-lg leading-relaxed">The Triple R Method is a science-backed system designed to help you break free from stubborn weight gain, rebuild your strength and habits, and rise with long-term energy and confidence.</p>
+                    <h1 className="text-4xl md:text-5xl font-bold text-brand-text leading-tight">90-DAY LEAN BODY METHOD</h1>
+                    <p className="text-brand-muted mt-6 text-lg leading-relaxed">Break free from stubborn weight gain, rebuild energy, and regain confidence with a science-backed transformation method trusted by hundreds.</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-brand-accent mt-8">TRIPLE R METHOD</h2>
                 </motion.div>
 
                 {/* 2️⃣ Cards Section (Grid Layout) */}
-                <motion.div className="mt-10 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
+                <motion.div className="mt-8 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
                     {/* RESET */}
-                    <MethodCard Icon={IconResetMetabolism} title="RESET" description="We start by restoring metabolic balance. This phase focuses on reducing inflammation, improving digestion, regulating stress, and preparing your body for efficient fat loss." variants={itemVariants} />
+                    <MethodCard Icon={IconResetMetabolism} title="RESET – YOUR METABOLISM" description="Restore metabolic balance, reduce inflammation, and prime your body for fat loss." variants={itemVariants} />
 
                     {/* REBUILD */}
-                    <MethodCard Icon={IconRebuildStrength} title="REBUILD" description="Once your system is balanced, we rebuild strength, nutrition, and daily habits using structured training, personalized diet strategies, and realistic lifestyle upgrades." variants={itemVariants} />
+                    <MethodCard Icon={IconRebuildStrength} title="REBUILD – STRENGTH & HABITS" description="Build strength and sustainable habits using structured training, personalized nutrition, and realistic lifestyle upgrades." variants={itemVariants} />
 
                     {/* RISE */}
-                    <MethodCard Icon={IconRiseGrowth} title="RISE" description="The final phase is about independence. You gain clarity, confidence, and control — so you can maintain results, energy, and performance long after coaching ends." variants={itemVariants} />
+                    <MethodCard Icon={IconRiseGrowth} title="RISE – WITH ENERGY & CONFIDENCE" description="Renew your energy and confidence to maintain long-term results and true independence." variants={itemVariants} />
+                </motion.div>
+
+                {/* Bottom Highlight Text */}
+                <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }} className="mt-10 md:mt-12 max-w-4xl">
+                    <p className="text-brand-text text-lg md:text-xl font-medium leading-relaxed">This is the launchpad to long-term success. You’re not just leaner — you’re energized, confident, and in full control of your health.</p>
                 </motion.div>
             </Section>
         </section>
@@ -71,9 +76,8 @@ function MethodCard({ title, description, variants, Icon }) {
                 whileHover={
                     !isMobile
                         ? {
-                              y: -3,
-                              borderColor: "rgba(2, 171, 255, 0.4)", // Muted accent border
-                              backgroundColor: "#F9FAFB", // Slightly more opaque
+                              y: -6, // Lift effect
+                              boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.05)", // Soft shadow
                           }
                         : {}
                 }
@@ -83,8 +87,7 @@ function MethodCard({ title, description, variants, Icon }) {
                     <h2 className="text-brand-text font-semibold text-lg mb-3 uppercase tracking-wider group-hover:text-brand-accent transition-colors duration-300">{title}</h2>
                     <p className="text-brand-muted leading-relaxed group-hover:text-brand-text transition-colors duration-300">{description}</p>
                 </div>
-                {/* Subtle Gradient Glow (Visible on Hover) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl pointer-events-none" />
+                {/* Removed blue hover gradient */}
             </Card>
         </motion.div>
     );

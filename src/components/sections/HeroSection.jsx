@@ -70,7 +70,7 @@ export default function HeroSection({ id = "hero", className = "" }) {
 
                 {/* Right Column: Image */}
                 <motion.div variants={itemVariants} className="flex-1 relative z-10 flex justify-center md:justify-end w-full">
-                    <img src="https://github.com/YashSinghal2001/athlix-website/blob/main/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative" style={{ maxHeight: "520px" }} />
+                    <img src="/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative" style={{ maxHeight: "520px" }} />
                 </motion.div>
             </motion.div>
         </section>

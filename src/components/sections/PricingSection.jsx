@@ -22,7 +22,10 @@ export default function PricingSection({ id = "pricing", className = "" }) {
     // Mobile should never wait for viewport triggers
     useEffect(() => {
         if (isMobile) {
-            setHasEntered(true);
+            const timer = setTimeout(() => {
+                setHasEntered(true);
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [isMobile]);
 
@@ -91,7 +94,7 @@ export default function PricingSection({ id = "pricing", className = "" }) {
 
     return (
         <section id={id} className={`relative w-full px-4 ${className}`}>
-            <Section className="max-w-7xl mx-auto py-10 md:py-20">
+            <Section className="max-w-7xl mx-auto py-10 md:py-14">
                 {/* Heading */}
                 <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: "easeOut" }}>
                     <h1 className="text-4xl md:text-5xl font-bold text-center">Coaching Plans & Investment</h1>
@@ -99,7 +102,7 @@ export default function PricingSection({ id = "pricing", className = "" }) {
                 </motion.div>
 
                 {/* Plans Grid */}
-                <div className="grid md:grid-cols-2 gap-8 mt-12 md:mt-20 relative min-h-[60vh] max-w-5xl mx-auto">
+                <div className="grid md:grid-cols-2 gap-8 mt-8 md:mt-10 relative min-h-[60vh] max-w-5xl mx-auto">
                     {/* Desktop-only viewport trigger */}
                     {!isMobile && <motion.div className="absolute inset-0 pointer-events-none" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} onViewportEnter={() => setHasEntered(true)} />}
 

@@ -27,7 +27,7 @@ export default function MainLayout() {
             <Navbar />
 
             {/* Added top padding on desktop to account for fixed navbar */}
-            <main className="flex-grow pt-3 md:pt-20 min-h-[100svh]">
+            <main className="flex-grow pt-3 md:pt-16 min-h-[100svh]">
                 <Outlet />
             </main>
 

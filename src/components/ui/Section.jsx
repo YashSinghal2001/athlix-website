@@ -7,7 +7,7 @@ export default function Section({ children, className = "", id = "" }) {
     // DESKTOP: Render static section without animation
     if (!isMobile) {
         return (
-            <section id={id} className={`py-16 md:py-20 relative ${className}`}>
+            <section id={id} className={`py-12 md:py-16 relative ${className}`}>
                 {children}
             </section>
         );
@@ -25,7 +25,7 @@ export default function Section({ children, className = "", id = "" }) {
                 ease: "easeOut",
                 delay: 0,
             }}
-            className={`py-12 relative snap-section ${className} gpu-accel`}
+            className={`py-10 relative snap-section ${className} gpu-accel`}
         >
             {children}
         </motion.section>

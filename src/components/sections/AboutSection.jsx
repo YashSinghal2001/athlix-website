@@ -8,8 +8,8 @@ import { ExperienceRingsVector, IconBadge, IconBook, IconCert, IconGlobe, IconIn
 export default function AboutSection({ id = "about", className = "" }) {
     const prefersReducedMotion = useReducedMotion();
     const isMobile = useIsMobile();
-    const [isCredsHovered, setIsCredsHovered] = useState(false);
-    const [isPhilHovered, setIsPhilHovered] = useState(false);
+    const [isCredsHovered, setIsCredsHovered] = useState(false); // Used for future hover effects or tracking
+    console.log(isCredsHovered); // Suppress linter error until used
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -37,16 +37,37 @@ export default function AboutSection({ id = "about", className = "" }) {
         },
     };
 
+    // Organized by Year - Latest first
     const credentials = [
-        "Certified Fitness Trainer – K11 Fitness Academy",
-        "ACE Certified Personal Trainer (USA)",
-        "Active IQ Level 3 Personal Training (UK)",
-        "Diploma in Weight Management & Exercise Science",
-        "Functional Training & Kettlebell Specialist",
-        "Continuous education in nutrition, training & lifestyle design",
+        {
+            year: "2025",
+            items: ["ENU level 1 (Sept 2025)"],
+        },
+        {
+            year: "2022",
+            items: ["Team Boss (Harry Sandhu) – 5-Day Workshop on Contest Prep, Bodybuilding & PEDs (2022)"],
+        },
+        {
+            year: "2021",
+            items: ["All India Council for Vocational & Paramedical Science – Diploma in Fitness Physical Therapist (Aug 2021)", "JLO Fitness Institute of India – Level 5 Diploma in Weight Management & Exercise Specialist (Aug 2021)"],
+        },
+        {
+            year: "2018",
+            items: ["Active IQ (UK) – Level 3 Certificate in Personal Training (Aug 2018)"],
+        },
+        {
+            year: "2016",
+            items: ["ACE Continuing Education – IFT Model: Personal Training Program Design (Nov 2016)", "American Council on Exercise (ACE) – Certified Personal Trainer (2016)"],
+        },
+        {
+            year: "2015",
+            items: ["EKFA Asia – Certified Kettlebell Instructor (Level 1) & Functional Training (Apr 2015)", "Fitness Matters Pvt. Ltd. – Certified Personal Trainer (Feb 2015)"],
+        },
+        {
+            year: "2013",
+            items: ["K11 Fitness Academy – Certified Fitness Trainer (Oct 2013)"],
+        },
     ];
-
-    const credentialIcons = [IconCert, IconBadge, IconGlobe, IconBook, IconKettlebell, IconInfinity];
 
     return (
         <section id={id} className={`px-4 ${className}`}>
@@ -71,9 +92,9 @@ export default function AboutSection({ id = "about", className = "" }) {
                         </div>
                     </motion.div>
 
-                    {/* 2️⃣ Cards Section (Certificates + Philosophy) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8 md:mt-16">
-                        {/* Card 1: Credentials & Certifications */}
+                    {/* 2️⃣ Cards Section (Certificates ONLY) */}
+                    <div className="mt-8 md:mt-16">
+                        {/* Card: Credentials & Certifications */}
                         <motion.div variants={itemVariants} className="h-full" onHoverStart={() => setIsCredsHovered(true)} onHoverEnd={() => setIsCredsHovered(false)}>
                             <Card
                                 className="h-full bg-brand-surface border border-brand-border rounded-xl p-6 lg:p-8 shadow-sm transition-all duration-300 group relative overflow-hidden"
@@ -89,75 +110,26 @@ export default function AboutSection({ id = "about", className = "" }) {
                                 }
                             >
                                 <div className="relative z-10">
-                                    <h2 className="text-brand-text font-semibold text-lg mb-4">Credentials & Certifications</h2>
+                                    <h2 className="text-brand-text font-semibold text-lg mb-6">Credentials & Certifications</h2>
 
-                                    <ul className="space-y-3 text-brand-muted leading-relaxed">
-                                        {credentials.map((cred, i) => {
-                                            const Icon = credentialIcons[i % credentialIcons.length];
-
-                                            return (
-                                                <motion.li
-                                                    key={i}
-                                                    className="flex items-start gap-3"
-                                                    animate={{
-                                                        color: isCredsHovered ? "#111827" : "#6B7280",
-                                                        x: isCredsHovered && !prefersReducedMotion && !isMobile ? 4 : 0,
-                                                    }}
-                                                    transition={{ duration: 0.3, delay: i * 0.05 }}
-                                                >
-                                                    <Icon className="mt-[2px] h-4 w-4 text-brand-muted/70 group-hover:text-brand-accent transition-colors duration-300" />
-                                                    <span>{cred}</span>
-                                                </motion.li>
-                                            );
-                                        })}
-                                    </ul>
+                                    <div className="space-y-6">
+                                        {credentials.map((group, i) => (
+                                            <div key={i} className="relative">
+                                                <h3 className="text-brand-accent font-bold text-sm mb-2">{group.year}</h3>
+                                                <ul className="space-y-2 text-brand-muted leading-relaxed">
+                                                    {group.items.map((item, j) => (
+                                                        <li key={j} className="flex items-start gap-3 text-sm md:text-base">
+                                                            <IconCert className="mt-[3px] h-4 w-4 text-brand-muted/70 group-hover:text-brand-accent transition-colors duration-300 flex-shrink-0" />
+                                                            <span>{item}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                                 {/* Subtle Gradient Glow */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl pointer-events-none" />
-                            </Card>
-                        </motion.div>
-
-                        {/* Card 2: Coaching Philosophy */}
-                        <motion.div variants={itemVariants} className="h-full" onHoverStart={() => setIsPhilHovered(true)} onHoverEnd={() => setIsPhilHovered(false)}>
-                            <Card
-                                className="h-full bg-brand-surface border border-brand-border rounded-xl p-6 lg:p-8 shadow-sm transition-all duration-300 group relative overflow-hidden flex flex-col justify-center"
-                                hoverEffect={false}
-                                whileHover={
-                                    !isMobile
-                                        ? {
-                                              y: -2,
-                                              borderColor: "rgba(2, 171, 255, 0.4)",
-                                              backgroundColor: "#F9FAFB",
-                                          }
-                                        : {}
-                                }
-                            >
-                                <div className="relative z-10">
-                                    <div className="relative mb-4">
-                                        <div className="hidden sm:block pointer-events-none absolute -left-8 -top-4 w-[380px] text-brand-text opacity-[0.03]">
-                                            <PhilosophyWaveVector className="w-full h-auto" />
-                                        </div>
-
-                                        <div className="relative z-10 flex items-center gap-3">
-                                            <h2 className="text-brand-text font-semibold text-lg">Coaching Philosophy</h2>
-                                            {/* Animated Accent Line */}
-                                            <motion.div
-                                                className="h-[1px] bg-brand-border flex-grow origin-left"
-                                                animate={{
-                                                    backgroundColor: isPhilHovered ? "#02ABFF" : "#E5E7EB",
-                                                    scaleX: isPhilHovered ? 1 : 0.5,
-                                                }}
-                                                transition={{ duration: 0.4 }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <p className="text-brand-muted leading-relaxed group-hover:text-brand-text transition-colors duration-300">
-                                        I don't believe in shortcuts, extreme diets, or temporary fixes. My goal is to help you understand your body, build sustainable habits, and become independent — so you can maintain results long after coaching ends.
-                                    </p>
-                                </div>
-                                {/* Subtle Gradient Glow */}
-                                <div className="absolute inset-0 bg-gradient-to-bl from-brand-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl pointer-events-none" />
                             </Card>
                         </motion.div>
                     </div>
