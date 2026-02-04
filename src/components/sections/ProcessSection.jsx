@@ -3,7 +3,7 @@ import { UserCheck, ClipboardList, Brain, LineChart, MessageCircle } from "lucid
 import Section from "../ui/Section";
 import Card from "../ui/Card";
 import useIsMobile from "../../hooks/useIsMobile";
-import { FormAbstractLines, HeroAbstractLines } from "../illustrations/PremiumSvgs";
+import { OnboardingIllustration, QuestionnaireIllustration } from "../illustrations/PremiumSvgs";
 
 const steps = [
     {
@@ -93,6 +93,16 @@ function MobileStepCard({ step }) {
 
     return (
         <div className="flex flex-col gap-6">
+            {step.id === 1 && (
+                <div className="flex justify-center px-6">
+                    <OnboardingIllustration className="w-full max-w-[200px] h-auto text-brand-muted/40" />
+                </div>
+            )}
+            {step.id === 2 && (
+                <div className="flex justify-center px-6">
+                    <QuestionnaireIllustration className="w-full max-w-[200px] h-auto text-brand-muted/40" />
+                </div>
+            )}
             <Card className="p-8 bg-brand-surface border border-brand-border rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-full bg-brand-accent/10 flex items-center justify-center">
@@ -123,8 +133,10 @@ function DesktopStepCard({ step }) {
                     </Card>
                 </div>
                 {/* Right Space Vector */}
-                <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center opacity-60">
-                    <HeroAbstractLines className="w-64 h-auto text-brand-muted/30" />
+                <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center">
+                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="opacity-90">
+                        <OnboardingIllustration className="w-80 h-auto text-brand-muted/40" />
+                    </motion.div>
                 </div>
             </div>
         );
@@ -135,8 +147,10 @@ function DesktopStepCard({ step }) {
         return (
             <div className="relative flex justify-end w-full">
                 {/* Left Space Vector */}
-                <div className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center opacity-60">
-                    <FormAbstractLines className="w-64 h-auto text-brand-muted/30" />
+                <div className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center">
+                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="opacity-90">
+                        <QuestionnaireIllustration className="w-80 h-auto text-brand-muted/40" />
+                    </motion.div>
                 </div>
                 <div className="w-full md:w-3/4 lg:w-2/3">
                     <Card className="p-10 bg-brand-surface border border-brand-border rounded-2xl">

@@ -1,3 +1,83 @@
+export function OnboardingIllustration({ className = "", ...props }) {
+    return (
+        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
+            <defs>
+                <linearGradient id="onboarding-grad" x1="50" y1="50" x2="350" y2="250" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#60A5FA" stopOpacity="0.1" />
+                    <stop offset="1" stopColor="#02ABFF" stopOpacity="0.05" />
+                </linearGradient>
+            </defs>
+
+            {/* Laptop / Planning Area */}
+            <rect x="80" y="100" width="240" height="150" rx="12" fill="url(#onboarding-grad)" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+            <path d="M80 220h240" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+
+            {/* Calendar / Checklist Floating */}
+            <rect x="240" y="60" width="100" height="120" rx="8" fill="#111827" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.3" />
+            <path d="M240 90h100" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+
+            {/* Calendar Lines */}
+            <path d="M260 120h60" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.2" />
+            <path d="M260 140h60" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.2" />
+            <path d="M260 160h40" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.2" />
+
+            {/* Checkmark Badge (Welcome/Success) */}
+            <circle cx="140" cy="160" r="40" fill="#111827" stroke="#02ABFF" strokeWidth="1.5" strokeOpacity="0.8" />
+            <path d="M128 160l8 8 16-16" stroke="#02ABFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* Decorative Elements */}
+            <circle cx="320" cy="80" r="3" fill="#02ABFF" fillOpacity="0.6" />
+            <circle cx="100" cy="240" r="2" fill="currentColor" fillOpacity="0.3" />
+
+            {/* Connection Lines */}
+            <path d="M180 160h40" stroke="#02ABFF" strokeWidth="1.5" strokeDasharray="4 4" strokeOpacity="0.4" />
+        </svg>
+    );
+}
+
+export function QuestionnaireIllustration({ className = "", ...props }) {
+    return (
+        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
+            <defs>
+                <linearGradient id="questionnaire-grad" x1="100" y1="50" x2="300" y2="250" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#60A5FA" stopOpacity="0.1" />
+                    <stop offset="1" stopColor="#02ABFF" stopOpacity="0.05" />
+                </linearGradient>
+            </defs>
+
+            {/* Clipboard / Form Base */}
+            <rect x="120" y="40" width="160" height="220" rx="12" fill="url(#questionnaire-grad)" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+
+            {/* Clip at top */}
+            <path d="M160 40v20a4 4 0 0 0 4 4h72a4 4 0 0 0 4-4V40" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.3" />
+
+            {/* Form Lines with Checkboxes */}
+            <g opacity="0.8">
+                {/* Item 1 */}
+                <rect x="145" y="90" width="16" height="16" rx="4" stroke="#02ABFF" strokeWidth="1.5" strokeOpacity="0.6" />
+                <path d="M149 98l3 3 5-5" stroke="#02ABFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M175 98h70" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.3" />
+
+                {/* Item 2 */}
+                <rect x="145" y="130" width="16" height="16" rx="4" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+                <path d="M175 138h70" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.3" />
+
+                {/* Item 3 */}
+                <rect x="145" y="170" width="16" height="16" rx="4" stroke="#02ABFF" strokeWidth="1.5" strokeOpacity="0.6" />
+                <path d="M149 178l3 3 5-5" stroke="#02ABFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M175 178h50" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.3" />
+            </g>
+
+            {/* Pen / Pencil Floating */}
+            <path d="M280 200l40 40m-40-40l-10 10-5 20 20-5 10-10m-15-15l15 15" stroke="#02ABFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+            {/* User Profile Bubble */}
+            <circle cx="320" cy="80" r="24" fill="#111827" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+            <path d="M320 70a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm-12 24c0-6.6 5.4-12 12-12s12 5.4 12 12" stroke="#02ABFF" strokeWidth="1.5" strokeOpacity="0.8" />
+        </svg>
+    );
+}
+
 export function HeroAbstractLines({ className = "", ...props }) {
     return (
         <svg viewBox="0 0 720 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className={className} {...props}>
