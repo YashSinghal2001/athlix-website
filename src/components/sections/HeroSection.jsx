@@ -37,8 +37,8 @@ export default function HeroSection({ id = "hero", className = "" }) {
     };
 
     return (
-        <section id={id} className={`px-4 ${className}`}>
-            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[80vh] flex flex-col md:flex-row items-center relative overflow-hidden gpu-accel gap-12">
+        <section id={id} className={`px-4 scroll-mt-24 ${className}`}>
+            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto min-h-[100vh] flex flex-col md:flex-row items-center relative overflow-hidden gpu-accel gap-12">
                 {/* Left Column: Content */}
                 <div className="flex-1 relative z-10">
                     <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold leading-tight">

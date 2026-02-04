@@ -5,7 +5,7 @@
 html,
 body {
     overflow-x: hidden;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -13,7 +13,7 @@ body {
 /* Navbar scroll padding for sticky desktop header */
 @media (min-width: 768px) {
     html {
-        scroll-padding-top: 80px;
+        scroll-padding-top: 96px;
     }
 }
 
@@ -21,13 +21,13 @@ body {
 @media (max-width: 768px) {
     html {
         scroll-snap-type: y proximity;
-        scroll-padding-top: 80px;
+        scroll-padding-top: 96px;
     }
 
     section,
     .snap-section {
         scroll-snap-align: start;
-        scroll-margin-top: 80px;
+        scroll-margin-top: 96px;
     }
 }
 
