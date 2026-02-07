@@ -3,31 +3,36 @@
 @tailwind utilities;
 
 html,
-body {
+body,
+#root {
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 /* Navbar scroll padding for sticky desktop header */
-@media (min-width: 768px) {
-    html {
-        scroll-padding-top: 96px;
-    }
+html {
+    scroll-padding-top: 96px;
 }
 
-/* Mobile Scroll Snap */
+/* Fix 4: Mobile Only Smooth Scroll + Overflow Lock */
 @media (max-width: 768px) {
     html {
-        scroll-snap-type: y proximity;
-        scroll-padding-top: 96px;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
     }
 
-    section,
-    .snap-section {
-        scroll-snap-align: start;
-        scroll-margin-top: 96px;
+    body {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Fix 5: Navbar Height Compensation */
+    .hero-section {
+        padding-top: 64px;
     }
 }
 

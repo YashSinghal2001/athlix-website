@@ -93,16 +93,6 @@ function MobileStepCard({ step }) {
 
     return (
         <div className="flex flex-col gap-6">
-            {step.id === 1 && (
-                <div className="flex justify-center px-6">
-                    <OnboardingIllustration className="w-full max-w-[200px] h-auto text-brand-muted/40" />
-                </div>
-            )}
-            {step.id === 2 && (
-                <div className="flex justify-center px-6">
-                    <QuestionnaireIllustration className="w-full max-w-[200px] h-auto text-brand-muted/40" />
-                </div>
-            )}
             <Card className="p-8 bg-brand-surface border border-brand-border rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-full bg-brand-accent/10 flex items-center justify-center">
@@ -124,19 +114,17 @@ function DesktopStepCard({ step }) {
     // Step 1: Onboarding (Left)
     if (step.id === 1) {
         return (
-            <div className="relative flex justify-start w-full">
-                <div className="w-full md:w-3/4 lg:w-2/3">
+            <div className="relative flex justify-start w-full items-center">
+                <div className="w-full md:w-3/4 lg:w-2/3 relative z-10">
                     <Card className="p-10 bg-brand-surface border border-brand-border rounded-2xl">
                         <span className="text-xs tracking-widest uppercase text-brand-muted">Step 0{step.id}</span>
                         <h3 className="text-2xl font-bold mt-2 mb-4">{step.title}</h3>
                         <div className="text-brand-muted leading-relaxed">{step.description}</div>
                     </Card>
                 </div>
-                {/* Right Space Vector */}
-                <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center">
-                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} className="opacity-90">
-                        <OnboardingIllustration className="w-80 h-auto text-brand-muted/40" />
-                    </motion.div>
+                {/* Illustration - Hidden on Mobile, Visible on Desktop */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden md:block w-[280px] lg:w-[360px] pointer-events-none opacity-90 z-0">
+                    <OnboardingIllustration className="w-full h-auto" />
                 </div>
             </div>
         );
@@ -145,14 +133,12 @@ function DesktopStepCard({ step }) {
     // Step 2: Questionnaire (Right)
     if (step.id === 2) {
         return (
-            <div className="relative flex justify-end w-full">
-                {/* Left Space Vector */}
-                <div className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 w-1/3 justify-center items-center">
-                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="opacity-90">
-                        <QuestionnaireIllustration className="w-80 h-auto text-brand-muted/40" />
-                    </motion.div>
+            <div className="relative flex justify-end w-full items-center">
+                {/* Illustration - Hidden on Mobile, Visible on Desktop */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block w-[280px] lg:w-[360px] pointer-events-none opacity-90 z-0">
+                    <QuestionnaireIllustration className="w-full h-auto" />
                 </div>
-                <div className="w-full md:w-3/4 lg:w-2/3">
+                <div className="w-full md:w-3/4 lg:w-2/3 relative z-10">
                     <Card className="p-10 bg-brand-surface border border-brand-border rounded-2xl">
                         <span className="text-xs tracking-widest uppercase text-brand-muted">Step 0{step.id}</span>
                         <h3 className="text-2xl font-bold mt-2 mb-4">{step.title}</h3>

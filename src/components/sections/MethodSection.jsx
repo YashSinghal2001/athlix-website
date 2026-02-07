@@ -36,7 +36,7 @@ export default function MethodSection({ id = "method", className = "" }) {
     };
 
     return (
-        <section id={id} className={`px-4 ${className}`}>
+        <section id={id} className={`method-section gpu-accel px-4 ${className}`}>
             <Section className="max-w-7xl mx-auto px-6 lg:px-12 py-10 md:py-20">
                 {/* 1️⃣ Top Section (Full Width) */}
                 <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, ease: "easeOut" }} className="max-w-4xl">

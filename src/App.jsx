@@ -3,14 +3,6 @@ import MainLayout from "./layouts/MainLayout";
 import ScrollToTop from "./components/ScrollToTop";
 
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Method from "./pages/Method";
-import Success from "./pages/Success";
-import Process from "./pages/Process";
-import Coaching from "./pages/Coaching";
-import Pricing from "./pages/Pricing";
-import Testimonials from "./pages/Testimonials";
-import Apply from "./pages/Apply";
 import Terms from "./pages/Terms";
 
 function App() {
@@ -20,14 +12,6 @@ function App() {
             <Routes>
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/method" element={<Method />} />
-                    <Route path="/success" element={<Success />} />
-                    <Route path="/process" element={<Process />} />
-                    <Route path="/coaching" element={<Coaching />} />
-                    <Route path="/pricing" element={<Pricing />} />
-                    <Route path="/testimonials" element={<Testimonials />} />
-                    <Route path="/apply" element={<Apply />} />
                     <Route path="/terms" element={<Terms />} />
                 </Route>
             </Routes>

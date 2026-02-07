@@ -6,13 +6,13 @@ import Button from "./ui/Button";
 const WHATSAPP_LINK = "https://wa.me/919872028656";
 
 const navLinks = [
-    { name: "Method", path: "/method", id: "method" },
-    { name: "About", path: "/about", id: "about" },
-    { name: "Success", path: "/success", id: "success" },
-    { name: "Process", path: "/process", id: "process" },
-    { name: "Coaching", path: "/coaching", id: "coaching" },
-    { name: "Pricing", path: "/pricing", id: "pricing" },
-    { name: "Testimonials", path: "/testimonials", id: "testimonials" },
+    { name: "Method", path: "/#method", id: "method" },
+    { name: "About", path: "/#about", id: "about" },
+    { name: "Success", path: "/#success", id: "success" },
+    { name: "Process", path: "/#process", id: "process" },
+    { name: "Coaching", path: "/#coaching", id: "coaching" },
+    { name: "Pricing", path: "/#pricing", id: "pricing" },
+    { name: "Testimonials", path: "/#testimonials", id: "testimonials" },
     { name: "Terms", path: "/terms", id: "terms" },
 ];
 
@@ -21,17 +21,16 @@ export default function Navbar() {
     const location = useLocation();
 
     const handleNavClick = (e, link) => {
-        // If on homepage, scroll to section
-        if (location.pathname === "/") {
+        setOpen(false);
+
+        // If on homepage and not Terms page, scroll to section
+        if (location.pathname === "/" && link.name !== "Terms") {
             e.preventDefault();
             const element = document.getElementById(link.id);
             if (element) {
                 element.scrollIntoView({ behavior: "smooth" });
+                window.history.pushState(null, "", link.path);
             }
-            setOpen(false);
-        } else {
-            // If not on homepage, let Link handle navigation to the separate page
-            setOpen(false);
         }
     };
 
@@ -74,7 +73,7 @@ export default function Navbar() {
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
                         {navLinks.map((link) => {
-                            const isActive = location.pathname === link.path;
+                            const isActive = link.name === "Terms" ? location.pathname === link.path : location.hash === `#${link.id}`;
 
                             // Special case for Terms link: open in new tab
                             if (link.name === "Terms") {
@@ -118,7 +117,7 @@ export default function Navbar() {
 
                             <div className="flex flex-col space-y-6">
                                 {navLinks.map((link) => {
-                                    const isActive = location.pathname === link.path;
+                                    const isActive = link.name === "Terms" ? location.pathname === link.path : location.hash === `#${link.id}`;
 
                                     // Special case for Terms link: open in new tab
                                     if (link.name === "Terms") {
