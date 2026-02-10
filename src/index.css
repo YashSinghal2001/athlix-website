@@ -8,7 +8,7 @@ body,
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth;  <-- Removed to allow instant route transitions */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -20,19 +20,14 @@ html {
 
 /* Fix 4: Mobile Only Smooth Scroll + Overflow Lock */
 @media (max-width: 768px) {
-    html {
-        scroll-behavior: smooth;
-        overflow-x: hidden;
-    }
-
+    /* Removed redundant overflow rules that might cause double scrollbars */
     body {
-        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
     }
 
     /* Fix 5: Navbar Height Compensation */
     .hero-section {
-        padding-top: 64px;
+        /* padding-top: 64px; */ /* Let natural flow handle this with sticky nav */
     }
 }
 

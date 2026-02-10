@@ -9,7 +9,7 @@ import TestimonialsSection from "../components/sections/TestimonialsSection";
 
 export default function Home() {
     return (
-        <div className="overflow-x-hidden">
+        <div>
             <HeroSection id="hero" />
             <MethodSection id="method" />
             <AboutSection id="about" />

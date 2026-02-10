@@ -37,16 +37,46 @@ export default function CoachingSection({ id = "coaching", className = "" }) {
     };
 
     const features = [
-        "A fully customized training program designed around your goals, fitness level, equipment, and schedule.",
-        "A structured cardio plan to enhance fat loss, endurance, and heart health.",
-        "A personalized diet plan built around your food preferences, health markers, and daily routine. A flexible food substitution guide so you never feel restricted.",
-        "A smart lifestyle plan that optimizes recovery, sleep, and stress management because real fitness goes beyond workouts.",
-        "Access to exclusive client-only resources and guides that help you sustain results long-term.",
-        "Supplementation Protocols. Note: I don’t generally recommend any supplements if they are not required. I only recommend them if they are absolutely necessary or worth it.",
-        "Weekly Progress Check-In. I will analyze your progress on a weekly basis and make changes to diet, training or cardio, etc. if they are needed.",
-        "Weekly Exercise Form Review, so you can be independent on the gym floor with the exercise execution.",
-        "You wouldn’t depend on someone else to show you how to perform certain exercises every time + you get my direct analysis on performing it the right way.",
-        "24/7 Access to me through WhatsApp and Emails.",
+        {
+            desktop: "A fully customized training program designed around your goals, fitness level, equipment, and schedule.",
+            mobile: "Fully customized training program designed around your goals and schedule."
+        },
+        {
+            desktop: "A structured cardio plan to enhance fat loss, endurance, and heart health.",
+            mobile: "Structured cardio plan for fat loss and heart health."
+        },
+        {
+            desktop: "A personalized diet plan built around your food preferences, health markers, and daily routine. A flexible food substitution guide so you never feel restricted.",
+            mobile: "Personalized diet plan with flexible food substitutions."
+        },
+        {
+            desktop: "A smart lifestyle plan that optimizes recovery, sleep, and stress management because real fitness goes beyond workouts.",
+            mobile: "Smart lifestyle plan optimizing recovery, sleep, and stress."
+        },
+        {
+            desktop: "Access to exclusive client-only resources and guides that help you sustain results long-term.",
+            mobile: "Access to exclusive client resources for long-term results."
+        },
+        {
+            desktop: "Supplementation Protocols. Note: I don’t generally recommend any supplements if they are not required. I only recommend them if they are absolutely necessary or worth it.",
+            mobile: "Supplementation protocols (only if necessary)."
+        },
+        {
+            desktop: "Weekly Progress Check-In. I will analyze your progress on a weekly basis and make changes to diet, training or cardio, etc. if they are needed.",
+            mobile: "Weekly progress check-ins and plan adjustments."
+        },
+        {
+            desktop: "Weekly Exercise Form Review, so you can be independent on the gym floor with the exercise execution.",
+            mobile: "Weekly exercise form review for better execution."
+        },
+        {
+            desktop: "You wouldn’t depend on someone else to show you how to perform certain exercises every time + you get my direct analysis on performing it the right way.",
+            mobile: null
+        },
+        {
+            desktop: "24/7 Access to me through WhatsApp and Emails.",
+            mobile: "24/7 Access via WhatsApp and Email."
+        },
     ];
 
     return (
@@ -70,7 +100,7 @@ export default function CoachingSection({ id = "coaching", className = "" }) {
                                     {features.map((feature, i) => (
                                         <motion.li
                                             key={i}
-                                            className="flex items-start"
+                                            className={`flex items-start ${!feature.mobile ? "hidden md:flex" : ""}`}
                                             animate={{
                                                 opacity: isLeftHovered ? 1 : 0.7,
                                                 color: isLeftHovered ? "#111827" : "#6B7280",
@@ -83,7 +113,8 @@ export default function CoachingSection({ id = "coaching", className = "" }) {
                                             }}
                                         >
                                             <span className="mr-2 text-brand-accent flex-shrink-0">•</span>
-                                            <span>{feature}</span>
+                                            <span className="hidden md:block">{feature.desktop}</span>
+                                            {feature.mobile && <span className="block md:hidden">{feature.mobile}</span>}
                                         </motion.li>
                                     ))}
                                 </ul>
@@ -108,7 +139,10 @@ export default function CoachingSection({ id = "coaching", className = "" }) {
                                     <h2 className="text-xl font-bold uppercase">ONLINE COACHING PROGRAMME</h2>
                                     <h3 className="text-sm font-bold mt-2 mb-6 text-brand-muted uppercase">ACCESS TO THE PRIVATE COACHING APP</h3>
 
-                                    <p className="text-brand-muted leading-relaxed">Once you’re in, you’ll get full access to my private coaching app — your personal command center for everything.</p>
+                                    <p className="text-brand-muted leading-relaxed">
+                                        <span className="hidden md:block">Once you’re in, you’ll get full access to my private coaching app — your personal command center for everything.</span>
+                                        <span className="block md:hidden">Get full access to my private coaching app — your personal command center.</span>
+                                    </p>
 
                                     <p className="font-bold mt-6 mb-3">Inside, you’ll find:</p>
                                     <ul className="space-y-2 text-brand-muted">
@@ -132,9 +166,15 @@ export default function CoachingSection({ id = "coaching", className = "" }) {
                                         </li>
                                     </ul>
 
-                                    <p className="text-brand-muted mt-6 leading-relaxed">This app keeps everything in one place — no messy Excel sheets, no Google links.</p>
+                                    <p className="text-brand-muted mt-6 leading-relaxed">
+                                        <span className="hidden md:block">This app keeps everything in one place — no messy Excel sheets, no Google links.</span>
+                                        <span className="block md:hidden">Everything in one place — no Excel sheets or Google links.</span>
+                                    </p>
 
-                                    <p className="text-brand-muted mt-4 leading-relaxed">It saves time, eliminates confusion, and allows me to track your progress in real-time, make faster adjustments, and keep us both accountable.</p>
+                                    <p className="text-brand-muted mt-4 leading-relaxed">
+                                        <span className="hidden md:block">It saves time, eliminates confusion, and allows me to track your progress in real-time, make faster adjustments, and keep us both accountable.</span>
+                                        <span className="block md:hidden">Saves time, eliminates confusion, and tracks progress in real-time.</span>
+                                    </p>
 
                                     <div className="mt-8 pt-6 border-t border-brand-border/50">
                                         <p className="text-brand-accent font-bold uppercase tracking-wide text-sm leading-relaxed">THIS ISN’T BASIC ONLINE COACHING THIS IS NEXT-LEVEL COACHING, BUILT FOR SERIOUS TRANSFORMATION.</p>

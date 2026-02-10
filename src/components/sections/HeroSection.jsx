@@ -38,7 +38,7 @@ export default function HeroSection({ id = "hero", className = "" }) {
 
     return (
         <section id={id} className={`hero-section px-4 scroll-mt-24 ${className}`}>
-            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto pt-16 pb-12 md:py-0 flex flex-col-reverse md:flex-row items-center relative gpu-accel gap-12" style={{ minHeight: isMobile ? "100svh" : "100vh" }}>
+            <motion.div initial={isMobile ? "hidden" : "visible"} animate="visible" variants={containerVariants} className="max-w-7xl mx-auto pt-4 pb-8 md:py-0 flex flex-col-reverse md:flex-row items-center relative gpu-accel gap-6 md:gap-12 min-h-auto md:min-h-screen">
                 {/* Left Column: Content */}
                 <div className="flex-1 relative z-10">
                     <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold leading-tight">
@@ -69,8 +69,8 @@ export default function HeroSection({ id = "hero", className = "" }) {
                 </div>
 
                 {/* Right Column: Image */}
-                <motion.div variants={itemVariants} className="flex-1 relative z-10 flex justify-center md:justify-end w-full min-h-[320px]">
-                    <img src="/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative aspect-[3/4] md:aspect-auto min-h-[300px]" style={{ maxHeight: "520px" }} />
+                <motion.div variants={itemVariants} className="flex-1 relative z-10 flex justify-center md:justify-end w-full min-h-auto md:min-h-[320px]">
+                    <img src="/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative aspect-[3/4] md:aspect-auto min-h-auto md:min-h-[300px] max-h-[50vh] md:max-h-[520px]" />
                 </motion.div>
             </motion.div>
         </section>

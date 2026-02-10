@@ -41,24 +41,54 @@ export default function MethodSection({ id = "method", className = "" }) {
                 {/* 1️⃣ Top Section (Full Width) */}
                 <motion.div initial={{ opacity: 0, y: isMobile ? 10 : 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5, ease: "easeOut" }} className="max-w-4xl">
                     <h1 className="text-4xl md:text-5xl font-bold text-brand-text leading-tight">90-DAY LEAN BODY METHOD</h1>
-                    <p className="text-brand-muted mt-6 text-lg leading-relaxed">Break free from stubborn weight gain, rebuild energy, and regain confidence with a science-backed transformation method trusted by hundreds.</p>
+                    <p className="hidden md:block text-brand-muted mt-6 text-lg leading-relaxed">Break free from stubborn weight gain, rebuild energy, and regain confidence with a science-backed transformation method trusted by hundreds.</p>
                     <h2 className="text-2xl md:text-3xl font-bold text-brand-accent mt-8">TRIPLE R METHOD</h2>
                 </motion.div>
 
                 {/* 2️⃣ Cards Section (Grid Layout) */}
                 <motion.div className="mt-8 md:mt-10 grid grid-cols-1 md:grid-cols-3 gap-8" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}>
                     {/* RESET */}
-                    <MethodCard Icon={IconResetMetabolism} title="RESET – YOUR METABOLISM" description="Restore metabolic balance, reduce inflammation, and prime your body for fat loss." variants={itemVariants} />
+                    <MethodCard
+                        Icon={IconResetMetabolism}
+                        title="RESET – YOUR METABOLISM"
+                        description={
+                            <>
+                                <span className="hidden md:block">Restore metabolic balance, reduce inflammation, and prime your body for fat loss.</span>
+                                <span className="block md:hidden">Restore metabolic balance and prime your body for fat loss.</span>
+                            </>
+                        }
+                        variants={itemVariants}
+                    />
 
                     {/* REBUILD */}
-                    <MethodCard Icon={IconRebuildStrength} title="REBUILD – STRENGTH & HABITS" description="Build strength and sustainable habits using structured training, personalized nutrition, and realistic lifestyle upgrades." variants={itemVariants} />
+                    <MethodCard
+                        Icon={IconRebuildStrength}
+                        title="REBUILD – STRENGTH & HABITS"
+                        description={
+                            <>
+                                <span className="hidden md:block">Build strength and sustainable habits using structured training, personalized nutrition, and realistic lifestyle upgrades.</span>
+                                <span className="block md:hidden">Build strength using structured training and personalized nutrition.</span>
+                            </>
+                        }
+                        variants={itemVariants}
+                    />
 
                     {/* RISE */}
-                    <MethodCard Icon={IconRiseGrowth} title="RISE – WITH ENERGY & CONFIDENCE" description="Renew your energy and confidence to maintain long-term results and true independence." variants={itemVariants} />
+                    <MethodCard
+                        Icon={IconRiseGrowth}
+                        title="RISE – WITH ENERGY & CONFIDENCE"
+                        description={
+                            <>
+                                <span className="hidden md:block">Renew your energy and confidence to maintain long-term results and true independence.</span>
+                                <span className="block md:hidden">Renew your energy to maintain long-term results.</span>
+                            </>
+                        }
+                        variants={itemVariants}
+                    />
                 </motion.div>
 
                 {/* Bottom Highlight Text */}
-                <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }} className="mt-10 md:mt-12 max-w-4xl">
+                <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.5, duration: 0.5 }} className="hidden md:block mt-10 md:mt-12 max-w-4xl">
                     <p className="text-brand-text text-lg md:text-xl font-medium leading-relaxed">This is the launchpad to long-term success. You’re not just leaner — you’re energized, confident, and in full control of your health.</p>
                 </motion.div>
             </Section>

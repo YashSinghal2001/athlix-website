@@ -101,34 +101,36 @@ export default function TestimonialsSection({ id = "testimonials", className = "
                         <p className="text-brand-muted mt-4 text-lg">Stories from clients who followed the system and stayed consistent.</p>
                     </motion.div>
 
-                    {/* Video Testimonials */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-20">
-                        {videoTestimonials.map((video) => (
-                            <motion.div key={video.id} variants={itemVariants}>
-                                <Card className="group relative overflow-hidden aspect-[9/16] sm:aspect-[4/5] md:aspect-[3/4] p-0 cursor-pointer border-0" hoverEffect={false}>
-                                    <img src={video.thumbnail} alt={video.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {/* Video Testimonials - Temporarily Hidden */}
+                    {false && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-20">
+                            {videoTestimonials.map((video) => (
+                                <motion.div key={video.id} variants={itemVariants}>
+                                    <Card className="group relative overflow-hidden aspect-[9/16] sm:aspect-[4/5] md:aspect-[3/4] p-0 cursor-pointer border-0" hoverEffect={false}>
+                                        <img src={video.thumbnail} alt={video.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
-                                            <IconPlay className="w-8 h-8 text-white ml-1" />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+                                                <IconPlay className="w-8 h-8 text-white ml-1" />
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                                        <h3 className="text-white font-bold text-lg">{video.name}</h3>
-                                        <p className="text-white/80 text-sm">{video.duration}</p>
-                                    </div>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </div>
+                                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                                            <h3 className="text-white font-bold text-lg">{video.name}</h3>
+                                            <p className="text-white/80 text-sm">{video.duration}</p>
+                                        </div>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Text Testimonials */}
                     {isMobile ? (
                         // Mobile Carousel
                         <div className="relative">
-                            <div ref={scrollRef} onScroll={handleScroll} className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 scrollbar-hide">
+                            <div ref={scrollRef} onScroll={handleScroll} className="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 scrollbar-hide">
                                 {textTestimonials.map((testimonial) => (
                                     <div key={testimonial.id} className="min-w-[85vw] snap-center h-full">
                                         <TestimonialCard testimonial={testimonial} />

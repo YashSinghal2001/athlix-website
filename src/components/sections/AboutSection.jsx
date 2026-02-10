@@ -86,9 +86,11 @@ export default function AboutSection({ id = "about", className = "" }) {
                                 One Proven Method.
                             </h1>
 
-                            <p className="text-brand-muted mt-6 text-lg leading-relaxed">
-                                Over the last 18+ years, I've trained, studied, and mentored under the best in the fitness industry to build a science-driven, results-focused coaching system that has helped hundreds of people transform their health for good.
-                            </p>
+                            <div className="hidden md:block">
+                                <p className="text-brand-muted mt-6 text-lg leading-relaxed">
+                                    Over the last 18+ years, I've trained, studied, and mentored under the best in the fitness industry to build a science-driven, results-focused coaching system that has helped hundreds of people transform their health for good.
+                                </p>
+                            </div>
                         </div>
                     </motion.div>
 

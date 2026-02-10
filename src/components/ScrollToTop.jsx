@@ -5,27 +5,25 @@ export default function ScrollToTop() {
     const { pathname, hash } = useLocation();
 
     useEffect(() => {
-        // Handle scroll behavior
-        const handleScroll = () => {
-            if (hash) {
-                const id = hash.replace("#", "");
-                const element = document.getElementById(id);
-                if (element) {
+        // Instant scroll to top on route change (no hash)
+        if (!hash) {
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "instant",
+            });
+        } 
+        // Smooth scroll to hash anchor
+        else {
+            const id = hash.replace("#", "");
+            const element = document.getElementById(id);
+            if (element) {
+                // Small timeout to ensure element exists
+                setTimeout(() => {
                     element.scrollIntoView({ behavior: "smooth" });
-                }
-            } else {
-                window.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: "instant",
-                });
+                }, 100);
             }
-        };
-
-        // Small timeout to ensure DOM is ready and layout is stable
-        const timeoutId = setTimeout(handleScroll, 100);
-
-        return () => clearTimeout(timeoutId);
+        }
     }, [pathname, hash]);
 
     return null;

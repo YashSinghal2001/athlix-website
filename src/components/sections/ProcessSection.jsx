@@ -10,12 +10,14 @@ const steps = [
         id: 1,
         title: "ONBOARDING",
         description: "Once your payment is confirmed, I’ll begin crafting your personalized plan built from scratch, not templates. Within three days, you’ll receive your full setup, and we’ll connect for a quick call to align on every detail before your journey officially begins.",
+        mobileDescription: "Once payment is confirmed, I'll craft your custom plan from scratch. In 3 days, you get the full setup and a call to align details.",
         icon: UserCheck,
     },
     {
         id: 2,
         title: "QUESTIONNAIRE",
         description: "You’ll then fill a detailed client form that helps me understand your goals, health history, lifestyle, and preferences. Every plan is created around your real life — your schedule, your food, your stress patterns — so it’s something you can actually follow and sustain.",
+        mobileDescription: "You'll fill a form about your goals and lifestyle. I build your plan around your real life so it's sustainable and easy to follow.",
         icon: ClipboardList,
     },
     {
@@ -41,6 +43,26 @@ const steps = [
                 </li>
             </ul>
         ),
+        mobileDescription: (
+            <ul className="space-y-3 mt-2">
+                <li className="flex gap-3">
+                    <span className="text-brand-accent">•</span>
+                    <span>No unnecessary supplements — only what adds value.</span>
+                </li>
+                <li className="flex gap-3">
+                    <span className="text-brand-accent">•</span>
+                    <span>No restrictive diets or cutting out foods you enjoy.</span>
+                </li>
+                <li className="flex gap-3">
+                    <span className="text-brand-accent">•</span>
+                    <span>Build permanent habits to stay fit long-term.</span>
+                </li>
+                <li className="flex gap-3">
+                    <span className="text-brand-accent">•</span>
+                    <span>Understand the 'why' behind every part of your plan.</span>
+                </li>
+            </ul>
+        ),
         icon: Brain,
     },
     {
@@ -63,6 +85,26 @@ const steps = [
                 <div>
                     <strong className="text-brand-text block mb-1">1-on-1 support:</strong>
                     Every discussion, adjustment, and assessment is done personally — no generic feedback, ever.
+                </div>
+            </div>
+        ),
+        mobileDescription: (
+            <div className="space-y-4 mt-2">
+                <div>
+                    <strong className="text-brand-text block mb-1">Direct access:</strong>
+                    24/7 support via WhatsApp and email.
+                </div>
+                <div>
+                    <strong className="text-brand-text block mb-1">Weekly check-ins:</strong>
+                    Weekly progress reviews and plan updates.
+                </div>
+                <div>
+                    <strong className="text-brand-text block mb-1">Form reviews:</strong>
+                    Personalized video feedback on your form.
+                </div>
+                <div>
+                    <strong className="text-brand-text block mb-1">1-on-1 support:</strong>
+                    Personal attention, no generic feedback.
                 </div>
             </div>
         ),
@@ -102,7 +144,7 @@ function MobileStepCard({ step }) {
                 </div>
 
                 <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                <div className="text-brand-muted leading-relaxed">{step.description}</div>
+                <div className="text-brand-muted leading-relaxed">{step.mobileDescription || step.description}</div>
             </Card>
         </div>
     );

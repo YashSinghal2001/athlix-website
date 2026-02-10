@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "./ui/Button";
+import useIsMobile from "../hooks/useIsMobile";
 
 const WHATSAPP_LINK = "https://wa.me/919872028656";
 
@@ -19,6 +20,45 @@ const navLinks = [
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const location = useLocation();
+    const isMobile = useIsMobile();
+    const [activeSection, setActiveSection] = useState("");
+
+    // Desktop: Scroll Spy Logic using IntersectionObserver
+    useEffect(() => {
+        if (isMobile || location.pathname !== "/") return;
+
+        const observerOptions = {
+            root: null,
+            // Trigger when the section is near the middle/top of the viewport.
+            // Adjust rootMargin to fine-tune when the highlight switches.
+            rootMargin: "-40% 0px -40% 0px", 
+            threshold: 0
+        };
+
+        const handleIntersect = (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    setActiveSection(entry.target.id);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+        const sectionsToObserve = navLinks
+            .filter((link) => link.name !== "Terms")
+            .map((link) => link.id);
+        
+        // Add hero section to observer to clear highlights when at the top
+        sectionsToObserve.push("hero");
+
+        sectionsToObserve.forEach((id) => {
+            const element = document.getElementById(id);
+            if (element) observer.observe(element);
+        });
+
+        return () => observer.disconnect();
+    }, [isMobile, location.pathname]);
 
     const handleNavClick = (e, link) => {
         setOpen(false);
@@ -26,6 +66,9 @@ export default function Navbar() {
         // If on homepage and not Terms page, scroll to section
         if (location.pathname === "/" && link.name !== "Terms") {
             e.preventDefault();
+            // Manually update active section for immediate feedback on desktop
+            if (!isMobile) setActiveSection(link.id);
+            
             const element = document.getElementById(link.id);
             if (element) {
                 element.scrollIntoView({ behavior: "smooth" });
@@ -62,7 +105,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="relative md:fixed md:top-0 md:left-0 md:right-0 z-50 w-full bg-brand-bg border-b border-brand-border">
+        <nav className="sticky top-0 md:fixed md:top-0 md:left-0 md:right-0 z-50 w-full bg-brand-bg border-b border-brand-border">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - Links to / */}
@@ -73,7 +116,9 @@ export default function Navbar() {
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
                         {navLinks.map((link) => {
-                            const isActive = link.name === "Terms" ? location.pathname === link.path : location.hash === `#${link.id}`;
+                            const isActive = link.name === "Terms" 
+                                ? location.pathname === link.path 
+                                : (isMobile ? location.hash === `#${link.id}` : activeSection === link.id);
 
                             // Special case for Terms link: open in new tab
                             if (link.name === "Terms") {

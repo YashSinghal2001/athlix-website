@@ -20,14 +20,14 @@ export default function MainLayout() {
     const isMobile = useIsMobile();
 
     return (
-        <div className="min-h-[100svh] flex flex-col bg-brand-bg text-brand-text">
+        <div className="min-h-[100dvh] flex flex-col bg-brand-bg text-brand-text">
             {/* Show progress bar ONLY on desktop to save main thread on mobile */}
             {!isMobile && <DesktopScrollProgress />}
 
             <Navbar />
 
             {/* Added top padding on desktop to account for fixed navbar */}
-            <main className="flex-grow pt-3 md:pt-16 min-h-[100svh]">
+            <main className="flex-grow md:pt-16 w-full">
                 <Outlet />
             </main>
 
