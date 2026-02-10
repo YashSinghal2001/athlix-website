@@ -70,7 +70,7 @@ export default function HeroSection({ id = "hero", className = "" }) {
 
                 {/* Right Column: Image */}
                 <motion.div variants={itemVariants} className="flex-1 relative z-10 flex justify-center md:justify-end w-full min-h-auto md:min-h-[320px]">
-                    <img src="/Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative aspect-[3/4] md:aspect-auto min-h-auto md:min-h-[300px] max-h-[50vh] md:max-h-[520px]" />
+                    <img src="Coach.png" alt="Coach Abhishek" className="w-auto h-auto max-w-full object-contain relative aspect-[3/4] md:aspect-auto min-h-auto md:min-h-[300px] max-h-[50vh] md:max-h-[520px]" />
                 </motion.div>
             </motion.div>
         </section>
