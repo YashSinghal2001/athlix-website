@@ -32,19 +32,19 @@ import r1 from "./assets/4_1.webp";
 import r2 from "./assets/4_2.webp";
 import r3 from "./assets/4_3.webp";
 
-/* certification logos */
-import certAce from "./assets/certs/ace.webp";
-import certK11 from "./assets/certs/k11.jpg";
-import certEkfa from "./assets/certs/ekfa.png";
-import certFitnessMatters from "./assets/certs/fitness-matters.png";
-import certActiveIq from "./assets/certs/active-iq.png";
-import certRepsUae from "./assets/certs/reps-uae.png";
-import certUsReps from "./assets/certs/us-reps.png";
-import certTeamBoss from "./assets/certs/team-boss.webp";
-import certJlo from "./assets/certs/jlo.avif";
-import certMnu from "./assets/certs/mnu.png";
-import certAicvps from "./assets/certs/aicvps.jpeg";
-import certEcna from "./assets/certs/ecna.png";
+/* certification logos (flat src/assets location) */
+import certAce from "./assets/ace-logo.webp";
+import certK11 from "./assets/k11-logo.jpg";
+import certEkfa from "./assets/efka-logo.png";
+import certFitnessMatters from "./assets/FM-logo.png";
+import certActiveIq from "./assets/aiq-logo.png";
+import certRepsUae from "./assets/rep-logo.png";
+import certUsReps from "./assets/usrep-logo.png";
+import certTeamBoss from "./assets/teamboss-logo.webp";
+import certJlo from "./assets/jf-logo.avif";
+import certMnu from "./assets/mnu-logo.png";
+import certAicvps from "./assets/aic-logo.jpeg";
+import certEcna from "./assets/ecna-logo.png";
 
 /* =====================================================================
    Data
