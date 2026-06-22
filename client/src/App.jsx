@@ -10,7 +10,7 @@ import { Icon } from "./components/icons.jsx";
 
 /* assets */
 import heroImage from "./assets/1.webp";
-import coachImage from "./assets/1_14.webp";
+import coachImage from "./assets/images/Coach.webp"; // optimized from Images/Coach.jpg
 import blueTick from "./assets/Blue_tick.png";
 
 import s1 from "./assets/2_1.webp";
@@ -653,7 +653,7 @@ function Certifications() {
         <div className="cert-wall">
           {certifications.map((c, i) => (
             <Reveal key={c.name} delay={(i % 4) * 0.06} className="cert-tile">
-              <div className={`cert-logo ${c.plate ? "plate" : ""}`}>
+              <div className="cert-logo">
                 <img src={c.logo} alt={`${c.full} certification logo`} loading="lazy" />
               </div>
               <div>

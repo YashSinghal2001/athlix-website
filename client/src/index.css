@@ -1113,19 +1113,29 @@ p {
   border-color: var(--border-strong);
 }
 
+/* Featured (Hybrid) card: fixed dark-premium look in BOTH themes so it never
+   inherits the theme's --ink flip (which previously turned it white in dark mode
+   and made the checklist text white-on-white). All values meet WCAG AA. */
 .pathway-card.featured {
-  background: var(--ink);
-  border-color: var(--ink);
-  box-shadow: var(--shadow-lg);
+  background: #0b1020;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(11, 16, 32, 0.45), 0 8px 24px rgba(37, 99, 235, 0.18);
+  color: #cbd5e1;
 }
 
-.pathway-card.featured h3,
-.pathway-card.featured .pathway-desc {
-  color: var(--ink-contrast);
+.pathway-card.featured:hover {
+  transform: translateY(-6px);
+  border-color: rgba(96, 165, 250, 0.45);
+  box-shadow: 0 38px 80px rgba(11, 16, 32, 0.55), 0 14px 34px rgba(37, 99, 235, 0.3);
+}
+
+.pathway-card.featured h3 {
+  color: #ffffff;
 }
 
 .pathway-card.featured .pathway-desc {
-  opacity: 0.75;
+  color: #cbd5e1;
+  opacity: 1;
 }
 
 .pathway-badge {
@@ -1156,8 +1166,8 @@ p {
 }
 
 .pathway-card.featured .pathway-icon {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: rgba(96, 165, 250, 0.16);
+  color: #60a5fa;
 }
 
 .pathway-icon svg {
@@ -1194,7 +1204,7 @@ p {
 }
 
 .pathway-card.featured .pathway-list li {
-  color: rgba(255, 255, 255, 0.92);
+  color: #e2e8f0;
 }
 
 .pathway-list svg {
@@ -1205,11 +1215,30 @@ p {
 }
 
 .pathway-card.featured .pathway-list svg {
-  color: var(--accent-strong);
+  color: #60a5fa;
 }
 
 .pathway-card .btn {
   margin-top: auto;
+}
+
+/* Featured CTA: blue gradient, white text, premium glow */
+.pathway-card.featured .pathway-badge {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+.pathway-card.featured .btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
+}
+
+.pathway-card.featured .btn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.5);
 }
 
 /* ----------------------------- Coach (executive profile) ----------------------------- */
@@ -1225,19 +1254,51 @@ p {
   border-radius: var(--radius-xl);
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* premium dark shadow + soft ATHLIX-blue glow behind the image */
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 90px rgba(47, 107, 255, 0.22);
   background: var(--bg-subtle);
+  isolation: isolate;
+  transition: box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
+}
+
+[data-theme="light"] .coach-photo {
+  /* keep a visible edge on light backgrounds while preserving the dark frame look */
+  border-color: rgba(10, 11, 13, 0.1);
+  box-shadow: 0 20px 60px rgba(10, 11, 13, 0.18), 0 0 90px rgba(47, 107, 255, 0.16);
+}
+
+.coach-photo:hover {
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42), 0 0 120px rgba(47, 107, 255, 0.32);
 }
 
 .coach-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* keep the face safe (it sits in the upper-center of the portrait) */
+  object-position: center 18%;
+  transition: transform 0.8s var(--ease-out);
+  will-change: transform;
+}
+
+.coach-photo:hover img {
+  transform: scale(1.03);
+}
+
+/* subtle gradient at the bottom for readability of the floating stat card */
+.coach-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 52%, rgba(8, 9, 12, 0.55));
 }
 
 .coach-photo .float {
   position: absolute;
+  z-index: 2;
   left: 20px;
   bottom: 20px;
   right: 20px;
@@ -1331,49 +1392,55 @@ p {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 14px;
-  padding: 30px 22px 22px;
+  gap: 16px;
+  padding: 28px 22px 22px;
   border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+/* On light backgrounds the white-tinted glass is invisible, so use a faint
+   dark tint + visible hairline border to keep the premium card readable. */
+[data-theme="light"] .cert-tile {
+  background: rgba(10, 11, 13, 0.015);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .cert-tile:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-strong);
+  transform: translateY(-6px) scale(1.03);
+  border-color: rgba(47, 107, 255, 0.5);
+  box-shadow: 0 20px 46px rgba(10, 11, 13, 0.18), 0 0 36px rgba(47, 107, 255, 0.22);
 }
 
+/* Transparent logo area — raw PNG/SVG shown exactly as provided, no chip,
+   no white rectangle, no filters. Consistent height keeps the wall aligned. */
 .cert-logo {
-  height: 64px;
   width: 100%;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  padding: 0;
 }
 
 .cert-logo img {
-  max-height: 64px;
-  max-width: 130px;
+  max-height: 100%;
+  max-width: 90%;
   width: auto;
   object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.62;
-  transition: filter 0.4s var(--ease), opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  background: transparent;
+  filter: none;
+  opacity: 1;
+  transition: transform 0.3s var(--ease);
 }
 
 .cert-tile:hover .cert-logo img {
-  filter: grayscale(0);
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-/* logos on dark/black backgrounds get a contrast plate */
-.cert-logo.plate {
-  background: #0b0c10;
-  border-radius: 12px;
-  padding: 10px 14px;
+  transform: scale(1.03);
 }
 
 .cert-name {
