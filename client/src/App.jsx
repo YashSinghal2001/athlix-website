@@ -1,603 +1,456 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-
 import "swiper/css";
 import "swiper/css/pagination";
 
-import heroImage from "./assets/1.png";
-import coachImage from "./assets/1_14.png";
-import storyOne from "./assets/2_1.png";
-import storyTwo from "./assets/2_2.png";
-import storyThree from "./assets/2_3.png";
-import storyFour from "./assets/2_4.png";
-import storyFive from "./assets/2_5.png";
-import storySix from "./assets/2_6.png";
-import storySeven from "./assets/2_7.png";
-import storyEight from "./assets/2_8.png";
-import storyNine from "./assets/2_9.png";
-import storyTen from "./assets/2_10.png";
-import storyEleven from "./assets/2_11.png";
-import storyTwelve from "./assets/2_12.png";
-import storyThirteen from "./assets/2_13.png";
-import storyFourteen from "./assets/2_14.png";
-import storyFifteen from "./assets/2_15.png";
-import reviewOne from "./assets/4_1.png";
-import reviewTwo from "./assets/4_2.png";
-import reviewThree from "./assets/4_3.png";
-import instagramIcon from "./assets/instagram.png";
+import { useTheme } from "./theme/ThemeContext.jsx";
+import { Icon } from "./components/icons.jsx";
+
+/* assets */
+import heroImage from "./assets/1.webp";
+import coachImage from "./assets/1_14.webp";
 import blueTick from "./assets/Blue_tick.png";
 
-/* ===================== Data ===================== */
+import s1 from "./assets/2_1.webp";
+import s2 from "./assets/2_2.webp";
+import s3 from "./assets/2_3.webp";
+import s4 from "./assets/2_4.webp";
+import s5 from "./assets/2_5.webp";
+import s6 from "./assets/2_6.webp";
+import s7 from "./assets/2_7.webp";
+import s8 from "./assets/2_8.webp";
+import s9 from "./assets/2_9.webp";
+import s10 from "./assets/2_10.webp";
+import s11 from "./assets/2_11.webp";
+import s12 from "./assets/2_12.webp";
+import s13 from "./assets/2_13.webp";
+import s14 from "./assets/2_14.webp";
+import s15 from "./assets/2_15.webp";
+import r1 from "./assets/4_1.webp";
+import r2 from "./assets/4_2.webp";
+import r3 from "./assets/4_3.webp";
 
-const trustIndicators = [
-  { label: "Certified Coaches", icon: "✓" },
-  { label: "Personalized Coaching", icon: "★" },
-  { label: "Online & Offline Support", icon: "◉" },
-  { label: "Proven Transformation System", icon: "↗" },
+/* certification logos */
+import certAce from "./assets/certs/ace.webp";
+import certK11 from "./assets/certs/k11.jpg";
+import certEkfa from "./assets/certs/ekfa.png";
+import certFitnessMatters from "./assets/certs/fitness-matters.png";
+import certActiveIq from "./assets/certs/active-iq.png";
+import certRepsUae from "./assets/certs/reps-uae.png";
+import certUsReps from "./assets/certs/us-reps.png";
+import certTeamBoss from "./assets/certs/team-boss.webp";
+import certJlo from "./assets/certs/jlo.avif";
+import certMnu from "./assets/certs/mnu.png";
+import certAicvps from "./assets/certs/aicvps.jpeg";
+import certEcna from "./assets/certs/ecna.png";
+
+/* =====================================================================
+   Data
+   ===================================================================== */
+
+const trustMetrics = [
+  { num: "18+", lbl: "Years Experience" },
+  { num: "100+", lbl: "Transformations" },
+  { num: "6", lbl: "Countries Served" },
+  { num: "ACE", lbl: "Certified Coach" },
 ];
 
-const marqueeItems = [
+const allTransformImages = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15];
+
+const transformations = [
+  { img: s1, duration: "20 Weeks", goal: "18 kg Fat Loss", quote: "I finally stopped guessing and followed a system that worked around my schedule." },
+  { img: s4, duration: "16 Weeks", goal: "Body Recomposition", quote: "Structure replaced motivation. The progress became almost automatic." },
+  { img: s2, duration: "14 Weeks", goal: "12 kg Fat Loss", quote: "Weekly accountability kept me consistent even on my hardest weeks." },
+  { img: s7, duration: "24 Weeks", goal: "Lifestyle Transformation", quote: "It wasn't a diet — it became the way I live now." },
+  { img: s5, duration: "18 Weeks", goal: "Strength + Definition", quote: "The coaching adapted as my body and goals evolved." },
+  { img: s9, duration: "22 Weeks", goal: "15 kg Fat Loss", quote: "Daily support made the difference I never had before." },
+  { img: s11, duration: "12 Weeks", goal: "Visible Recomposition", quote: "Clear, sustainable, and built entirely around my real life." },
+  { img: s12, duration: "26 Weeks", goal: "Confidence + Composition", quote: "I trust the process now because I understand it." },
+  { img: s8, duration: "20 Weeks", goal: "Sustainable Fat Loss", quote: "No crash diets — just consistent, coached progress." },
+];
+
+const problems = [
+  "Random Diets",
+  "No Accountability",
+  "Temporary Motivation",
+  "Generic Programs",
+  "Information Overload",
+  "Lack Of Structure",
+];
+
+const solutions = [
   "Personalized Coaching",
-  "Daily Accountability",
-  "Fat Loss Systems",
-  "Habit Building",
-  "Progress Reviews",
-  "RRR Method",
-  "International Clients",
+  "Weekly Accountability",
+  "Nutrition Strategy",
+  "Training Framework",
+  "Lifestyle Integration",
   "Sustainable Results",
 ];
 
-const featuredTransformations = [
+const methodStages = [
   {
-    before: storyOne,
-    after: storyEight,
-    name: "Rohan Mehta",
-    result: "18 kg lost",
-    timeline: "20 weeks",
-    occupation: "Product Manager",
-    quote:
-      "The biggest change was not just my body. I finally stopped guessing and had a system I could follow even on the busiest weeks.",
-  },
-  {
-    before: storySix,
-    after: storyTwelve,
-    name: "Meera Kapoor",
-    result: "12 kg lost",
-    timeline: "16 weeks",
-    occupation: "Founder",
-    quote:
-      "Athlix helped me build structure around a demanding schedule — no crash diets, no panic, just consistent progress.",
-  },
-  {
-    before: storyThree,
-    after: storyFifteen,
-    name: "Arjun Singh",
-    result: "Visible recomposition",
-    timeline: "14 weeks",
-    occupation: "Consultant",
-    quote:
-      "Weekly reviews and daily accountability made the process feel clear and sustainable. I trust the system now.",
-  },
-];
-
-const transformationImages = [
-  storyOne, storyTwo, storyThree, storyFour, storyFive,
-  storySix, storySeven, storyEight, storyNine, storyTen,
-  storyEleven, storyTwelve, storyThirteen, storyFourteen, storyFifteen,
-];
-
-const failurePoints = [
-  "Random dieting with no strategy",
-  "Zero accountability after week two",
-  "Workouts that don't match your life",
-  "No expert to adjust the plan",
-  "Motivation-led, not system-led approach",
-];
-
-const differencePoints = [
-  "Personalized coaching built around you",
-  "Daily accountability touchpoints",
-  "Habit and lifestyle design",
-  "Weekly progress reviews",
-  "Expert guidance at every step",
-];
-
-const rrrStages = [
-  {
-    stage: "01",
+    step: "Stage 01",
     title: "RESET",
-    description: "Fix habits, improve awareness, and establish consistency.",
-    detail: "We rebuild the foundation: nutrition clarity, baseline tracking, routine design, and early visible wins.",
-    features: ["Habit audit", "Baseline tracking", "Routine design", "Nutrition clarity"],
+    desc: "Build the foundation. We create awareness, fix daily habits, and establish the consistency every transformation depends on.",
+    points: ["Build Awareness", "Fix Habits", "Create Consistency"],
   },
   {
-    stage: "02",
+    step: "Stage 02",
     title: "REBUILD",
-    description: "Build strength, improve metabolism, and create sustainable routines.",
-    detail: "Progressive training, smarter food systems, and weekly performance reviews that compound over time.",
-    features: ["Progressive training", "Metabolic reset", "Weekly reviews", "Strength gain"],
+    desc: "Develop the systems. Nutrition and training evolve into a repeatable structure that compounds results over time.",
+    points: ["Improve Nutrition", "Develop Systems", "Increase Performance"],
   },
   {
-    stage: "03",
+    step: "Stage 03",
     title: "RISE",
-    description: "Achieve long-term transformation, confidence, and lifestyle mastery.",
-    detail: "Identity-level habits, confident maintenance, and the systems to keep results for life.",
-    features: ["Identity shift", "Confident maintenance", "Long-term support", "Lifestyle mastery"],
+    desc: "Master the lifestyle. Advanced body composition and long-term sustainability become a permanent part of who you are.",
+    points: ["Lifestyle Mastery", "Long-Term Sustainability", "Advanced Body Composition"],
   },
 ];
 
-const coachingOptions = [
+const pathways = [
   {
+    icon: <Icon.Monitor />,
     title: "Online Coaching",
-    description: "A structured remote transformation experience for clients who need expert direction from anywhere in the world.",
-    items: ["Personalized Workout Plan", "Nutrition Guidance", "Weekly Reviews", "Progress Tracking", "Online Support"],
+    desc: "A structured remote transformation experience with expert direction from anywhere in the world.",
+    items: ["Remote Coaching", "Weekly Reviews", "App Support", "Personalized Programming"],
   },
   {
+    icon: <Icon.MapPin />,
     title: "Offline Coaching",
-    description: "In-person coaching for clients who want hands-on support inside the training environment.",
-    items: ["In-Person Guidance", "Personalized Coaching", "Gym Support", "Performance Tracking"],
+    desc: "Hands-on, face-to-face coaching for clients who want direct support inside the training environment.",
+    items: ["Face To Face Coaching", "Direct Assessments", "In-Gym Guidance", "Personal Support"],
   },
   {
+    icon: <Icon.Layers />,
     title: "Hybrid Coaching",
-    badge: "Most Popular",
-    highlighted: true,
-    description:
-      "Designed personally by Coach Abhishek. Daily accountability, follow-ups, progress monitoring, and client support are handled by the Athlix Assistant.",
-    items: ["Coach-designed strategy", "Daily accountability", "Follow-up support", "Progress monitoring", "Online + offline structure"],
-    meta: "Best results • Personal design",
+    featured: true,
+    badge: "Most Recommended",
+    desc: "Program designed personally by Coach Abhishek. Daily follow-ups, accountability, and support handled by the Athlix Assistant Team.",
+    items: ["Best of Online + Offline", "Faster Communication", "Greater Accountability", "Continuous Support"],
   },
 ];
 
 const coachStats = [
-  { value: "18+", label: "Years coaching" },
-  { value: "ACE", label: "Certified PT" },
-  { value: "100+", label: "Transformations" },
-  { value: "6", label: "Countries served" },
+  { num: "18+", lbl: "Years Experience" },
+  { num: "100+", lbl: "Transformations" },
+  { num: "6", lbl: "Countries Served" },
+  { num: "ACE", lbl: "Certified" },
 ];
 
-const coachBadges = [
-  "Certified Personal Trainer (ACE)",
-  "Active IQ Level 3 (UK)",
-  "K11 Fitness Academy",
-  "REPs UAE & USA",
-  "Weight Management Specialist",
+const specializations = ["Fat Loss", "Body Recomposition", "Lifestyle Transformation", "Sustainable Coaching"];
+
+const certifications = [
+  { logo: certAce, name: "ACE", full: "American Council on Exercise", year: "Certified PT" },
+  { logo: certK11, name: "K11", full: "K11 Fitness Academy", year: "Academy", plate: true },
+  { logo: certEkfa, name: "EKFA", full: "EKFA Fitness Academy", year: "Certified" },
+  { logo: certFitnessMatters, name: "Fitness Matters", full: "Fitness Matters", year: "Certified" },
+  { logo: certActiveIq, name: "Active IQ", full: "Active IQ Level 3 (UK)", year: "Level 3" },
+  { logo: certRepsUae, name: "REPs UAE", full: "Register of Exercise Professionals", year: "Registered" },
+  { logo: certUsReps, name: "US REPs", full: "US Register of Exercise Professionals", year: "Registered" },
+  { logo: certTeamBoss, name: "Team Boss", full: "Team Boss Coaching", year: "Member" },
+  { logo: certJlo, name: "JLO", full: "JLO Coaching System", year: "Certified" },
+  { logo: certMnu, name: "MNU", full: "Mac-Nutrition Uni", year: "Certified" },
+  { logo: certAicvps, name: "AICVPS", full: "All India Council (Paramedical Science)", year: "Certified" },
+  { logo: certEcna, name: "ECNA", full: "Elite Coaches & Nutrition Academy", year: "Certified" },
 ];
 
 const testimonials = [
-  {
-    type: "Video Review",
-    name: "Nisha Rao",
-    role: "Marketing Lead",
-    initials: "NR",
-    quote: "I had tried plans before, but this was the first time someone adjusted the process around my work, travel, and real life.",
-  },
-  {
-    type: "Client Review",
-    name: "Kabir Khanna",
-    role: "Finance Professional",
-    initials: "KK",
-    quote: "The weekly review system kept me honest. I knew exactly what was working and what needed to change.",
-  },
-  {
-    type: "Success Story",
-    name: "Sara Iyer",
-    role: "Entrepreneur",
-    initials: "SI",
-    quote: "I gained confidence in how I looked, how I trained, and how I managed food without fear or restriction.",
-  },
-  {
-    type: "Transformation",
-    name: "Vikram Joshi",
-    role: "Software Architect",
-    initials: "VJ",
-    quote: "It wasn't about losing weight. It was about gaining a system that finally worked for someone with my schedule.",
-  },
+  { name: "Nisha Rao", role: "Marketing Lead", type: "Transformation", photo: r1, quote: "The first time someone adjusted the process around my work, travel, and real life. The results finally stayed." },
+  { name: "Kabir Khanna", role: "Finance Professional", type: "Client Review", photo: r2, quote: "The weekly review system kept me honest. I always knew what was working and what to change." },
+  { name: "Sara Iyer", role: "Entrepreneur", type: "Success Story", photo: r3, quote: "I gained confidence in how I looked, trained, and managed food — without fear or restriction." },
+  { name: "Vikram Joshi", role: "Software Architect", type: "Transformation", initials: "VJ", quote: "It wasn't about losing weight. It was gaining a system that finally worked for my schedule." },
+  { name: "Aarti Menon", role: "Consultant", type: "Client Review", initials: "AM", quote: "Sustainable, structured, and genuinely personal. Coaching that respects a demanding life." },
+  { name: "Rahul Verma", role: "Founder", type: "Success Story", initials: "RV", quote: "Six months in and the habits are permanent. That's the real transformation." },
 ];
 
-const others = ["Generic workout plans", "No accountability", "Temporary results", "One-time guidance", "Motivation based"];
-const athlix = ["Personalized coaching", "Daily accountability", "Sustainable transformation", "Continuous support", "System led"];
-
-const faqItems = [
-  { question: "How is Athlix different from a normal gym or diet plan?", answer: "Athlix is not a plan you download — it is a coaching relationship. We combine personalized programming, daily accountability, weekly reviews, and lifestyle design to produce results that actually last." },
-  { question: "Do I need gym access to start?", answer: "No. Your plan is built around your access — home, hotel, or full gym — based on your training history, equipment, and goals." },
-  { question: "Is Athlix beginner friendly?", answer: "Yes. The RESET stage is designed to help beginners build confidence, consistency, and awareness before intensity increases. Every plan is scaled to your starting point." },
-  { question: "How does the Hybrid Coaching experience work?", answer: "Coach Abhishek designs the overall strategy and the Athlix Assistant handles daily accountability, follow-ups, progress monitoring, and client communication so nothing falls through the cracks." },
-  { question: "How often are reviews and check-ins?", answer: "Reviews happen weekly with structured metrics. Daily accountability touchpoints are also included, depending on the coaching experience you select." },
-  { question: "How long does a transformation usually take?", answer: "Every body and schedule is different, but most clients begin seeing meaningful changes within 8 to 16 weeks when execution is consistent. Sustainable transformation is a 6–12 month arc." },
-  { question: "Do you work with international clients?", answer: "Yes. Athlix coaches clients across India, UAE, the UK, USA, Canada, and Australia — fully online with optional in-person for hybrid clients." },
+const socialMetrics = [
+  { value: 100, suffix: "+", lbl: "Transformations" },
+  { value: 18, suffix: "+", lbl: "Years Experience" },
+  { value: 6, suffix: "+", lbl: "Countries Served" },
+  { value: 95, suffix: "%", lbl: "Client Satisfaction" },
 ];
 
-const formFields = [
-  { id: "fullName", label: "Full Name", type: "text" },
-  { id: "age", label: "Age", type: "number" },
-  { id: "gender", label: "Gender", type: "select", options: ["", "Male", "Female", "Non-binary", "Prefer not to say"] },
-  { id: "currentWeight", label: "Current Weight (kg)", type: "text" },
-  { id: "goalWeight", label: "Goal Weight (kg)", type: "text" },
-  { id: "occupation", label: "Occupation", type: "text" },
-  { id: "city", label: "City / Country", type: "text" },
-  { id: "phone", label: "Phone Number", type: "tel" },
-  { id: "email", label: "Email", type: "email" },
-  { id: "goal", label: "What is your primary fitness goal?", type: "text" },
-  { id: "challenge", label: "Biggest Challenge Right Now", type: "textarea", wide: true },
-  { id: "why", label: "Why do you want to transform now?", type: "textarea", wide: true },
+const faqs = [
+  { q: "How is Athlix different from a normal gym or diet plan?", a: "Athlix is not a downloadable plan — it is a coaching relationship. We combine personalized programming, weekly accountability, and lifestyle design to produce results that actually last." },
+  { q: "What is the Athlix Coaching Method?", a: "A dynamic three-stage framework — Reset, Rebuild, Rise — that adapts as your body, lifestyle, and goals evolve. The process is never fixed; it changes with your progress." },
+  { q: "Do I need gym access to start?", a: "No. Your program is built around your access — home, hotel, or full gym — based on your training history, equipment, and goals." },
+  { q: "How does Hybrid Coaching work?", a: "Coach Abhishek designs your overall strategy personally. The Athlix Assistant Team handles daily follow-ups, accountability, and support so nothing falls through the cracks." },
+  { q: "Is Athlix beginner friendly?", a: "Yes. The Reset stage is designed to help beginners build awareness and consistency before intensity increases. Every plan is scaled to your starting point." },
+  { q: "How long does a transformation take?", a: "Most clients see meaningful change within 8–16 weeks of consistent execution. A complete, sustainable transformation is typically a 6–12 month journey." },
+  { q: "Do you work with international clients?", a: "Yes. Athlix coaches clients across 6 countries — fully online, with optional in-person support for hybrid clients." },
+  { q: "What happens after I apply?", a: "We personally review your application, invite the best-fit applicants to a consultation, and align on goals before building your personalized roadmap." },
 ];
 
-/* ===================== Hooks ===================== */
+/* =====================================================================
+   Motion helpers
+   ===================================================================== */
 
-function useReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll(".reveal");
-    if (!("IntersectionObserver" in window) || !els.length) {
-      els.forEach((el) => el.classList.add("in"));
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in");
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
+function Reveal({ children, delay = 0, y = 26, className, as = "div" }) {
+  const reduce = useReducedMotion();
+  const MotionTag = motion[as] || motion.div;
+  return (
+    <MotionTag
+      className={className}
+      initial={reduce ? false : { opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
+    >
+      {children}
+    </MotionTag>
+  );
 }
 
-function useScrolled() {
+function SectionHead({ eyebrow, title, lede, align = "center" }) {
+  return (
+    <Reveal className={`section-head ${align === "left" ? "left" : ""}`}>
+      {eyebrow && <p className={`eyebrow ${align === "center" ? "center" : ""}`}>{eyebrow}</p>}
+      <h2 className="section-title">{title}</h2>
+      {lede && <p className="section-lede">{lede}</p>}
+    </Reveal>
+  );
+}
+
+/* =====================================================================
+   Header + theme toggle
+   ===================================================================== */
+
+const navLinks = [
+  { href: "#transformations", label: "Transformations" },
+  { href: "#method", label: "Method" },
+  { href: "#pathways", label: "Pathways" },
+  { href: "#coach", label: "Coach" },
+  { href: "#testimonials", label: "Testimonials" },
+  { href: "#faq", label: "FAQ" },
+];
+
+function Logo() {
+  return (
+    <a href="#top" className="logo-mark" aria-label="Athlix home">
+      ATH<span className="accent">LIX</span>
+    </a>
+  );
+}
+
+function ThemeToggle() {
+  const { preference, setTheme } = useTheme();
+  const options = [
+    { key: "light", icon: <Icon.Sun />, label: "Light theme" },
+    { key: "auto", icon: <Icon.Auto />, label: "Automatic theme" },
+    { key: "dark", icon: <Icon.Moon />, label: "Dark theme" },
+  ];
+  return (
+    <div className="theme-toggle" role="group" aria-label="Theme">
+      {options.map((o) => (
+        <button
+          key={o.key}
+          type="button"
+          className={preference === o.key ? "active" : ""}
+          aria-label={o.label}
+          aria-pressed={preference === o.key}
+          onClick={() => setTheme(o.key)}
+        >
+          {o.icon}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return scrolled;
-}
-
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
-      setProgress(Math.min(100, Math.max(0, scrolled * 100)));
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-  return progress;
-}
-
-/* ===================== Icons ===================== */
-
-const Icon = {
-  Arrow: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
-  ),
-  ArrowsH: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="8 7 3 12 8 17" />
-      <polyline points="16 7 21 12 16 17" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-    </svg>
-  ),
-  Star: () => (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  ),
-  Mail: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  ),
-  Phone: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-    </svg>
-  ),
-  Instagram: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  ),
-  YouTube: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-    </svg>
-  ),
-  Sparkle: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66 4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66 4.24-4.24" />
-    </svg>
-  ),
-  Shield: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  ),
-};
-
-/* ===================== Reusable UI ===================== */
-
-function Logo() {
-  return (
-    <a href="#top" className="logo-mark" aria-label="Athlix home">
-      <span>ATH</span>
-      <span>LIX</span>
-    </a>
-  );
-}
-
-function SectionHeading({ eyebrow, title, description, align = "center" }) {
-  return (
-    <div className={`section-heading ${align === "left" ? "section-heading-left" : ""}`}>
-      {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-      <h2 className="section-title">{title}</h2>
-      {description && <p className="section-lede">{description}</p>}
-    </div>
-  );
-}
-
-function CheckList({ items, variant = "check" }) {
-  return (
-    <ul className={`check-list ${variant === "x" ? "x-list" : ""}`}>
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
-
-function CTAGroup({ primaryHref = "#apply", primaryLabel = "Apply For Coaching", secondaryHref = "#transformations", secondaryLabel = "View Transformations" }) {
-  return (
-    <div className="cta-row">
-      <a href={primaryHref} className="btn btn-primary btn-lg">
-        {primaryLabel}
-        <Icon.Arrow />
-      </a>
-      <a href={secondaryHref} className="btn btn-secondary btn-lg">{secondaryLabel}</a>
-    </div>
-  );
-}
-
-/* ===================== Before / After Slider ===================== */
-
-function BeforeAfter({ before, after, alt, hint = "Drag to compare" }) {
-  const [pos, setPos] = useState(50);
-  const [dragging, setDragging] = useState(false);
-  const [hideHint, setHideHint] = useState(false);
-  const [wrap, setWrap] = useState(null);
-
-  const setFromClientX = useCallback((clientX) => {
-    if (!wrap) return;
-    const rect = wrap.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const pct = Math.min(100, Math.max(0, (x / rect.width) * 100));
-    setPos(pct);
-    if (!hideHint) setHideHint(true);
-  }, [wrap, hideHint]);
 
   useEffect(() => {
-    if (!dragging) return;
-    const onMove = (e) => {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      setFromClientX(clientX);
-    };
-    const onUp = () => setDragging(false);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    window.addEventListener("touchmove", onMove, { passive: true });
-    window.addEventListener("touchend", onUp);
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("touchmove", onMove);
-      window.removeEventListener("touchend", onUp);
-    };
-  }, [dragging, setFromClientX]);
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
-  return (
-    <div
-      className="ba-wrap"
-      ref={setWrap}
-      onMouseDown={(e) => { setDragging(true); setFromClientX(e.clientX); }}
-      onTouchStart={(e) => { setDragging(true); setFromClientX(e.touches[0].clientX); }}
-      role="slider"
-      aria-label="Drag to compare before and after"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={Math.round(pos)}
-    >
-      <img src={after} alt={`${alt} — after transformation`} className="ba-img after" loading="lazy" draggable="false" />
-      <div style={{ position: "absolute", inset: 0, width: `${pos}%`, overflow: "hidden" }}>
-        <img src={before} alt={`${alt} — before transformation`} className="ba-img" loading="lazy" draggable="false" style={{ width: wrap ? `${wrap.getBoundingClientRect().width}px` : "100%", maxWidth: "none" }} />
-      </div>
-      <div className="ba-handle" style={{ left: `calc(${pos}% - 1px)` }} aria-hidden="true">
-        <div className="ba-knob"><Icon.ArrowsH /></div>
-      </div>
-      <span className="ba-label left">Before</span>
-      <span className="ba-label right">After</span>
-      <span className={`ba-hint ${hideHint ? "hide" : ""}`}>{hint}</span>
-    </div>
-  );
-}
-
-/* ===================== Header ===================== */
-
-function Header() {
-  const scrolled = useScrolled();
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
   return (
     <>
       <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
         <Logo />
-        <nav className="primary-nav" aria-label="Primary navigation">
-          <a href="#transformations">Transformations</a>
-          <a href="#method">Method</a>
-          <a href="#coaching">Coaching</a>
-          <a href="#coach">Coach</a>
-          <a href="#faq">FAQ</a>
+        <nav className="nav-center" aria-label="Primary">
+          {navLinks.map((l) => (
+            <a key={l.href} href={l.href}>{l.label}</a>
+          ))}
         </nav>
-        <a className="btn btn-primary header-cta" href="#apply">Apply</a>
-        <button className="menu-btn" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-      </header>
-      <div className={`mobile-menu ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Mobile navigation">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Logo />
-          <button className="menu-btn" aria-label="Close menu" onClick={close}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <div className="nav-right">
+          <ThemeToggle />
+          <a className="btn btn-primary btn-sm header-cta" href="#apply">Apply For Coaching</a>
+          <button className="menu-btn" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
+            <Icon.Menu />
           </button>
         </div>
-        <a href="#transformations" onClick={close}>Transformations</a>
-        <a href="#method" onClick={close}>Method</a>
-        <a href="#coaching" onClick={close}>Coaching</a>
-        <a href="#coach" onClick={close}>Coach</a>
-        <a href="#faq" onClick={close}>FAQ</a>
-        <a className="btn btn-primary btn-lg" style={{ marginTop: 16 }} href="#apply" onClick={close}>Apply For Coaching</a>
+      </header>
+
+      <div className={`mobile-menu ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu">
+        <div className="mobile-menu-top">
+          <Logo />
+          <button className="menu-btn" aria-label="Close menu" onClick={() => setOpen(false)}>
+            <Icon.X />
+          </button>
+        </div>
+        <nav>
+          {navLinks.map((l) => (
+            <a key={l.href} href={l.href} onClick={() => setOpen(false)}>{l.label}</a>
+          ))}
+        </nav>
+        <a className="btn btn-primary btn-lg btn-block" href="#apply" onClick={() => setOpen(false)}>
+          Apply For Coaching <Icon.Arrow />
+        </a>
       </div>
     </>
   );
 }
 
-/* ===================== Hero ===================== */
+/* =====================================================================
+   Hero
+   ===================================================================== */
 
 function Hero() {
+  const reduce = useReducedMotion();
   return (
-    <section id="top" className="hero section-dark">
-      <Header />
-      <div className="hero-grid shell">
-        <div className="reveal" data-delay="1">
-          <span className="hero-eyebrow">
-            <span className="dot" />
-            Premium transformation coaching
-          </span>
-          <h1 className="hero-title">
-            Stop Starting Over.
-            <span className="gradient-text">Start Transforming.</span>
-          </h1>
-          <p className="hero-subheadline">
-            Athlix helps busy professionals lose fat, build confidence, and achieve sustainable results through
-            personalized coaching, daily accountability, and our proven transformation system.
-          </p>
-          <CTAGroup />
-          <div className="trust-row" aria-label="Why Athlix">
-            {trustIndicators.map((t) => (
-              <div key={t.label} className="trust-pill">
-                <span className="ico" aria-hidden="true">{t.icon}</span>
-                {t.label}
+    <section id="top" className="hero">
+      <div className="hero-bg" aria-hidden="true" />
+      <span className="hero-glow a" aria-hidden="true" />
+      <span className="hero-glow b" aria-hidden="true" />
+
+      <div className="shell hero-grid">
+        <div>
+          <Reveal>
+            <span className="hero-badge">
+              <span className="pip" /> Premium Transformation Coaching
+            </span>
+          </Reveal>
+          <Reveal delay={0.06}>
+            <h1 className="hero-title">
+              <span className="line">Transform Your Body.</span>
+              <span className="line">Rebuild Your Lifestyle.</span>
+              <span className="line dim">Create Results That Last.</span>
+            </h1>
+          </Reveal>
+          <Reveal delay={0.12}>
+            <p className="hero-sub">
+              Personalized transformation coaching built around accountability, nutrition,
+              training, and sustainable behavior change.
+            </p>
+          </Reveal>
+          <Reveal delay={0.18}>
+            <div className="cta-row">
+              <a className="btn btn-primary btn-lg" href="#apply">Apply For Coaching <Icon.Arrow /></a>
+              <a className="btn btn-secondary btn-lg" href="#apply">Book Consultation</a>
+            </div>
+          </Reveal>
+        </div>
+
+        <motion.div
+          className="hero-visual"
+          initial={reduce ? false : { opacity: 0, scale: 0.96, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+        >
+          <div className="hero-photo">
+            <img src={heroImage} alt="Athlix transformation coaching client" fetchpriority="high" />
+          </div>
+          <motion.div
+            className="hero-float tl"
+            initial={reduce ? false : { opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            <span className="pulse" />
+            <div>
+              <div className="ig">@coachavk</div>
+              <div className="stat-label">Verified Coach</div>
+            </div>
+            <img src={blueTick} alt="" width="18" height="18" />
+          </motion.div>
+          <motion.div
+            className="hero-float br"
+            initial={reduce ? false : { opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.62, duration: 0.6 }}
+          >
+            <div className="stat-num">100+</div>
+            <div className="stat-label">Real transformations<br />across 6 countries</div>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      <div className="shell">
+        <Reveal delay={0.2}>
+          <div className="trust-bar">
+            {trustMetrics.map((m) => (
+              <div className="trust-cell" key={m.lbl}>
+                <div className="num">{m.num}</div>
+                <div className="lbl">{m.lbl}</div>
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="hero-visual reveal" data-delay="2">
-          <div className="hero-image-card">
-            <img src={heroImage} alt="Athlix transformation coaching client" />
-            <div className="corner-pill top">
-              <span className="badge-dot" />
-              RRR Method
-            </div>
-            <div className="corner-pill bottom">
-              <strong>100+ transformations</strong>
-              <span>Built through coaching and accountability</span>
-            </div>
-          </div>
-          <a className="hero-stat" href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer" aria-label="Follow Coach Abhishek on Instagram">
-            <img src={instagramIcon} alt="" />
-            <span>@coachavk</span>
-            <img src={blueTick} alt="Verified" className="verified" />
-          </a>
-        </div>
-      </div>
-
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee-track">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i}>
-              <span className="dot" />
-              {item}
-            </span>
-          ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* ===================== Transformations ===================== */
+/* =====================================================================
+   Transformations
+   ===================================================================== */
 
 function Transformations() {
   return (
-    <section id="transformations" className="section transformations">
+    <section id="transformations" className="section">
       <div className="shell">
-        <SectionHeading
-          eyebrow="Client proof"
-          title={<>Real Transformations. <span className="gradient-text-blue">Real Results.</span></>}
-          description="See how Athlix clients transformed their bodies, confidence, and lifestyles — and kept the results."
+        <SectionHead
+          eyebrow="Real Client Proof"
+          title={<>Real People. <span className="accent">Real Transformations.</span></>}
+          lede="See how Athlix clients reshaped their bodies, habits, and confidence — and kept the results for life."
         />
 
-        <div className="featured-grid">
-          {featuredTransformations.map((client, index) => (
-            <article className="transformation-card reveal" data-delay={(index + 1).toString()} key={client.name}>
-              <BeforeAfter
-                before={client.before}
-                after={client.after}
-                alt={`${client.name} Athlix client transformation`}
-                hint="Drag to compare"
-              />
-              <div className="transformation-content">
-                <h3>{client.name}</h3>
-                <p className="role">{client.occupation}</p>
-                <div className="result-meta">
-                  <span className="dark">
-                    <Icon.Arrow /> {client.result}
-                  </span>
-                  <span>{client.timeline}</span>
-                </div>
-                <blockquote>“{client.quote}”</blockquote>
+        {/* Desktop / tablet masonry */}
+        <div className="transform-masonry">
+          {transformations.map((t, i) => (
+            <Reveal key={i} delay={(i % 3) * 0.08} className="t-card">
+              <div className="t-card-media">
+                <img src={t.img} alt={`Athlix client transformation — ${t.goal}`} loading="lazy" />
+                <span className="t-tag"><Icon.Star style={{ width: 12, height: 12, color: "#f5a623" }} /> {t.duration}</span>
               </div>
-            </article>
+              <div className="t-card-body">
+                <div className="t-card-meta">
+                  <span className="t-chip">{t.goal}</span>
+                  <span className="t-chip neutral">{t.duration}</span>
+                </div>
+                <blockquote>“{t.quote}”</blockquote>
+              </div>
+            </Reveal>
           ))}
         </div>
 
-        <div className="transformation-strip" aria-label="More Athlix transformations">
+        {/* Mobile carousel */}
+        <div className="t-carousel">
           <Swiper
             modules={[Autoplay, Pagination]}
-            autoplay={{ delay: 2400, disableOnInteraction: false, pauseOnMouseEnter: true }}
-            breakpoints={{
-              0: { slidesPerView: 1.15, spaceBetween: 14 },
-              700: { slidesPerView: 2.3, spaceBetween: 18 },
-              1100: { slidesPerView: 4, spaceBetween: 22 },
-            }}
-            loop
+            autoplay={{ delay: 2600, disableOnInteraction: false }}
             pagination={{ clickable: true }}
+            spaceBetween={16}
+            slidesPerView={1.15}
+            loop
           >
-            {transformationImages.map((image, index) => (
-              <SwiperSlide key={image}>
-                <div className="t-strip-card">
-                  <img src={image} alt={`Athlix transformation result ${index + 1}`} loading="lazy" />
-                  <span className="t-strip-tag">Result #{index + 1}</span>
+            {allTransformImages.map((img, i) => (
+              <SwiperSlide key={i}>
+                <div className="t-slide">
+                  <img src={img} alt={`Athlix transformation result ${i + 1}`} loading="lazy" />
                 </div>
               </SwiperSlide>
             ))}
@@ -608,70 +461,79 @@ function Transformations() {
   );
 }
 
-/* ===================== Failure / Difference ===================== */
+/* =====================================================================
+   Problem vs Solution
+   ===================================================================== */
 
-function FailureDifference() {
+function ProblemSolution() {
   return (
-    <section className="section split-section">
-      <div className="shell split-grid">
-        <article className="split-card negative reveal" data-delay="1">
-          <SectionHeading
-            eyebrow="The real obstacle"
-            title={<>Why Most Fat Loss <br />Attempts Fail</>}
-            align="left"
-          />
-          <p className="section-lede" style={{ marginLeft: 0, textAlign: "left" }}>
-            Most plans fail not because of effort, but because of structure. The five problems below repeat across almost every client we meet.
-          </p>
-          <CheckList items={failurePoints} variant="x" />
-        </article>
-
-        <article className="split-card solution reveal" data-delay="2">
-          <SectionHeading
-            eyebrow="The Athlix Difference"
-            title={<>Coaching Built Around <br />Your Real Life</>}
-            align="left"
-          />
-          <p className="section-lede" style={{ marginLeft: 0, textAlign: "left" }}>
-            Athlix replaces guesswork with structure, feedback, and accountability, so transformation becomes repeatable
-            instead of dependent on short bursts of motivation.
-          </p>
-          <CheckList items={differencePoints} />
-          <a className="text-link" href="#apply">
-            Apply For Coaching <Icon.Arrow />
-          </a>
-        </article>
+    <section className="section bg-subtle">
+      <div className="shell">
+        <SectionHead
+          eyebrow="The Real Difference"
+          title={<>Why Most Attempts Fail — <span className="accent">And Why Clients Succeed</span></>}
+          lede="Transformation rarely fails from lack of effort. It fails from lack of structure, accountability, and a system built around real life."
+        />
+        <div className="compare-grid">
+          <Reveal className="compare-card problem">
+            <h3>Why Most Fat Loss Attempts Fail</h3>
+            <ul className="compare-list">
+              {problems.map((p) => (
+                <li key={p}>
+                  <span className="compare-icon x"><Icon.X /></span>
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={0.1} className="compare-card solution">
+            <h3>Why Athlix Clients Succeed</h3>
+            <ul className="compare-list">
+              {solutions.map((s) => (
+                <li key={s}>
+                  <span className="compare-icon check"><Icon.Check /></span>
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
       </div>
     </section>
   );
 }
 
-/* ===================== RRR Method ===================== */
+/* =====================================================================
+   The Athlix Coaching Method
+   ===================================================================== */
 
-function RRRMethod() {
+function CoachingMethod() {
   return (
-    <section id="method" className="section method section-dark">
-      <span className="orb blue" style={{ width: 360, height: 360, top: -120, left: -120 }} />
-      <span className="orb deep" style={{ width: 420, height: 420, bottom: -160, right: -120 }} />
-      <div className="shell" style={{ position: "relative" }}>
-        <SectionHeading
-          eyebrow="Transformation framework"
-          title={<>The Athlix <span className="gradient-text">RRR Method</span></>}
-          description="The proven framework behind every successful transformation. Three stages, one system, real results."
+    <section id="method" className="section">
+      <div className="shell">
+        <SectionHead
+          eyebrow="The Framework"
+          title={<>The Athlix <span className="accent">Coaching Method</span></>}
+          lede="A dynamic coaching framework that adapts as your body, lifestyle, and goals evolve."
         />
+        <p className="method-supporting">
+          The process is not fixed. Every stage evolves based on progress, challenges, lifestyle
+          demands, and long-term transformation goals.
+        </p>
+
         <div className="timeline">
-          {rrrStages.map((stage, index) => (
-            <article className="timeline-card reveal" data-delay={(index + 1).toString()} key={stage.title}>
-              <div className="stage-num">STAGE {stage.stage}</div>
+          {methodStages.map((stage, i) => (
+            <Reveal key={stage.title} delay={i * 0.12} className="stage-card">
+              <div className="stage-node">{String(i + 1).padStart(2, "0")}</div>
+              <div className="stage-step">{stage.step}</div>
               <h3>{stage.title}</h3>
-              <p>{stage.description}</p>
-              <span className="detail">{stage.detail}</span>
-              <div className="feature-row">
-                {stage.features.map((f) => (
-                  <span key={f}>{f}</span>
+              <p className="stage-desc">{stage.desc}</p>
+              <ul className="stage-points">
+                {stage.points.map((pt) => (
+                  <li key={pt}>{pt}</li>
                 ))}
-              </div>
-            </article>
+              </ul>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -679,34 +541,35 @@ function RRRMethod() {
   );
 }
 
-/* ===================== Coaching Options ===================== */
+/* =====================================================================
+   Coaching Pathways
+   ===================================================================== */
 
-function CoachingOptions() {
+function Pathways() {
   return (
-    <section id="coaching" className="section coaching">
+    <section id="pathways" className="section bg-subtle">
       <div className="shell">
-        <SectionHeading
-          eyebrow="Personalized paths"
-          title={<>Choose Your <span className="gradient-text-blue">Coaching Experience</span></>}
-          description="Every experience is designed to move you from uncertainty to execution with the right level of support."
+        <SectionHead
+          eyebrow="Coaching Pathways"
+          title={<>Choose Your <span className="accent">Coaching Pathway</span></>}
+          lede="Every pathway is built to move you from uncertainty to execution with the right level of expert support."
         />
-        <div className="coaching-grid">
-          {coachingOptions.map((option) => (
-            <article className={`coaching-card ${option.highlighted ? "highlighted" : ""} reveal`} key={option.title}>
-              {option.badge && <span className="badge">★ {option.badge}</span>}
-              <h3>{option.title}</h3>
-              <p>{option.description}</p>
-              <CheckList items={option.items} />
-              {option.meta && (
-                <div className="coaching-meta">
-                  <Icon.Sparkle />
-                  {option.meta}
-                </div>
-              )}
-              <a className={option.highlighted ? "btn btn-dark" : "btn btn-ghost"} href="#apply">
+        <div className="pathway-grid">
+          {pathways.map((p) => (
+            <Reveal key={p.title} className={`pathway-card ${p.featured ? "featured" : ""}`}>
+              {p.badge && <span className="pathway-badge"><Icon.Star style={{ width: 12, height: 12 }} /> {p.badge}</span>}
+              <span className="pathway-icon">{p.icon}</span>
+              <h3>{p.title}</h3>
+              <p className="pathway-desc">{p.desc}</p>
+              <ul className="pathway-list">
+                {p.items.map((it) => (
+                  <li key={it}><Icon.Check /> {it}</li>
+                ))}
+              </ul>
+              <a className={`btn btn-lg ${p.featured ? "btn-accent" : "btn-ghost"}`} href="#apply">
                 Apply For Coaching <Icon.Arrow />
               </a>
-            </article>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -714,184 +577,90 @@ function CoachingOptions() {
   );
 }
 
-/* ===================== Coach Abhishek ===================== */
+/* =====================================================================
+   Coach Abhishek
+   ===================================================================== */
 
 function Coach() {
   return (
-    <section id="coach" className="section coach-section">
+    <section id="coach" className="section">
       <div className="shell">
-        <SectionHeading
-          eyebrow="Founder led coaching"
-          title={<>Meet <span className="gradient-text-blue">Coach Abhishek</span></>}
-          description="The expert behind every Athlix transformation — leading a premium, system-driven coaching practice for international clients."
-        />
         <div className="coach-grid">
-          <div className="coach-image reveal" data-delay="1">
-            <img src={coachImage} alt="Coach Abhishek, Athlix founder and transformation coach" loading="lazy" />
-            <div className="coach-stat top">
-              <strong>18+ Years</strong>
-              <span>Coaching experience</span>
+          <Reveal className="coach-photo">
+            <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
+            <div className="float">
+              <div>
+                <strong>18+</strong>
+                <span>Years coaching</span>
+              </div>
+              <div>
+                <strong>100+</strong>
+                <span>Clients transformed</span>
+              </div>
             </div>
-            <div className="coach-stat bot">
-              <strong>100+ Clients</strong>
-              <span>Transformed globally</span>
-            </div>
-          </div>
+          </Reveal>
 
-          <div className="coach-copy reveal" data-delay="2">
-            <SectionHeading
-              eyebrow="The Athlix founder"
-              title="Coaching designed for real life"
-              align="left"
-            />
+          <Reveal delay={0.1} className="coach-copy">
+            <p className="eyebrow">Founder-Led Coaching</p>
+            <h2 className="section-title">Meet Coach Abhishek</h2>
             <p>
-              Coach Abhishek leads Athlix as a premium transformation coaching company for people who want sustainable fat
-              loss, stronger bodies, better habits, and higher confidence — without extreme short-term approaches that
-              always seem to fail.
+              Coach Abhishek leads Athlix as a premium transformation coaching practice for people
+              who want sustainable fat loss, stronger bodies, and higher confidence — without the
+              extreme, short-term approaches that always fail.
             </p>
             <p>
-              With 18+ years of coaching, international certifications, and a science-driven framework, he has helped
-              professionals, founders, and athletes transform their bodies and their relationship with food, training,
-              and discipline.
+              With 18+ years of coaching, international certifications, and a science-driven method,
+              he has helped professionals, founders, and athletes across 6 countries transform their
+              bodies and their relationship with training, food, and discipline.
             </p>
 
-            <div className="credential-grid">
+            <div className="coach-stats">
               {coachStats.map((s) => (
-                <div key={s.label}>
-                  <strong>{s.value}</strong>
-                  <span>{s.label}</span>
+                <div key={s.lbl}>
+                  <div className="num">{s.num}</div>
+                  <div className="lbl">{s.lbl}</div>
                 </div>
               ))}
             </div>
 
-            <div className="badge-row">
-              {coachBadges.map((b) => (
-                <span key={b}>
-                  <Icon.Shield /> {b}
-                </span>
+            <div className="spec-row">
+              {specializations.map((sp) => (
+                <span className="spec-chip" key={sp}><Icon.Shield /> {sp}</span>
               ))}
             </div>
 
-            <div className="credentials-strip">
-              <h4>Specializations</h4>
-              <ul>
-                <li>Sustainable fat loss & body recomposition</li>
-                <li>Habit-based lifestyle coaching</li>
-                <li>Strength training & performance systems</li>
-                <li>Accountability and progress review frameworks</li>
-              </ul>
-            </div>
-
-            <div style={{ marginTop: 22 }}>
-              <a className="btn btn-primary btn-lg" href="#apply">
-                Work With Coach Abhishek <Icon.Arrow />
-              </a>
-            </div>
-          </div>
+            <a className="btn btn-primary btn-lg" href="#apply">Work With Coach Abhishek <Icon.Arrow /></a>
+          </Reveal>
         </div>
       </div>
     </section>
   );
 }
 
-/* ===================== Testimonials ===================== */
+/* =====================================================================
+   Certifications wall
+   ===================================================================== */
 
-function Testimonials() {
+function Certifications() {
   return (
-    <section className="section testimonials section-dark">
-      <span className="orb deep" style={{ width: 320, height: 320, top: -100, right: -120 }} />
-      <div className="shell" style={{ position: "relative" }}>
-        <SectionHeading
-          eyebrow="Social proof"
-          title={<>Trusted By Clients Who <br />Wanted Real Change</>}
-          description="Real reviews, real results, real people. Hear directly from the clients who trusted the Athlix system."
-        />
-        <div className="testimonial-layout">
-          <div className="review-imgs">
-            <img src={reviewOne} alt="Athlix client video review screenshot 1" loading="lazy" />
-            <img src={reviewTwo} alt="Athlix client video review screenshot 2" loading="lazy" />
-            <img src={reviewThree} alt="Athlix client video review screenshot 3" loading="lazy" />
-          </div>
-          <Swiper
-            className="testimonial-carousel"
-            modules={[Autoplay, Pagination]}
-            autoplay={{ delay: 3800, disableOnInteraction: false, pauseOnMouseEnter: true }}
-            pagination={{ clickable: true }}
-            loop
-          >
-            {testimonials.map((t) => (
-              <SwiperSlide key={t.name}>
-                <article className="testimonial-card">
-                  <span className="tag">{t.type}</span>
-                  <div className="stars" aria-label="5 out of 5 stars">
-                    {Array.from({ length: 5 }).map((_, i) => <Icon.Star key={i} />)}
-                  </div>
-                  <blockquote>“{t.quote}”</blockquote>
-                  <div className="author">
-                    <div className="avatar" aria-hidden="true">{t.initials}</div>
-                    <div>
-                      <strong>{t.name}</strong>
-                      <span>{t.role}</span>
-                    </div>
-                  </div>
-                </article>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ===================== Comparison ===================== */
-
-function Comparison() {
-  return (
-    <section className="section comparison-section">
+    <section className="section bg-subtle">
       <div className="shell">
-        <SectionHeading
-          eyebrow="Side by side"
-          title={<>Why Clients <span className="gradient-text-blue">Choose Athlix</span></>}
-          description="A side-by-side look at the difference between generic plans and a premium transformation system."
+        <SectionHead
+          eyebrow="Credentials & Certifications"
+          title={<>Backed By <span className="accent">World-Class Credentials</span></>}
+          lede="Coaching grounded in internationally recognized education, certification, and accreditation."
         />
-        <div className="comparison-grid">
-          <article className="comparison-card reveal" data-delay="1">
-            <span className="label">Others</span>
-            <h3>The Generic Approach</h3>
-            <CheckList items={others} variant="x" />
-          </article>
-          <article className="comparison-card premium reveal" data-delay="2">
-            <span className="label">Athlix</span>
-            <h3>The Transformation System</h3>
-            <CheckList items={athlix} />
-            <a className="btn btn-secondary btn-lg" href="#apply" style={{ marginTop: 22 }}>
-              Apply For Coaching <Icon.Arrow />
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ===================== FAQ ===================== */
-
-function FAQ() {
-  return (
-    <section id="faq" className="section faq-section">
-      <div className="shell faq-shell">
-        <SectionHeading
-          eyebrow="Questions"
-          title="Frequently Asked"
-          description="Clear, honest answers before you apply for coaching."
-        />
-        <div className="faq-list">
-          {faqItems.map((item, i) => (
-            <details className="faq-item reveal" data-delay={(((i % 4) + 1)).toString()} key={item.question}>
-              <summary>{item.question}</summary>
-              <p className="answer">{item.answer}</p>
-            </details>
+        <div className="cert-wall">
+          {certifications.map((c, i) => (
+            <Reveal key={c.name} delay={(i % 4) * 0.06} className="cert-tile">
+              <div className={`cert-logo ${c.plate ? "plate" : ""}`}>
+                <img src={c.logo} alt={`${c.full} certification logo`} loading="lazy" />
+              </div>
+              <div>
+                <div className="cert-name">{c.name}</div>
+              </div>
+              <div className="cert-year">{c.year}</div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -899,164 +668,465 @@ function FAQ() {
   );
 }
 
-/* ===================== Application Form ===================== */
+/* =====================================================================
+   Testimonials (auto-scrolling marquee)
+   ===================================================================== */
+
+function TestimonialCard({ t }) {
+  return (
+    <div className="tst-card">
+      <span className="tst-tag">{t.type}</span>
+      <div className="tst-stars" aria-label="5 out of 5">
+        {Array.from({ length: 5 }).map((_, i) => <Icon.Star key={i} />)}
+      </div>
+      <blockquote>“{t.quote}”</blockquote>
+      <div className="tst-author">
+        <div className="tst-avatar">
+          {t.photo ? <img src={t.photo} alt={t.name} loading="lazy" /> : t.initials}
+        </div>
+        <div>
+          <strong>{t.name}</strong>
+          <span>{t.role}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Testimonials() {
+  const loop = [...testimonials, ...testimonials];
+  return (
+    <section id="testimonials" className="section">
+      <div className="shell">
+        <SectionHead
+          eyebrow="Client Voices"
+          title={<>Trusted By People Who <span className="accent">Wanted Real Change</span></>}
+          lede="Real reviews from real clients who committed to the Athlix system — and changed their lives."
+        />
+      </div>
+      <div className="tst-track-wrap">
+        <div className="tst-track">
+          {loop.map((t, i) => (
+            <TestimonialCard key={i} t={t} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+   Social proof (animated counters)
+   ===================================================================== */
+
+function useCountUp(target, run, duration = 1600) {
+  const [val, setVal] = useState(0);
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (!run || reduce) return undefined;
+    let raf;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(eased * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run, target, duration, reduce]);
+  return reduce ? target : val;
+}
+
+function Metric({ m, run }) {
+  const val = useCountUp(m.value, run);
+  return (
+    <div className="metric">
+      <div className="num">{val}<span className="suffix">{m.suffix}</span></div>
+      <div className="lbl">{m.lbl}</div>
+    </div>
+  );
+}
+
+function SocialProof() {
+  const ref = useRef(null);
+  // If IntersectionObserver is unavailable, run counters immediately.
+  const [run, setRun] = useState(() => typeof window !== "undefined" && !("IntersectionObserver" in window));
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return undefined;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setRun(true); io.disconnect(); } },
+      { threshold: 0.3 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <section className="section bg-subtle">
+      <div className="shell" ref={ref}>
+        <div className="metrics-grid">
+          {socialMetrics.map((m) => (
+            <Metric key={m.lbl} m={m} run={run} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+   FAQ
+   ===================================================================== */
+
+function FAQItem({ item, isOpen, onToggle }) {
+  return (
+    <div className={`faq-item ${isOpen ? "open" : ""}`}>
+      <button className="faq-q" aria-expanded={isOpen} onClick={onToggle}>
+        {item.q}
+        <span className="faq-icon"><Icon.Plus /></span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            className="faq-a"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="faq-a-inner">{item.a}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function FAQ() {
+  const [open, setOpen] = useState(0);
+  return (
+    <section id="faq" className="section">
+      <div className="shell faq-shell">
+        <SectionHead
+          eyebrow="Questions"
+          title="Frequently Asked Questions"
+          lede="Clear, honest answers before you apply for coaching."
+        />
+        <Reveal>
+          <div>
+            {faqs.map((f, i) => (
+              <FAQItem key={f.q} item={f} isOpen={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+   Application form
+   ===================================================================== */
+
+// Optional CRM / Google Sheets endpoint. Set VITE_FORM_ENDPOINT to enable a
+// real POST (e.g. a Google Apps Script Web App, Formspree, or your CRM webhook).
+const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || "";
+
+const goalOptions = ["Fat Loss", "Body Recomposition", "Muscle Gain", "Lifestyle Transformation", "General Fitness"];
+const pathwayOptions = ["Online Coaching", "Offline Coaching", "Hybrid Coaching", "Not Sure Yet"];
+const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
+
+const initialForm = {
+  name: "", phone: "", email: "", age: "", gender: "",
+  currentWeight: "", goal: "", pathway: "", message: "",
+};
+
+function validate(values) {
+  const e = {};
+  if (!values.name.trim()) e.name = "Please enter your name";
+  if (!/^[+\d][\d\s-]{6,}$/.test(values.phone.trim())) e.phone = "Enter a valid phone number";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) e.email = "Enter a valid email";
+  if (!values.age || Number(values.age) < 14 || Number(values.age) > 99) e.age = "Enter a valid age";
+  if (!values.gender) e.gender = "Please select";
+  if (!values.currentWeight.trim()) e.currentWeight = "Required";
+  if (!values.goal) e.goal = "Please select a goal";
+  if (!values.pathway) e.pathway = "Please select a pathway";
+  return e;
+}
 
 function ApplicationForm() {
-  const [status, setStatus] = useState({ type: "", message: "" });
+  const [values, setValues] = useState(initialForm);
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const onSubmit = (e) => {
-    e.preventDefault();
+  const [done, setDone] = useState(false);
+  const [serverError, setServerError] = useState("");
+
+  const update = (key) => (ev) => {
+    setValues((v) => ({ ...v, [key]: ev.target.value }));
+    setErrors((er) => (er[key] ? { ...er, [key]: undefined } : er));
+  };
+
+  const onSubmit = async (ev) => {
+    ev.preventDefault();
+    setServerError("");
+    const errs = validate(values);
+    setErrors(errs);
+    if (Object.keys(errs).some((k) => errs[k])) {
+      const first = document.querySelector(".field.error input, .field.error select");
+      first?.focus();
+      return;
+    }
     setSubmitting(true);
-    setStatus({ type: "", message: "" });
-    setTimeout(() => {
+    try {
+      if (FORM_ENDPOINT) {
+        const res = await fetch(FORM_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...values, source: "athlix-website", submittedAt: new Date().toISOString() }),
+        });
+        if (!res.ok) throw new Error("Request failed");
+      } else {
+        // No backend configured yet — simulate the request so the UX is complete.
+        await new Promise((r) => setTimeout(r, 1100));
+      }
+      setDone(true);
+      setValues(initialForm);
+    } catch {
+      setServerError("Something went wrong. Please try again, or reach us on WhatsApp.");
+    } finally {
       setSubmitting(false);
-      setStatus({ type: "ok", message: "Application received. The Athlix team will personally review and reach out within 48 hours." });
-      e.target.reset();
-    }, 1100);
+    }
   };
 
   return (
-    <section id="apply" className="section application section-dark">
-      <span className="orb blue" style={{ width: 360, height: 360, top: -120, right: -120 }} />
-      <div className="shell application-grid" style={{ position: "relative" }}>
-        <div className="reveal" data-delay="1">
-          <SectionHeading
-            eyebrow="Start your transformation"
-            title={<>Apply For <span className="gradient-text">Coaching</span></>}
-            description="Tell us about your goals and our team will personally review your application and reach out within 48 hours."
-            align="left"
-          />
-          <div className="application-proof">
-            <strong>Applications are reviewed personally by the Athlix Team.</strong>
-            <span>The best-fit clients are invited to a private consultation to align on goals, plan, and the right coaching experience for them.</span>
-          </div>
-          <div className="application-proof" style={{ marginTop: 14 }}>
-            <strong>What happens next?</strong>
-            <span>1) We review your application within 48 hours. 2) A short alignment call. 3) You receive your personalized coaching roadmap.</span>
-          </div>
-        </div>
+    <section id="apply" className="section bg-subtle">
+      <div className="shell apply-grid">
+        <Reveal>
+          <p className="eyebrow">Start Your Transformation</p>
+          <h2 className="section-title">Apply For Coaching</h2>
+          <p className="section-lede" style={{ marginInline: 0 }}>
+            Tell us about your goals. Our team personally reviews every application and reaches out
+            within 48 hours to the best-fit applicants.
+          </p>
+          <ul className="apply-points">
+            <li><span className="step">1</span><div><strong>We review your application</strong><span>Personally evaluated within 48 hours.</span></div></li>
+            <li><span className="step">2</span><div><strong>A short alignment call</strong><span>We align on your goals and the right pathway.</span></div></li>
+            <li><span className="step">3</span><div><strong>Your personalized roadmap</strong><span>You receive a coaching plan built around your life.</span></div></li>
+          </ul>
+        </Reveal>
 
-        <form className="application-form reveal" data-delay="2" onSubmit={onSubmit} noValidate>
-          {formFields.map((field) => (
-            <label key={field.id} className={`field ${field.wide ? "field-wide" : ""}`}>
-              <span>{field.label}</span>
-              {field.type === "textarea" ? (
-                <textarea id={field.id} name={field.id} rows="4" placeholder={field.label} required />
-              ) : field.type === "select" ? (
-                <select id={field.id} name={field.id} required defaultValue="">
-                  <option value="" disabled>Select</option>
-                  {field.options.filter(Boolean).map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-              ) : (
-                <input id={field.id} name={field.id} type={field.type} placeholder={field.label} required />
-              )}
-            </label>
-          ))}
-          <button className="btn btn-primary btn-lg field-wide" type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit Application"} <Icon.Arrow />
-          </button>
-          {status.message && (
-            <div className={`form-status ${status.type}`} role="status">{status.message}</div>
-          )}
-        </form>
+        <Reveal delay={0.1} as="div">
+          <AnimatePresence mode="wait">
+            {done ? (
+              <motion.div
+                key="success"
+                className="apply-form"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="apply-success">
+                  <span className="check-circle"><Icon.Check /></span>
+                  <h3>Application Received</h3>
+                  <p>Thank you. The Athlix team will personally review your application and reach out within 48 hours.</p>
+                  <button className="btn btn-ghost" style={{ marginTop: 22 }} onClick={() => setDone(false)}>
+                    Submit another application
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.form
+                key="form"
+                className="apply-form"
+                onSubmit={onSubmit}
+                noValidate
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Field label="Full Name" id="name" error={errors.name}>
+                  <input id="name" type="text" value={values.name} onChange={update("name")} placeholder="Your name" autoComplete="name" />
+                </Field>
+                <Field label="Phone" id="phone" error={errors.phone}>
+                  <input id="phone" type="tel" value={values.phone} onChange={update("phone")} placeholder="+91 00000 00000" autoComplete="tel" />
+                </Field>
+                <Field label="Email" id="email" error={errors.email}>
+                  <input id="email" type="email" value={values.email} onChange={update("email")} placeholder="you@email.com" autoComplete="email" />
+                </Field>
+                <Field label="Age" id="age" error={errors.age}>
+                  <input id="age" type="number" min="14" max="99" value={values.age} onChange={update("age")} placeholder="28" />
+                </Field>
+                <Field label="Gender" id="gender" error={errors.gender}>
+                  <select id="gender" value={values.gender} onChange={update("gender")}>
+                    <option value="" disabled>Select</option>
+                    {genderOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </Field>
+                <Field label="Current Weight (kg)" id="currentWeight" error={errors.currentWeight}>
+                  <input id="currentWeight" type="text" value={values.currentWeight} onChange={update("currentWeight")} placeholder="e.g. 82" />
+                </Field>
+                <Field label="Primary Goal" id="goal" error={errors.goal}>
+                  <select id="goal" value={values.goal} onChange={update("goal")}>
+                    <option value="" disabled>Select</option>
+                    {goalOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </Field>
+                <Field label="Preferred Coaching Pathway" id="pathway" error={errors.pathway}>
+                  <select id="pathway" value={values.pathway} onChange={update("pathway")}>
+                    <option value="" disabled>Select</option>
+                    {pathwayOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </Field>
+                <Field label="Message (optional)" id="message" wide>
+                  <textarea id="message" rows="4" value={values.message} onChange={update("message")} placeholder="Tell us about your goals, challenges, and why you want to transform now." />
+                </Field>
+
+                {serverError && (
+                  <div className="form-status err" role="alert"><Icon.X /> {serverError}</div>
+                )}
+
+                <button className="btn btn-primary btn-lg btn-block field wide" type="submit" disabled={submitting}>
+                  {submitting ? <><span className="spinner" /> Submitting…</> : <>Submit Application <Icon.Arrow /></>}
+                </button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/* ===================== Footer ===================== */
+function Field({ label, id, error, wide, children }) {
+  return (
+    <div className={`field ${wide ? "wide" : ""} ${error ? "error" : ""}`}>
+      <label htmlFor={id}>{label}</label>
+      {children}
+      {error && <span className="err-msg">{error}</span>}
+    </div>
+  );
+}
+
+/* =====================================================================
+   Footer
+   ===================================================================== */
 
 function Footer() {
   return (
     <footer className="footer">
-      <div className="shell footer-grid">
-        <div>
-          <Logo />
-          <p>
-            Athlix is a premium international transformation coaching company. We help ambitious professionals lose fat,
-            build confidence, and master their lifestyle through personalized coaching and accountability.
-          </p>
-          <div className="footer-socials" aria-label="Social media">
-            <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer" aria-label="Instagram"><Icon.Instagram /></a>
-            <a href="#" aria-label="YouTube"><Icon.YouTube /></a>
-            <a href="mailto:hello@athlix.co" aria-label="Email"><Icon.Mail /></a>
-            <a href="tel:+910000000000" aria-label="Phone"><Icon.Phone /></a>
+      <div className="shell">
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <Logo />
+            <p>
+              Athlix is a premium international transformation coaching company helping ambitious
+              people transform their bodies, lifestyles, and confidence — built on a proven,
+              adaptive coaching method.
+            </p>
+            <div className="footer-socials">
+              <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer" aria-label="Instagram"><Icon.Instagram /></a>
+              <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" aria-label="WhatsApp"><Icon.WhatsApp /></a>
+              <a href="mailto:hello@athlix.co" aria-label="Email"><Icon.Mail /></a>
+            </div>
+          </div>
+          <div className="footer-col">
+            <h4>Explore</h4>
+            <a href="#top">Home</a>
+            <a href="#transformations">Transformations</a>
+            <a href="#method">Method</a>
+            <a href="#coach">Coach</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#apply">Apply</a>
+          </div>
+          <div className="footer-col">
+            <h4>Connect</h4>
+            <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer">Instagram</a>
+            <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer">WhatsApp</a>
+            <a href="mailto:hello@athlix.co">hello@athlix.co</a>
           </div>
         </div>
-        <div className="footer-links">
-          <h3>About</h3>
-          <a href="#coach">Coach Abhishek</a>
-          <a href="#method">RRR Method</a>
-          <a href="#transformations">Success Stories</a>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} Athlix. All rights reserved.</span>
+          <span>Built for transformation that lasts.</span>
         </div>
-        <div className="footer-links">
-          <h3>Coaching</h3>
-          <a href="#coaching">Online Coaching</a>
-          <a href="#coaching">Offline Coaching</a>
-          <a href="#coaching">Hybrid Coaching</a>
-          <a href="#apply">Apply Now</a>
-        </div>
-        <div className="footer-links">
-          <h3>Contact</h3>
-          <a href="mailto:hello@athlix.co">hello@athlix.co</a>
-          <a href="tel:+910000000000">+91 00000 00000</a>
-          <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer">@coachavk</a>
-        </div>
-      </div>
-      <div className="footer-bottom">
-        <span>© 2026 Athlix. All rights reserved.</span>
-        <span>Built with intention. Designed for transformation.</span>
       </div>
     </footer>
   );
 }
 
-/* ===================== Sticky mobile CTA ===================== */
+/* =====================================================================
+   Sticky mobile CTA + scroll progress
+   ===================================================================== */
 
 function StickyMobileCTA() {
   const [show, setShow] = useState(false);
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 600);
+    const onScroll = () => setShow(window.scrollY > 700);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  if (!show) return null;
   return (
-    <div className="sticky-cta" role="region" aria-label="Apply for coaching">
-      <div className="label">
-        <strong>Ready to transform?</strong>
-        <span>Get a personalized roadmap</span>
-      </div>
-      <a className="btn btn-primary btn-sm" href="#apply">Apply Now <Icon.Arrow /></a>
-    </div>
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="sticky-cta"
+          initial={{ y: 90, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 90, opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div>
+            <strong>Ready to transform?</strong>
+            <span>Get your personalized roadmap.</span>
+          </div>
+          <a className="btn btn-primary btn-sm" href="#apply">Apply <Icon.Arrow /></a>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-/* ===================== App ===================== */
+function ScrollProgress() {
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const h = document.documentElement;
+      const p = h.scrollTop / (h.scrollHeight - h.clientHeight || 1);
+      setW(Math.min(100, Math.max(0, p * 100)));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return <div className="scroll-progress" style={{ width: `${w}%` }} aria-hidden="true" />;
+}
 
-function App() {
-  useReveal();
-  const progress = useScrollProgress();
+/* =====================================================================
+   App
+   ===================================================================== */
+
+export default function App() {
   return (
     <>
-      <div className="scroll-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
+      <ScrollProgress />
+      <Header />
       <main>
         <Hero />
         <Transformations />
-        <FailureDifference />
-        <RRRMethod />
-        <CoachingOptions />
+        <ProblemSolution />
+        <CoachingMethod />
+        <Pathways />
         <Coach />
+        <Certifications />
         <Testimonials />
-        <Comparison />
+        <SocialProof />
         <FAQ />
         <ApplicationForm />
-        <Footer />
       </main>
+      <Footer />
       <StickyMobileCTA />
     </>
   );
 }
-
-export default App;
