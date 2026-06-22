@@ -987,7 +987,7 @@ function ApplicationForm() {
                 )}
 
                 <button className="btn btn-primary btn-lg btn-block field wide" type="submit" disabled={submitting}>
-                  {submitting ? <><span className="spinner" /> Submitting…</> : <>Submit Application <Icon.Arrow /></>}
+                  {submitting ? <><span className="spinner" /> Submitting…</> : "Submit Application"}
                 </button>
               </motion.form>
             )}
