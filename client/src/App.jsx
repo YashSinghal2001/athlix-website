@@ -586,10 +586,6 @@ function CoachingMethod() {
           title={<>The Athlix <span className="accent">Coaching Method</span></>}
           lede="A dynamic coaching framework that adapts as your body, lifestyle, and goals evolve."
         />
-        <p className="method-supporting">
-          The process is not fixed. Every stage evolves based on progress, challenges, lifestyle
-          demands, and long-term transformation goals.
-        </p>
 
         <div className="timeline">
           {methodStages.map((stage, i) => (
@@ -606,6 +602,13 @@ function CoachingMethod() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="method-statement">
+          <p>
+            <span className="hl">The process is not fixed.</span> Every stage evolves based on
+            progress, challenges, lifestyle demands, and long-term transformation goals.
+          </p>
+        </Reveal>
       </div>
     </section>
   );
