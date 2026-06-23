@@ -318,6 +318,36 @@ p {
   font-size: clamp(1.8rem, 3.4vw, 2.9rem);
 }
 
+/* Center the ENTIRE #testimonials heading block (label + title + lede) on one
+   shared axis = the shell/viewport center, independent of the carousel width
+   below, instead of inside a narrow 720px box that the wide nowrap title/lede
+   overflow asymmetrically. */
+#testimonials .section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: none;          /* drop the 720px box that caused the shift */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  transform: none;          /* clear any translateX/offset positioning */
+}
+
+/* Each child shares the exact same center axis */
+#testimonials .eyebrow,
+#testimonials .section-title,
+#testimonials .section-lede {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: none;
+}
+
 @media (min-width: 1280px) {
   #why .section-title,
   #why .section-lede,
@@ -1399,6 +1429,35 @@ p {
 
 /* ----------------------------- Coaching Pathways ----------------------------- */
 /* Keep heading + subheading on a single line on desktop */
+/* Center the ENTIRE #pathways heading block (label + title + lede) on one
+   shared axis = the shell/viewport center, instead of inside a narrow 720px
+   box that the wide nowrap title/lede overflow asymmetrically. */
+#pathways .section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: none;          /* drop the 720px box that caused the shift */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  transform: none;          /* clear any translateX/offset positioning */
+}
+
+/* Each child shares the exact same center axis */
+#pathways .eyebrow,
+#pathways .section-title,
+#pathways .section-lede {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: none;
+}
+
 #pathways .section-lede {
   max-width: 1000px;
   font-size: clamp(0.95rem, 1.2vw, 1.05rem);
@@ -1714,6 +1773,35 @@ p {
 
 /* ----------------------------- Certifications wall ----------------------------- */
 /* Keep heading + subheading on one line on desktop */
+/* Center the ENTIRE #credentials heading block (label + title + lede) on one
+   shared axis = the shell/viewport center, instead of inside a narrow 720px
+   box that the wide nowrap title/lede overflow asymmetrically. */
+#credentials .section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: none;          /* drop the 720px box that caused the shift */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  transform: none;          /* clear any translateX/offset positioning */
+}
+
+/* Each child shares the exact same center axis */
+#credentials .eyebrow,
+#credentials .section-title,
+#credentials .section-lede {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: none;
+}
+
 #credentials .section-lede {
   max-width: 1000px;
   font-size: clamp(0.95rem, 1.2vw, 1.05rem);
