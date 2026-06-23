@@ -174,17 +174,69 @@ const faqs = [
    Motion helpers
    ===================================================================== */
 
-function Reveal({ children, delay = 0, y = 26, className, as = "div", style, ...rest }) {
+/* Premium scroll-reveal spec (Apple-like): fade + rise into view once.
+   initial: opacity 0, y 40px  →  animate: opacity 1, y 0
+   duration 0.8s, easeOut, triggered once. Children stagger by 0.1s. */
+const REVEAL_EASE = "easeOut";
+const REVEAL_DURATION = 0.8;
+const REVEAL_Y = 40;
+const REVEAL_STAGGER = 0.1;
+const REVEAL_VIEWPORT = { once: true, margin: "0px 0px -80px 0px" };
+
+// Parent variant: orchestrates a 0.1s stagger across its <Reveal group> children.
+const staggerContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: REVEAL_STAGGER } },
+};
+
+function Reveal({ children, delay = 0, y = REVEAL_Y, className, as = "div", style, group = false, ...rest }) {
   const reduce = useReducedMotion();
   const MotionTag = motion[as] || motion.div;
+
+  // Inside a <RevealGroup>: inherit the parent's orchestrated stagger via variants.
+  if (group) {
+    const variants = reduce
+      ? undefined
+      : {
+          hidden: { opacity: 0, y },
+          show: { opacity: 1, y: 0, transition: { duration: REVEAL_DURATION, ease: REVEAL_EASE } },
+        };
+    return (
+      <MotionTag className={className} style={style} variants={variants} {...rest}>
+        {children}
+      </MotionTag>
+    );
+  }
+
+  // Standalone: fade + rise when it scrolls into view, once.
   return (
     <MotionTag
       className={className}
       style={style}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
+      viewport={REVEAL_VIEWPORT}
+      transition={{ duration: REVEAL_DURATION, ease: REVEAL_EASE, delay }}
+      {...rest}
+    >
+      {children}
+    </MotionTag>
+  );
+}
+
+// Wraps a set of <Reveal group> children and reveals them with a 0.1s stagger
+// when the group scrolls into view (once).
+function RevealGroup({ children, className, as = "div", style, ...rest }) {
+  const reduce = useReducedMotion();
+  const MotionTag = motion[as] || motion.div;
+  return (
+    <MotionTag
+      className={className}
+      style={style}
+      initial={reduce ? false : "hidden"}
+      whileInView="show"
+      viewport={REVEAL_VIEWPORT}
+      variants={staggerContainer}
       {...rest}
     >
       {children}
@@ -194,11 +246,15 @@ function Reveal({ children, delay = 0, y = 26, className, as = "div", style, ...
 
 function SectionHead({ eyebrow, title, lede, align = "center" }) {
   return (
-    <Reveal className={`section-head ${align === "left" ? "left" : ""}`}>
-      {eyebrow && <p className={`eyebrow ${align === "center" ? "center" : ""}`}>{eyebrow}</p>}
-      <h2 className="section-title">{title}</h2>
-      {lede && <p className="section-lede">{lede}</p>}
-    </Reveal>
+    <RevealGroup className={`section-head ${align === "left" ? "left" : ""}`}>
+      {eyebrow && (
+        <Reveal group as="p" className={`eyebrow ${align === "center" ? "center" : ""}`}>
+          {eyebrow}
+        </Reveal>
+      )}
+      <Reveal group as="h2" className="section-title">{title}</Reveal>
+      {lede && <Reveal group as="p" className="section-lede">{lede}</Reveal>}
+    </RevealGroup>
   );
 }
 
@@ -306,50 +362,70 @@ function Header() {
    Hero
    ===================================================================== */
 
+/* Luxury animated mesh: slow-drifting, heavily-blurred low-opacity blue blobs.
+   Sits behind a section's content (Linear / Raycast / Stripe feel). */
+function MeshBackground() {
+  return (
+    <div className="mesh-bg" aria-hidden="true">
+      <span className="mesh-blob b1" />
+      <span className="mesh-blob b2" />
+      <span className="mesh-blob b3" />
+    </div>
+  );
+}
+
 function Hero() {
   const reduce = useReducedMotion();
   return (
-    <section id="top" className="hero">
+    <section id="top" className="hero has-mesh">
+      <MeshBackground />
       <div className="hero-bg" aria-hidden="true" />
       <span className="hero-glow a" aria-hidden="true" />
       <span className="hero-glow b" aria-hidden="true" />
 
       <div className="shell hero-grid">
-        <div>
-          <Reveal>
+        <RevealGroup>
+          <Reveal group>
             <span className="hero-badge">
               <span className="pip" /> Premium Transformation Coaching
             </span>
           </Reveal>
-          <Reveal delay={0.06}>
+          <Reveal group>
             <h1 className="hero-title">
               <span className="line">Transform Your Body.</span>
               <span className="line">Rebuild Your Lifestyle.</span>
               <span className="line dim">Create Results That Last.</span>
             </h1>
           </Reveal>
-          <Reveal delay={0.12}>
+          <Reveal group>
             <p className="hero-sub">
               Personalized transformation coaching built around accountability, nutrition,
               training, and sustainable behavior change.
             </p>
           </Reveal>
-          <Reveal delay={0.18}>
+          <Reveal group>
             <div className="cta-row">
               <a className="btn btn-primary btn-lg" href="#apply">Apply For Coaching <Icon.Arrow /></a>
               <a className="btn btn-secondary btn-lg" href="#apply">Book Consultation</a>
             </div>
           </Reveal>
-        </div>
+        </RevealGroup>
 
         <motion.div
           className="hero-visual"
-          initial={reduce ? false : { opacity: 0, scale: 0.96, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          initial={reduce ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
         >
           <div className="hero-photo">
-            <img src={heroImage} alt="Athlix transformation coaching client" fetchpriority="high" />
+            <motion.img
+              src={heroImage}
+              alt="Athlix transformation coaching client"
+              fetchpriority="high"
+              initial={reduce ? false : { opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            />
           </div>
           <motion.div
             className="hero-float tl"
@@ -548,8 +624,8 @@ function ProblemSolution() {
           title={<>Why Most Attempts Fail — <span className="accent">And Why Clients Succeed</span></>}
           lede="Transformation rarely fails from lack of effort. It fails from lack of structure, accountability, and a system built around real life."
         />
-        <div className="compare-grid">
-          <Reveal className="compare-card problem">
+        <RevealGroup className="compare-grid">
+          <Reveal group className="compare-card problem">
             <h3>Why Most Fat Loss Attempts Fail</h3>
             <ul className="compare-list">
               {problems.map((p) => (
@@ -560,7 +636,7 @@ function ProblemSolution() {
               ))}
             </ul>
           </Reveal>
-          <Reveal delay={0.1} className="compare-card solution">
+          <Reveal group className="compare-card solution">
             <h3>Why Athlix Clients Succeed</h3>
             <ul className="compare-list">
               {solutions.map((s) => (
@@ -571,7 +647,7 @@ function ProblemSolution() {
               ))}
             </ul>
           </Reveal>
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );
@@ -583,7 +659,8 @@ function ProblemSolution() {
 
 function CoachingMethod() {
   return (
-    <section id="method" className="section">
+    <section id="method" className="section has-mesh">
+      <MeshBackground />
       <div className="shell">
         <SectionHead
           eyebrow="The Framework"
@@ -591,11 +668,11 @@ function CoachingMethod() {
           lede="A dynamic coaching framework that adapts as your body, lifestyle, and goals evolve."
         />
 
-        <div className="timeline">
+        <RevealGroup className="timeline">
           {methodStages.map((stage, i) => (
             <Reveal
+              group
               key={stage.title}
-              delay={i * 0.12}
               className="stage-card"
               style={{ "--card-accent": stage.accent }}
               onMouseMove={(e) => {
@@ -615,7 +692,7 @@ function CoachingMethod() {
               </ul>
             </Reveal>
           ))}
-        </div>
+        </RevealGroup>
 
         <Reveal className="method-statement">
           <p>
@@ -633,16 +710,17 @@ function CoachingMethod() {
 
 function Pathways() {
   return (
-    <section id="pathways" className="section bg-subtle">
+    <section id="pathways" className="section bg-subtle has-mesh">
+      <MeshBackground />
       <div className="shell">
         <SectionHead
           eyebrow="Coaching Pathways"
           title={<>Choose Your <span className="accent">Coaching Pathway</span></>}
           lede="Every pathway is built to move you from uncertainty to execution with the right level of expert support."
         />
-        <div className="pathway-grid">
+        <RevealGroup className="pathway-grid">
           {pathways.map((p) => (
-            <Reveal key={p.title} className={`pathway-card ${p.featured ? "featured" : ""}`}>
+            <Reveal group key={p.title} className={`pathway-card ${p.featured ? "featured" : ""}`}>
               {p.badge && <span className="pathway-badge"><Icon.Star style={{ width: 12, height: 12 }} /> {p.badge}</span>}
               <span className="pathway-icon">{p.icon}</span>
               <h3>{p.title}</h3>
@@ -657,7 +735,7 @@ function Pathways() {
               </a>
             </Reveal>
           ))}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );
@@ -671,8 +749,8 @@ function Coach() {
   return (
     <section id="coach" className="section">
       <div className="shell">
-        <div className="coach-grid">
-          <Reveal className="coach-photo">
+        <RevealGroup className="coach-grid">
+          <Reveal group className="coach-photo">
             <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
             <div className="float">
               <div>
@@ -686,7 +764,7 @@ function Coach() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.1} className="coach-copy">
+          <Reveal group className="coach-copy">
             <p className="eyebrow">Founder-Led Coaching</p>
             <h2 className="section-title">Meet Coach Abhishek</h2>
             <p>
@@ -717,7 +795,7 @@ function Coach() {
 
             <a className="btn btn-primary btn-lg" href="#apply">Work With Coach Abhishek <Icon.Arrow /></a>
           </Reveal>
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );
@@ -736,9 +814,9 @@ function Certifications() {
           title={<>Backed By <span className="accent">World-Class Credentials</span></>}
           lede="Coaching grounded in internationally recognized education, certification, and accreditation."
         />
-        <div className="cert-wall">
-          {certifications.map((c, i) => (
-            <Reveal key={c.name} delay={(i % 4) * 0.06} className="cert-tile">
+        <RevealGroup className="cert-wall">
+          {certifications.map((c) => (
+            <Reveal group key={c.name} className="cert-tile">
               <div className="cert-logo">
                 <img src={c.logo} alt={`${c.full} certification logo`} loading="lazy" />
               </div>
@@ -748,7 +826,7 @@ function Certifications() {
               <div className="cert-year">{c.year}</div>
             </Reveal>
           ))}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );
@@ -782,7 +860,8 @@ function TestimonialCard({ t }) {
 function Testimonials() {
   const loop = [...testimonials, ...testimonials];
   return (
-    <section id="testimonials" className="section">
+    <section id="testimonials" className="section has-mesh">
+      <MeshBackground />
       <div className="shell">
         <SectionHead
           eyebrow="Client Voices"
@@ -805,7 +884,7 @@ function Testimonials() {
    Social proof (animated counters)
    ===================================================================== */
 
-function useCountUp(target, run, duration = 1600) {
+function useCountUp(target, run, duration = 2000) {
   const [val, setVal] = useState(0);
   const reduce = useReducedMotion();
   useEffect(() => {
@@ -851,11 +930,13 @@ function SocialProof() {
   return (
     <section className="section bg-subtle">
       <div className="shell" ref={ref}>
-        <div className="metrics-grid">
+        <RevealGroup className="metrics-grid">
           {socialMetrics.map((m) => (
-            <Metric key={m.lbl} m={m} run={run} />
+            <Reveal group key={m.lbl}>
+              <Metric m={m} run={run} />
+            </Reveal>
           ))}
-        </div>
+        </RevealGroup>
       </div>
     </section>
   );
@@ -879,9 +960,20 @@ function FAQItem({ item, isOpen, onToggle }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{
+              height: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+              opacity: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+            }}
           >
-            <div className="faq-a-inner">{item.a}</div>
+            <motion.div
+              className="faq-a-inner"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {item.a}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -899,13 +991,13 @@ function FAQ() {
           title="Frequently Asked Questions"
           lede="Clear, honest answers before you apply for coaching."
         />
-        <Reveal>
-          <div>
-            {faqs.map((f, i) => (
-              <FAQItem key={f.q} item={f} isOpen={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
-            ))}
-          </div>
-        </Reveal>
+        <RevealGroup>
+          {faqs.map((f, i) => (
+            <Reveal group key={f.q}>
+              <FAQItem item={f} isOpen={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
+            </Reveal>
+          ))}
+        </RevealGroup>
       </div>
     </section>
   );
@@ -987,8 +1079,8 @@ function ApplicationForm() {
 
   return (
     <section id="apply" className="section bg-subtle">
-      <div className="shell apply-grid">
-        <Reveal>
+      <RevealGroup className="shell apply-grid">
+        <Reveal group>
           <p className="eyebrow">Start Your Transformation</p>
           <h2 className="section-title">Apply For Coaching</h2>
           <p className="section-lede" style={{ marginInline: 0 }}>
@@ -1002,7 +1094,7 @@ function ApplicationForm() {
           </ul>
         </Reveal>
 
-        <Reveal delay={0.1} as="div">
+        <Reveal group as="div">
           <AnimatePresence mode="wait">
             {done ? (
               <motion.div
@@ -1079,7 +1171,7 @@ function ApplicationForm() {
             )}
           </AnimatePresence>
         </Reveal>
-      </div>
+      </RevealGroup>
     </section>
   );
 }
@@ -1189,6 +1281,49 @@ function ScrollProgress() {
   return <div className="scroll-progress" style={{ width: `${w}%` }} aria-hidden="true" />;
 }
 
+/* Global cursor-follow spotlight (Linear.dev feel): a soft, heavily blurred
+   low-opacity blue glow that tracks the mouse across the whole site.
+   Disabled on touch / reduced-motion. Uses a GPU transform (no re-renders). */
+function CursorGlow() {
+  const ref = useRef(null);
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (reduce) return undefined;
+    // Skip on touch-primary devices (no hovering pointer).
+    if (window.matchMedia && window.matchMedia("(hover: none)").matches) return undefined;
+
+    const el = ref.current;
+    if (!el) return undefined;
+    let raf = 0;
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+
+    const render = () => {
+      raf = 0;
+      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
+    const onMove = (e) => {
+      x = e.clientX;
+      y = e.clientY;
+      document.body.classList.add("cursor-active");
+      if (!raf) raf = requestAnimationFrame(render);
+    };
+    const onLeave = () => document.body.classList.remove("cursor-active");
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("mouseleave", onLeave);
+    window.addEventListener("blur", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("blur", onLeave);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [reduce]);
+
+  return <div ref={ref} className="cursor-glow" aria-hidden="true" />;
+}
+
 /* =====================================================================
    App
    ===================================================================== */
@@ -1233,6 +1368,7 @@ export default function App() {
   return (
     <>
       <ScrollProgress />
+      <CursorGlow />
       <Header />
       <main>
         <Hero />
