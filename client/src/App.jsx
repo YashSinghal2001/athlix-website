@@ -1,36 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
 
 import { useTheme } from "./theme/ThemeContext.jsx";
 import { Icon } from "./components/icons.jsx";
+import TransformationComparisonCard from "./components/TransformationComparisonCard.jsx";
 
 /* assets */
 import heroImage from "./assets/1.webp";
 import coachImage from "./assets/images/Coach.webp"; // optimized from Images/Coach.jpg
 import blueTick from "./assets/Blue_tick.png";
 
-import s1 from "./assets/2_1.webp";
-import s2 from "./assets/2_2.webp";
-import s3 from "./assets/2_3.webp";
-import s4 from "./assets/2_4.webp";
-import s5 from "./assets/2_5.webp";
-import s6 from "./assets/2_6.webp";
-import s7 from "./assets/2_7.webp";
-import s8 from "./assets/2_8.webp";
-import s9 from "./assets/2_9.webp";
-import s10 from "./assets/2_10.webp";
-import s11 from "./assets/2_11.webp";
-import s12 from "./assets/2_12.webp";
-import s13 from "./assets/2_13.webp";
-import s14 from "./assets/2_14.webp";
-import s15 from "./assets/2_15.webp";
 import r1 from "./assets/4_1.webp";
 import r2 from "./assets/4_2.webp";
 import r3 from "./assets/4_3.webp";
+
+/* Auto-detect every before/after transformation pair (2_N_before / 2_N_after). */
+const baModules = import.meta.glob("./assets/2_*_{before,after}.webp", { eager: true, import: "default" });
+const transformationPairs = (() => {
+  const map = {};
+  for (const [key, url] of Object.entries(baModules)) {
+    const m = key.match(/2_(\d+)_(before|after)\.webp$/);
+    if (!m) continue;
+    const id = Number(m[1]);
+    (map[id] ||= { id })[m[2]] = url;
+  }
+  return Object.values(map)
+    .filter((p) => p.before && p.after)
+    .sort((a, b) => a.id - b.id);
+})();
 
 /* certification logos (flat src/assets location) */
 import certAce from "./assets/ace-logo.webp";
@@ -55,20 +52,6 @@ const trustMetrics = [
   { num: "100+", lbl: "Transformations" },
   { num: "6", lbl: "Countries Served" },
   { num: "ACE", lbl: "Certified Coach" },
-];
-
-const allTransformImages = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15];
-
-const transformations = [
-  { img: s1, duration: "20 Weeks", goal: "18 kg Fat Loss", quote: "I finally stopped guessing and followed a system that worked around my schedule." },
-  { img: s4, duration: "16 Weeks", goal: "Body Recomposition", quote: "Structure replaced motivation. The progress became almost automatic." },
-  { img: s2, duration: "14 Weeks", goal: "12 kg Fat Loss", quote: "Weekly accountability kept me consistent even on my hardest weeks." },
-  { img: s7, duration: "24 Weeks", goal: "Lifestyle Transformation", quote: "It wasn't a diet — it became the way I live now." },
-  { img: s5, duration: "18 Weeks", goal: "Strength + Definition", quote: "The coaching adapted as my body and goals evolved." },
-  { img: s9, duration: "22 Weeks", goal: "15 kg Fat Loss", quote: "Daily support made the difference I never had before." },
-  { img: s11, duration: "12 Weeks", goal: "Visible Recomposition", quote: "Clear, sustainable, and built entirely around my real life." },
-  { img: s12, duration: "26 Weeks", goal: "Confidence + Composition", quote: "I trust the process now because I understand it." },
-  { img: s8, duration: "20 Weeks", goal: "Sustainable Fat Loss", quote: "No crash diets — just consistent, coached progress." },
 ];
 
 const problems = [
@@ -408,53 +391,140 @@ function Hero() {
    Transformations
    ===================================================================== */
 
+function useIsMobile(query = "(max-width: 680px)") {
+  const [mobile, setMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(query).matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = () => setMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [query]);
+  return mobile;
+}
+
 function Transformations() {
+  const n = transformationPairs.length;
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const resumeRef = useRef(null);
+  const comparingRef = useRef(false);
+  const swipeRef = useRef(null);
+  const isMobile = useIsMobile();
+
+  const pauseFor = (ms = 6000) => {
+    setPaused(true);
+    clearTimeout(resumeRef.current);
+    resumeRef.current = setTimeout(() => setPaused(false), ms);
+  };
+
+  const goTo = (i) => { setActive(((i % n) + n) % n); pauseFor(); };
+  const next = () => goTo(active + 1);
+  const prev = () => goTo(active - 1);
+
+  // Autoplay every 5s, infinite loop.
+  useEffect(() => {
+    if (paused || n <= 1) return undefined;
+    const id = setInterval(() => setActive((a) => (a + 1) % n), 5000);
+    return () => clearInterval(id);
+  }, [paused, n]);
+
+  useEffect(() => () => clearTimeout(resumeRef.current), []);
+
+  // Pause while comparing (dragging the slider); resume shortly after.
+  const onCardDrag = (dragging) => {
+    if (dragging) { comparingRef.current = true; setPaused(true); clearTimeout(resumeRef.current); }
+    else { pauseFor(); }
+  };
+
+  // Swipe-to-navigate. Capture phase resets the comparing flag at gesture start;
+  // if a card then begins a compare-drag it sets the flag and we skip navigation.
+  const onStageDownCapture = (e) => {
+    comparingRef.current = false;
+    swipeRef.current = { x: e.clientX, t: Date.now() };
+  };
+  const onStageUp = (e) => {
+    const s = swipeRef.current;
+    swipeRef.current = null;
+    if (!s || comparingRef.current) return; // a compare-drag, not a swipe
+    const dx = e.clientX - s.x;
+    if (Math.abs(dx) > 55 && Date.now() - s.t < 800) (dx < 0 ? next() : prev());
+  };
+
+  // Render ONLY three cards: previous, active, next. Explicit role-based
+  // transforms + z-index — no hidden cards, no overlap, no ghosting.
+  const sideX = isMobile ? 94 : 110;
+  const sideScale = isMobile ? 0.82 : 0.9;
+  const sideOpacity = isMobile ? 0.3 : 0.6;
+  const ROLE = {
+    prev:   { x: `-${sideX}%`, scale: sideScale, opacity: sideOpacity, z: 20 },
+    active: { x: "0%",         scale: 1,          opacity: 1,           z: 30 },
+    next:   { x: `${sideX}%`,  scale: sideScale,  opacity: sideOpacity, z: 20 },
+  };
+
+  const prevIndex = (active - 1 + n) % n;
+  const nextIndex = (active + 1) % n;
+  const visible =
+    n <= 1
+      ? [{ pair: transformationPairs[active], role: "active" }]
+      : [
+          { pair: transformationPairs[prevIndex], role: "prev" },
+          { pair: transformationPairs[active], role: "active" },
+          { pair: transformationPairs[nextIndex], role: "next" },
+        ];
+
   return (
     <section id="transformations" className="section">
       <div className="shell">
         <SectionHead
           eyebrow="Real Client Proof"
           title={<>Real People. <span className="accent">Real Transformations.</span></>}
-          lede="See how Athlix clients reshaped their bodies, habits, and confidence — and kept the results for life."
+          lede="Every transformation tells a story of consistency, accountability, and sustainable change."
         />
+        <p className="ba-hint-line">Drag the slider to compare before and after results.</p>
 
-        {/* Desktop / tablet masonry */}
-        <div className="transform-masonry">
-          {transformations.map((t, i) => (
-            <Reveal key={i} delay={(i % 3) * 0.08} className="t-card">
-              <div className="t-card-media">
-                <img src={t.img} alt={`Athlix client transformation — ${t.goal}`} loading="lazy" />
-                <span className="t-tag"><Icon.Star style={{ width: 12, height: 12, color: "#f5a623" }} /> {t.duration}</span>
-              </div>
-              <div className="t-card-body">
-                <div className="t-card-meta">
-                  <span className="t-chip">{t.goal}</span>
-                  <span className="t-chip neutral">{t.duration}</span>
-                </div>
-                <blockquote>“{t.quote}”</blockquote>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* Mobile carousel */}
-        <div className="t-carousel">
-          <Swiper
-            modules={[Autoplay, Pagination]}
-            autoplay={{ delay: 2600, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            spaceBetween={16}
-            slidesPerView={1.15}
-            loop
+        <div className="show-wrap">
+          <div
+            className="cover-stage"
+            onPointerDownCapture={onStageDownCapture}
+            onPointerUp={onStageUp}
           >
-            {allTransformImages.map((img, i) => (
-              <SwiperSlide key={i}>
-                <div className="t-slide">
-                  <img src={img} alt={`Athlix transformation result ${i + 1}`} loading="lazy" />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+            <AnimatePresence initial={false}>
+              {visible.map(({ pair, role }) => {
+                const t = ROLE[role];
+                return (
+                  <motion.div
+                    key={pair.id}
+                    className="cover-card"
+                    style={{ zIndex: t.z }}
+                    initial={{ x: t.x, y: "-50%", scale: t.scale, opacity: 0 }}
+                    animate={{ x: t.x, y: "-50%", scale: t.scale, opacity: t.opacity }}
+                    exit={{ opacity: 0, transition: { duration: 0.3 } }}
+                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <TransformationComparisonCard
+                      before={pair.before}
+                      after={pair.after}
+                      alt={`Athlix client ${pair.id} transformation`}
+                      onActiveChange={onCardDrag}
+                      featured={role === "active"}
+                      dragFromHandleOnly={isMobile && role === "active"}
+                    />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          <div className="show-controls">
+            <button className="show-nav" onClick={prev} aria-label="Previous transformation">
+              <Icon.ChevronLeft />
+            </button>
+            <button className="show-nav" onClick={next} aria-label="Next transformation">
+              <Icon.ChevronRight />
+            </button>
+          </div>
         </div>
       </div>
     </section>

@@ -778,15 +778,85 @@ p {
   color: var(--text-muted);
 }
 
-/* ----------------------------- Transformations ----------------------------- */
-.transform-masonry {
-  columns: 3;
-  column-gap: 20px;
+/* ----------------------------- Transformations (Before / After) ----------------------------- */
+.ba-hint-line {
+  text-align: center;
+  margin: -32px auto 48px;
+  max-width: 540px;
+  font-size: 0.98rem;
+  color: var(--text-muted);
 }
 
-.t-card {
-  break-inside: avoid;
-  margin-bottom: 20px;
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.ba-carousel {
+  display: none;
+}
+
+/* 3-card coverflow showcase */
+.show-wrap {
+  --cardw: clamp(220px, 26vw, 300px);
+  max-width: 1060px;
+  margin: 0 auto;
+}
+
+.cover-stage {
+  position: relative;
+  height: calc(var(--cardw) * 1.34); /* matches the 3/4 card frame */
+  margin: 0 auto;
+  touch-action: pan-y; /* allow vertical page scroll, capture horizontal */
+}
+
+.cover-card {
+  position: absolute;
+  top: 50%;            /* combined with framer y:-50% => identical center line */
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: var(--cardw);
+  will-change: transform, opacity;
+}
+
+.show-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.show-nav {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), background-color 0.25s var(--ease),
+    color 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.show-nav:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.07);
+  box-shadow: 0 10px 26px rgba(47, 107, 255, 0.4);
+}
+
+.show-nav:active { transform: scale(0.96); }
+.show-nav svg { width: 22px; height: 22px; }
+
+.ba-card {
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface);
@@ -795,101 +865,122 @@ p {
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
 }
 
-.t-card:hover {
+.ba-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
+  border-color: rgba(47, 107, 255, 0.4);
+  box-shadow: 0 24px 50px rgba(10, 11, 13, 0.16), 0 0 40px rgba(47, 107, 255, 0.2);
 }
 
-.t-card-media {
+.ba-frame {
   position: relative;
-  overflow: hidden;
-}
-
-.t-card-media img {
   width: 100%;
-  height: auto;
-  transition: transform 0.7s var(--ease-out);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+  cursor: ew-resize;
+  touch-action: none; /* enables pointer-drag without triggering page scroll */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.t-card:hover .t-card-media img {
-  transform: scale(1.04);
+.ba-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
-.t-tag {
+.ba-before {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path;
+}
+
+.ba-tag {
   position: absolute;
   top: 14px;
-  left: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  z-index: 3;
   padding: 6px 12px;
   border-radius: 100px;
-  font-size: 0.74rem;
-  font-weight: 600;
-  background: var(--surface-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  color: var(--text-strong);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  background: rgba(8, 9, 12, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  pointer-events: none;
 }
 
-.t-card-body {
-  padding: 20px 22px 24px;
+.ba-tag-before { left: 14px; }
+.ba-tag-after { right: 14px; }
+
+.ba-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
 }
 
-.t-card-meta {
+.ba-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 20px rgba(47, 107, 255, 0.55);
 }
 
-.t-chip {
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 5px 11px;
-  border-radius: 100px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+.ba-handle svg {
+  width: 18px;
+  height: 18px;
 }
 
-.t-chip.neutral {
-  background: var(--bg-subtle);
-  color: var(--text-muted);
+.ba-card:hover .ba-handle {
+  box-shadow: 0 8px 26px rgba(47, 107, 255, 0.7);
 }
 
-.t-card-body h3 {
-  font-size: 1.08rem;
-  margin-bottom: 8px;
+/* Featured (single-showcase) variant — larger, more premium */
+.ba-card--featured {
+  box-shadow: var(--shadow-lg);
 }
 
-.t-card-body blockquote {
-  font-size: 0.92rem;
-  color: var(--text-muted);
-  line-height: 1.55;
-  font-style: italic;
+.ba-card--featured .ba-handle {
+  width: 56px;
+  height: 56px;
+  border-width: 3px;
 }
 
-/* Mobile transformation carousel */
-.t-carousel {
-  display: none;
+.ba-card--featured .ba-handle svg {
+  width: 22px;
+  height: 22px;
 }
 
-.t-slide {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  height: 100%;
+.ba-card--featured .ba-tag {
+  font-size: 0.72rem;
+  padding: 7px 14px;
 }
 
-.t-slide img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-}
 
 /* ----------------------------- Problem vs Solution ----------------------------- */
 .compare-grid {
@@ -1988,6 +2079,9 @@ p {
   .transform-masonry {
     columns: 2;
   }
+  .ba-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 880px) {
@@ -2043,6 +2137,12 @@ p {
   .t-carousel {
     display: block;
   }
+  .ba-grid {
+    display: none;
+  }
+  .ba-carousel {
+    display: block;
+  }
   .hero-float.tl {
     left: 8px;
   }
@@ -2064,6 +2164,24 @@ p {
   }
   .trust-cell {
     padding: 20px 14px;
+  }
+}
+
+/* Transformation showcase — compact controls on small screens */
+@media (max-width: 600px) {
+  .show-wrap {
+    --cardw: min(80vw, 320px);
+  }
+  .show-controls {
+    gap: 16px;
+  }
+  .show-nav {
+    width: 46px;
+    height: 46px;
+  }
+  .show-nav svg {
+    width: 19px;
+    height: 19px;
   }
 }
 
