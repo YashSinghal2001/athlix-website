@@ -391,17 +391,17 @@ function Hero() {
    Transformations
    ===================================================================== */
 
-function useIsMobile(query = "(max-width: 680px)") {
-  const [mobile, setMobile] = useState(
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(
     () => typeof window !== "undefined" && window.matchMedia(query).matches
   );
   useEffect(() => {
     const mq = window.matchMedia(query);
-    const onChange = () => setMobile(mq.matches);
+    const onChange = () => setMatches(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, [query]);
-  return mobile;
+  return matches;
 }
 
 function Transformations() {
@@ -411,7 +411,8 @@ function Transformations() {
   const resumeRef = useRef(null);
   const comparingRef = useRef(false);
   const swipeRef = useRef(null);
-  const isMobile = useIsMobile();
+  const isMobile = useMediaQuery("(max-width: 680px)");
+  const isCompact = useMediaQuery("(max-width: 1024px)");
 
   const pauseFor = (ms = 6000) => {
     setPaused(true);
@@ -454,9 +455,9 @@ function Transformations() {
 
   // Render ONLY three cards: previous, active, next. Explicit role-based
   // transforms + z-index — no hidden cards, no overlap, no ghosting.
-  const sideX = isMobile ? 94 : 110;
-  const sideScale = isMobile ? 0.82 : 0.9;
-  const sideOpacity = isMobile ? 0.3 : 0.6;
+  const sideX = isMobile ? 90 : isCompact ? 80 : 104;
+  const sideScale = isMobile ? 0.82 : isCompact ? 0.86 : 0.9;
+  const sideOpacity = isMobile ? 0.3 : isCompact ? 0.5 : 0.6;
   const ROLE = {
     prev:   { x: `-${sideX}%`, scale: sideScale, opacity: sideOpacity, z: 20 },
     active: { x: "0%",         scale: 1,          opacity: 1,           z: 30 },
@@ -482,9 +483,12 @@ function Transformations() {
           title={<>Real People. <span className="accent">Real Transformations.</span></>}
           lede="Every transformation tells a story of consistency, accountability, and sustainable change."
         />
-        <p className="ba-hint-line">Drag the slider to compare before and after results.</p>
 
         <div className="show-wrap">
+          <button className="show-nav prev" onClick={prev} aria-label="Previous transformation">
+            <Icon.ChevronLeft />
+          </button>
+
           <div
             className="cover-stage"
             onPointerDownCapture={onStageDownCapture}
@@ -517,14 +521,9 @@ function Transformations() {
             </AnimatePresence>
           </div>
 
-          <div className="show-controls">
-            <button className="show-nav" onClick={prev} aria-label="Previous transformation">
-              <Icon.ChevronLeft />
-            </button>
-            <button className="show-nav" onClick={next} aria-label="Next transformation">
-              <Icon.ChevronRight />
-            </button>
-          </div>
+          <button className="show-nav next" onClick={next} aria-label="Next transformation">
+            <Icon.ChevronRight />
+          </button>
         </div>
       </div>
     </section>
@@ -1181,6 +1180,42 @@ function ScrollProgress() {
    ===================================================================== */
 
 export default function App() {
+  // Smooth in-page navigation with a dynamically-measured navbar offset.
+  // Scrolls past each section's top padding so the heading lands right under
+  // the fixed navbar — consistent on every screen size, no hardcoded values.
+  useEffect(() => {
+    const onClick = (e) => {
+      const a = e.target.closest('a[href^="#"]');
+      if (!a) return;
+      const id = a.getAttribute("href").slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      e.preventDefault();
+      // Release the mobile-menu scroll lock so scrollTo can run immediately.
+      document.body.style.overflow = "";
+
+      const header = document.querySelector(".site-header");
+      const headerH = header ? header.offsetHeight : 0;
+      const GAP = 14; // small breathing space below the navbar
+
+      if (id === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+
+      // Land at the section's content (after its top padding), under the navbar.
+      const padTop = parseFloat(getComputedStyle(el).paddingTop) || 0;
+      const y = window.scrollY + el.getBoundingClientRect().top + padTop - headerH - GAP;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      history.replaceState(null, "", `#${id}`);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return (
     <>
       <ScrollProgress />

@@ -122,8 +122,6 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
-  scroll-padding-top: 90px;
 }
 
 body {
@@ -795,12 +793,25 @@ p {
 }
 
 /* ----------------------------- Transformations (Before / After) ----------------------------- */
-.ba-hint-line {
-  text-align: center;
-  margin: -32px auto 48px;
-  max-width: 540px;
-  font-size: 0.98rem;
-  color: var(--text-muted);
+/* Pull the carousel up now that the helper line is gone */
+#transformations .section-head {
+  margin-bottom: clamp(28px, 3.2vw, 44px);
+}
+
+#transformations .section-title {
+  font-size: clamp(2rem, 4.2vw, 4rem);
+}
+
+#transformations .section-lede {
+  max-width: 1000px;
+}
+
+/* Keep headline + description on a single line on large screens */
+@media (min-width: 1280px) {
+  #transformations .section-title,
+  #transformations .section-lede {
+    white-space: nowrap;
+  }
 }
 
 .ba-grid {
@@ -815,14 +826,17 @@ p {
 
 /* 3-card coverflow showcase */
 .show-wrap {
-  --cardw: clamp(220px, 26vw, 300px);
-  max-width: 1060px;
+  --cardw: clamp(240px, 22vw, 330px);
+  position: relative;
+  max-width: 1180px;
   margin: 0 auto;
+  /* reserved gutters keep the side arrows fully outside the cards */
+  padding-inline: clamp(60px, 7vw, 96px);
 }
 
 .cover-stage {
   position: relative;
-  height: calc(var(--cardw) * 1.34); /* matches the 3/4 card frame */
+  height: calc(var(--cardw) * 1.333); /* matches the 3/4 card frame */
   margin: 0 auto;
   touch-action: pan-y; /* allow vertical page scroll, capture horizontal */
 }
@@ -837,39 +851,45 @@ p {
   will-change: transform, opacity;
 }
 
-.show-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 22px;
-  margin-top: clamp(28px, 4vw, 44px);
-}
-
+/* Side navigation — circular glass buttons, vertically centered beside cards */
 .show-nav {
-  flex-shrink: 0;
-  width: 52px;
-  height: 52px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: var(--text-strong);
-  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-md);
   transition: transform 0.25s var(--ease), background-color 0.25s var(--ease),
     color 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
 }
 
+[data-theme="light"] .show-nav {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: var(--border);
+}
+
+.show-nav.prev { left: 0; }
+.show-nav.next { right: 0; }
+
 .show-nav:hover {
+  transform: translateY(-50%) scale(1.08);
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
-  transform: scale(1.07);
-  box-shadow: 0 10px 26px rgba(47, 107, 255, 0.4);
+  box-shadow: 0 12px 30px rgba(47, 107, 255, 0.45);
 }
 
-.show-nav:active { transform: scale(0.96); }
+.show-nav:active { transform: translateY(-50%) scale(0.96); }
 .show-nav svg { width: 22px; height: 22px; }
 
 .ba-card {
@@ -893,7 +913,7 @@ p {
   aspect-ratio: 3 / 4;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: var(--bg-subtle);
+  background: var(--bg-sunken);
   cursor: ew-resize;
   touch-action: none; /* enables pointer-drag without triggering page scroll */
   user-select: none;
@@ -906,7 +926,7 @@ p {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
   pointer-events: none;
   -webkit-user-drag: none;
   user-select: none;
@@ -2212,17 +2232,17 @@ p {
 }
 
 /* Transformation showcase — compact controls on small screens */
-@media (max-width: 600px) {
+@media (max-width: 680px) {
   .show-wrap {
-    --cardw: min(80vw, 320px);
-  }
-  .show-controls {
-    gap: 16px;
+    --cardw: min(74vw, 300px);
+    padding-inline: 0;
   }
   .show-nav {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
   }
+  .show-nav.prev { left: -4px; }
+  .show-nav.next { right: -4px; }
   .show-nav svg {
     width: 19px;
     height: 19px;
