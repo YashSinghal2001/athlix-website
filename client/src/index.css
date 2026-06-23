@@ -274,6 +274,65 @@ p {
   margin-inline: auto;
 }
 
+/* Single-line section headings on desktop (Apple/Stripe/Linear style) */
+/* Center the ENTIRE #why heading block (label + title + lede) on one shared
+   axis = the shell/viewport center, instead of inside a narrow 720px box
+   that the wide nowrap title/lede overflow asymmetrically. */
+#why .section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: none;          /* drop the 720px box that caused the shift */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  transform: none;          /* clear any translateX/offset positioning */
+}
+
+/* Each child shares the exact same center axis */
+#why .eyebrow,
+#why .section-title,
+#why .section-lede {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: none;
+}
+
+#why .section-lede,
+#testimonials .section-lede {
+  max-width: 1000px;
+  font-size: clamp(0.92rem, 1.1vw, 1rem);
+}
+
+#why .section-title {
+  font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+}
+
+#testimonials .section-title {
+  font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+}
+
+@media (min-width: 1280px) {
+  #why .section-title,
+  #why .section-lede,
+  #testimonials .section-title,
+  #testimonials .section-lede {
+    white-space: nowrap;
+    max-width: none;
+  }
+}
+
+/* Apply heading stays left-aligned, just never breaks to two lines */
+#apply .section-title {
+  white-space: nowrap;
+}
+
 .muted {
   color: var(--text-muted);
 }
@@ -793,9 +852,37 @@ p {
 }
 
 /* ----------------------------- Transformations (Before / After) ----------------------------- */
-/* Pull the carousel up now that the helper line is gone */
+/* Pull the carousel up now that the helper line is gone.
+   Center the ENTIRE heading block (label + title + lede) on one shared
+   axis = the shell/viewport center, instead of inside a narrow 720px box
+   that the wide nowrap title/lede overflow asymmetrically. */
 #transformations .section-head {
   margin-bottom: clamp(28px, 3.2vw, 44px);
+
+  /* full-width flex column so every child centers on the same axis */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  width: 100%;
+  max-width: none;          /* drop the 720px box that caused the shift */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+  transform: none;          /* clear any translateX/offset positioning */
+}
+
+/* Each child shares the exact same center axis */
+#transformations .eyebrow,
+#transformations .section-title,
+#transformations .section-lede {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  transform: none;
 }
 
 #transformations .section-title {
@@ -1109,14 +1196,20 @@ p {
 }
 
 /* ----------------------------- Coaching Method timeline ----------------------------- */
+/* Subtitle: a touch smaller + wider so the full sentence stays on one line on desktop */
+#method .section-lede {
+  max-width: 900px;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+}
+
 /* Framework statement — premium centered info card below the stage cards */
 .method-statement {
-  max-width: 900px;
+  max-width: 1140px;
   margin: 48px auto 8px;
   background: rgba(15, 23, 42, 0.7);
   border: 1px solid rgba(96, 165, 250, 0.15);
   border-radius: 20px;
-  padding: 24px 32px;
+  padding: 22px 34px;
   text-align: center;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -1124,14 +1217,23 @@ p {
 
 .method-statement p {
   margin: 0;
-  font-size: clamp(1rem, 1.4vw, 1.12rem);
-  line-height: 1.65;
+  /* smaller so the full statement fits on a single line on desktop */
+  font-size: clamp(0.82rem, 0.95vw, 0.92rem);
+  line-height: 1.6;
   color: #cbd5e1;
 }
 
 .method-statement .hl {
   color: #60a5fa;
   font-weight: 600;
+}
+
+/* Keep the full subtitle + statement on a single line on large screens */
+@media (min-width: 1280px) {
+  #method .section-lede,
+  .method-statement p {
+    white-space: nowrap;
+  }
 }
 
 .timeline {
@@ -1153,6 +1255,7 @@ p {
 }
 
 .stage-card {
+  --card-accent: var(--accent);
   position: relative;
   z-index: 1;
   background: var(--surface);
@@ -1160,29 +1263,91 @@ p {
   border-radius: var(--radius-lg);
   padding: clamp(24px, 3vw, 34px);
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  isolation: isolate;
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
 }
 
-.stage-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-strong);
+/* Mouse-following radial spotlight (very subtle) */
+.stage-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--card-accent) 16%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
 }
 
-.stage-node {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+.stage-card:hover::before { opacity: 1; }
+
+/* Animated top border glow line */
+.stage-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--card-accent), transparent);
+  opacity: 0;
+  transform: scaleX(0.5);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.stage-card:hover::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* Bottom ambient light, as if emitted from inside the card */
+.stage-ambient {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  width: 72%;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--card-accent);
+  filter: blur(46px);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+}
+
+.stage-card:hover .stage-ambient { opacity: 0.32; }
+
+.stage-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--card-accent);
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--card-accent) 32%, transparent),
+    0 0 40px color-mix(in srgb, var(--card-accent) 18%, transparent),
+    0 0 80px color-mix(in srgb, var(--card-accent) 10%, transparent),
+    0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.stage-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 100px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
   color: #fff;
-  background: linear-gradient(140deg, var(--accent), var(--accent-strong));
-  box-shadow: var(--shadow-glow);
-  margin-bottom: 22px;
+  background: linear-gradient(135deg, var(--card-accent), color-mix(in srgb, var(--card-accent) 58%, #000 22%));
+  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--card-accent) 36%, transparent);
+  margin-bottom: 18px;
 }
 
 .stage-step {
@@ -1228,11 +1393,24 @@ p {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--card-accent, var(--accent));
   flex-shrink: 0;
 }
 
 /* ----------------------------- Coaching Pathways ----------------------------- */
+/* Keep heading + subheading on a single line on desktop */
+#pathways .section-lede {
+  max-width: 1000px;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+}
+
+@media (min-width: 1280px) {
+  #pathways .section-title,
+  #pathways .section-lede {
+    white-space: nowrap;
+  }
+}
+
 .pathway-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1241,12 +1419,14 @@ p {
 }
 
 .pathway-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: clamp(26px, 3vw, 36px);
+  isolation: isolate;
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
 }
 
@@ -1256,44 +1436,74 @@ p {
   border-color: var(--border-strong);
 }
 
-/* Featured (Hybrid) card: fixed dark-premium look in BOTH themes so it never
-   inherits the theme's --ink flip (which previously turned it white in dark mode
-   and made the checklist text white-on-white). All values meet WCAG AA. */
+/* Featured (Hybrid) card: same surface as the others, only a subtle blue
+   border by default. The premium glow appears on hover (Linear/Stripe style). */
 .pathway-card.featured {
-  background: #0b1020;
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 30px 60px rgba(11, 16, 32, 0.45), 0 8px 24px rgba(37, 99, 235, 0.18);
-  color: #cbd5e1;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* top blue accent line (hover) */
+.pathway-card.featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+}
+
+/* bottom blue ambient light (hover) */
+.pathway-card.featured::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -30px;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 90px;
+  border-radius: 50%;
+  background: #3b82f6;
+  filter: blur(46px);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
 }
 
 .pathway-card.featured:hover {
-  transform: translateY(-6px);
-  border-color: rgba(96, 165, 250, 0.45);
-  box-shadow: 0 38px 80px rgba(11, 16, 32, 0.55), 0 14px 34px rgba(37, 99, 235, 0.3);
+  transform: translateY(-8px);
+  border-color: #3b82f6;
+  box-shadow:
+    0 0 20px rgba(59, 130, 246, 0.3),
+    0 0 50px rgba(59, 130, 246, 0.18),
+    0 24px 60px rgba(0, 0, 0, 0.2);
 }
 
-.pathway-card.featured h3 {
-  color: #ffffff;
-}
+.pathway-card.featured:hover::before { opacity: 1; }
+.pathway-card.featured:hover::after { opacity: 0.32; }
 
-.pathway-card.featured .pathway-desc {
-  color: #cbd5e1;
-  opacity: 1;
-}
-
+/* Floating "Most Recommended" badge attached to the top border */
 .pathway-badge {
-  align-self: flex-start;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 100px;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  background: var(--accent);
+  white-space: nowrap;
   color: #fff;
-  margin-bottom: 20px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
 }
 
 .pathway-icon {
@@ -1306,11 +1516,6 @@ p {
   background: var(--accent-soft);
   color: var(--accent-text);
   margin-bottom: 22px;
-}
-
-.pathway-card.featured .pathway-icon {
-  background: rgba(96, 165, 250, 0.16);
-  color: #60a5fa;
 }
 
 .pathway-icon svg {
@@ -1346,10 +1551,6 @@ p {
   font-weight: 500;
 }
 
-.pathway-card.featured .pathway-list li {
-  color: #e2e8f0;
-}
-
 .pathway-list svg {
   width: 17px;
   height: 17px;
@@ -1357,31 +1558,20 @@ p {
   color: var(--accent-text);
 }
 
-.pathway-card.featured .pathway-list svg {
-  color: #60a5fa;
-}
-
-.pathway-card .btn {
+/* CTA — dark by default, premium blue gradient on hover */
+.pathway-cta {
   margin-top: auto;
+  background: var(--ink);
+  color: var(--ink-contrast);
+  border: 1px solid transparent;
 }
 
-/* Featured CTA: blue gradient, white text, premium glow */
-.pathway-card.featured .pathway-badge {
+.pathway-cta:hover {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-}
-
-.pathway-card.featured .btn {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
-}
-
-.pathway-card.featured .btn:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  border-color: transparent;
   transform: translateY(-2px);
-  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.35), 0 10px 26px rgba(37, 99, 235, 0.3);
 }
 
 /* ----------------------------- Coach (executive profile) ----------------------------- */
@@ -1523,6 +1713,20 @@ p {
 }
 
 /* ----------------------------- Certifications wall ----------------------------- */
+/* Keep heading + subheading on one line on desktop */
+#credentials .section-lede {
+  max-width: 1000px;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+}
+
+@media (min-width: 1280px) {
+  #credentials .section-title,
+  #credentials .section-lede {
+    white-space: nowrap;
+    max-width: none;
+  }
+}
+
 .cert-wall {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

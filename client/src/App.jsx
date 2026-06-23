@@ -76,18 +76,21 @@ const methodStages = [
   {
     step: "Stage 01",
     title: "RESET",
+    accent: "#4F8CFF",
     desc: "Build the foundation. We create awareness, fix daily habits, and establish the consistency every transformation depends on.",
     points: ["Build Awareness", "Fix Habits", "Create Consistency"],
   },
   {
     step: "Stage 02",
     title: "REBUILD",
+    accent: "#8B5CF6",
     desc: "Develop the systems. Nutrition and training evolve into a repeatable structure that compounds results over time.",
     points: ["Improve Nutrition", "Develop Systems", "Increase Performance"],
   },
   {
     step: "Stage 03",
     title: "RISE",
+    accent: "#10B981",
     desc: "Master the lifestyle. Advanced body composition and long-term sustainability become a permanent part of who you are.",
     points: ["Lifestyle Mastery", "Long-Term Sustainability", "Advanced Body Composition"],
   },
@@ -171,16 +174,18 @@ const faqs = [
    Motion helpers
    ===================================================================== */
 
-function Reveal({ children, delay = 0, y = 26, className, as = "div" }) {
+function Reveal({ children, delay = 0, y = 26, className, as = "div", style, ...rest }) {
   const reduce = useReducedMotion();
   const MotionTag = motion[as] || motion.div;
   return (
     <MotionTag
       className={className}
+      style={style}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -80px 0px" }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay }}
+      {...rest}
     >
       {children}
     </MotionTag>
@@ -536,7 +541,7 @@ function Transformations() {
 
 function ProblemSolution() {
   return (
-    <section className="section bg-subtle">
+    <section id="why" className="section bg-subtle">
       <div className="shell">
         <SectionHead
           eyebrow="The Real Difference"
@@ -588,9 +593,19 @@ function CoachingMethod() {
 
         <div className="timeline">
           {methodStages.map((stage, i) => (
-            <Reveal key={stage.title} delay={i * 0.12} className="stage-card">
-              <div className="stage-node">{String(i + 1).padStart(2, "0")}</div>
-              <div className="stage-step">{stage.step}</div>
+            <Reveal
+              key={stage.title}
+              delay={i * 0.12}
+              className="stage-card"
+              style={{ "--card-accent": stage.accent }}
+              onMouseMove={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+              }}
+            >
+              <span className="stage-ambient" aria-hidden="true" />
+              <div className="stage-badge">Stage {i + 1}</div>
               <h3>{stage.title}</h3>
               <p className="stage-desc">{stage.desc}</p>
               <ul className="stage-points">
@@ -604,8 +619,7 @@ function CoachingMethod() {
 
         <Reveal className="method-statement">
           <p>
-            <span className="hl">The process is not fixed.</span> Every stage evolves based on
-            progress, challenges, lifestyle demands, and long-term transformation goals.
+            <span className="hl">The process is not fixed.</span> Every stage evolves based on progress, challenges, lifestyle demands, and long-term transformation goals.
           </p>
         </Reveal>
       </div>
@@ -638,7 +652,7 @@ function Pathways() {
                   <li key={it}><Icon.Check /> {it}</li>
                 ))}
               </ul>
-              <a className={`btn btn-lg ${p.featured ? "btn-accent" : "btn-ghost"}`} href="#apply">
+              <a className="btn btn-lg pathway-cta" href="#apply">
                 Apply For Coaching <Icon.Arrow />
               </a>
             </Reveal>
@@ -715,7 +729,7 @@ function Coach() {
 
 function Certifications() {
   return (
-    <section className="section bg-subtle">
+    <section id="credentials" className="section bg-subtle">
       <div className="shell">
         <SectionHead
           eyebrow="Credentials & Certifications"
