@@ -152,13 +152,6 @@ const testimonials = [
   { name: "Rahul Verma", role: "Founder", type: "Success Story", initials: "RV", quote: "Six months in and the habits are permanent. That's the real transformation." },
 ];
 
-const socialMetrics = [
-  { value: 100, suffix: "+", lbl: "Transformations" },
-  { value: 18, suffix: "+", lbl: "Years Experience" },
-  { value: 6, suffix: "+", lbl: "Countries Served" },
-  { value: 95, suffix: "%", lbl: "Client Satisfaction" },
-];
-
 const faqs = [
   { q: "How is Athlix different from a normal gym or diet plan?", a: "Athlix is not a downloadable plan — it is a coaching relationship. We combine personalized programming, weekly accountability, and lifestyle design to produce results that actually last." },
   { q: "What is the Athlix Coaching Method?", a: "A dynamic three-stage framework — Reset, Rebuild, Rise — that adapts as your body, lifestyle, and goals evolve. The process is never fixed; it changes with your progress." },
@@ -626,26 +619,28 @@ function ProblemSolution() {
         />
         <RevealGroup className="compare-grid">
           <Reveal group className="compare-card problem">
+            <span className="compare-glow" aria-hidden="true" />
             <h3>Why Most Fat Loss Attempts Fail</h3>
-            <ul className="compare-list">
+            <RevealGroup as="ul" className="compare-list">
               {problems.map((p) => (
-                <li key={p}>
+                <Reveal group as="li" y={14} key={p}>
                   <span className="compare-icon x"><Icon.X /></span>
-                  {p}
-                </li>
+                  <span className="compare-text">{p}</span>
+                </Reveal>
               ))}
-            </ul>
+            </RevealGroup>
           </Reveal>
           <Reveal group className="compare-card solution">
+            <span className="compare-glow" aria-hidden="true" />
             <h3>Why Athlix Clients Succeed</h3>
-            <ul className="compare-list">
+            <RevealGroup as="ul" className="compare-list">
               {solutions.map((s) => (
-                <li key={s}>
+                <Reveal group as="li" y={14} key={s}>
                   <span className="compare-icon check"><Icon.Check /></span>
-                  {s}
-                </li>
+                  <span className="compare-text">{s}</span>
+                </Reveal>
               ))}
-            </ul>
+            </RevealGroup>
           </Reveal>
         </RevealGroup>
       </div>
@@ -881,68 +876,6 @@ function Testimonials() {
 }
 
 /* =====================================================================
-   Social proof (animated counters)
-   ===================================================================== */
-
-function useCountUp(target, run, duration = 2000) {
-  const [val, setVal] = useState(0);
-  const reduce = useReducedMotion();
-  useEffect(() => {
-    if (!run || reduce) return undefined;
-    let raf;
-    const start = performance.now();
-    const tick = (now) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(eased * target));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [run, target, duration, reduce]);
-  return reduce ? target : val;
-}
-
-function Metric({ m, run }) {
-  const val = useCountUp(m.value, run);
-  return (
-    <div className="metric">
-      <div className="num">{val}<span className="suffix">{m.suffix}</span></div>
-      <div className="lbl">{m.lbl}</div>
-    </div>
-  );
-}
-
-function SocialProof() {
-  const ref = useRef(null);
-  // If IntersectionObserver is unavailable, run counters immediately.
-  const [run, setRun] = useState(() => typeof window !== "undefined" && !("IntersectionObserver" in window));
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !("IntersectionObserver" in window)) return undefined;
-    const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setRun(true); io.disconnect(); } },
-      { threshold: 0.3 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return (
-    <section className="section bg-subtle">
-      <div className="shell" ref={ref}>
-        <RevealGroup className="metrics-grid">
-          {socialMetrics.map((m) => (
-            <Reveal group key={m.lbl}>
-              <Metric m={m} run={run} />
-            </Reveal>
-          ))}
-        </RevealGroup>
-      </div>
-    </section>
-  );
-}
-
-/* =====================================================================
    FAQ
    ===================================================================== */
 
@@ -984,7 +917,7 @@ function FAQItem({ item, isOpen, onToggle }) {
 function FAQ() {
   const [open, setOpen] = useState(0);
   return (
-    <section id="faq" className="section">
+    <section id="faq" className="section bg-subtle">
       <div className="shell faq-shell">
         <SectionHead
           eyebrow="Questions"
@@ -1007,9 +940,12 @@ function FAQ() {
    Application form
    ===================================================================== */
 
-// Optional CRM / Google Sheets endpoint. Set VITE_FORM_ENDPOINT to enable a
-// real POST (e.g. a Google Apps Script Web App, Formspree, or your CRM webhook).
-const FORM_ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT || "";
+// Submissions go to OUR backend (never a third-party webhook with secrets).
+// Same-origin "/api/apply" works in production behind a reverse proxy; in dev
+// the Vite proxy (see vite.config.js) forwards /api to the local API server.
+// Override the base URL only if the API is hosted on a different origin.
+const API_BASE = import.meta.env.VITE_API_URL || "";
+const APPLY_ENDPOINT = `${API_BASE}/api/apply`;
 
 const goalOptions = ["Fat Loss", "Body Recomposition", "Muscle Gain", "Lifestyle Transformation", "General Fitness"];
 const pathwayOptions = ["Online Coaching", "Offline Coaching", "Hybrid Coaching", "Not Sure Yet"];
@@ -1018,6 +954,7 @@ const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
 const initialForm = {
   name: "", phone: "", email: "", age: "", gender: "",
   currentWeight: "", goal: "", pathway: "", message: "",
+  company: "", // honeypot — must stay empty; real users never see this field
 };
 
 function validate(values) {
@@ -1039,6 +976,9 @@ function ApplicationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [serverError, setServerError] = useState("");
+  // Guards against duplicate submissions from rapid double-clicks / Enter spam
+  // (a synchronous lock that doesn't depend on async state updates).
+  const inFlightRef = useRef(false);
 
   const update = (key) => (ev) => {
     setValues((v) => ({ ...v, [key]: ev.target.value }));
@@ -1047,6 +987,7 @@ function ApplicationForm() {
 
   const onSubmit = async (ev) => {
     ev.preventDefault();
+    if (inFlightRef.current) return; // already sending — ignore duplicate trigger
     setServerError("");
     const errs = validate(values);
     setErrors(errs);
@@ -1055,30 +996,44 @@ function ApplicationForm() {
       first?.focus();
       return;
     }
+    inFlightRef.current = true;
     setSubmitting(true);
     try {
-      if (FORM_ENDPOINT) {
-        const res = await fetch(FORM_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...values, source: "athlix-website", submittedAt: new Date().toISOString() }),
-        });
-        if (!res.ok) throw new Error("Request failed");
-      } else {
-        // No backend configured yet — simulate the request so the UX is complete.
-        await new Promise((r) => setTimeout(r, 1100));
+      const res = await fetch(APPLY_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...values, source: "athlix-website", submittedAt: new Date().toISOString() }),
+      });
+
+      if (res.ok) {
+        setDone(true);
+        setValues(initialForm);
+        return;
       }
-      setDone(true);
-      setValues(initialForm);
+
+      // Server is the source of truth. Surface its safe, field-level messages.
+      let data = null;
+      try { data = await res.json(); } catch { /* ignore non-JSON */ }
+      if (res.status === 400 && data?.fields && typeof data.fields === "object") {
+        setErrors(data.fields);
+        const first = document.querySelector(".field.error input, .field.error select");
+        first?.focus();
+        setServerError(data.error || "Please correct the highlighted fields.");
+      } else if (res.status === 429) {
+        setServerError("Too many attempts. Please wait a little while and try again.");
+      } else {
+        setServerError(data?.error || "Something went wrong. Please try again, or reach us on WhatsApp.");
+      }
     } catch {
       setServerError("Something went wrong. Please try again, or reach us on WhatsApp.");
     } finally {
+      inFlightRef.current = false;
       setSubmitting(false);
     }
   };
 
   return (
-    <section id="apply" className="section bg-subtle">
+    <section id="apply" className="section">
       <RevealGroup className="shell apply-grid">
         <Reveal group>
           <p className="eyebrow">Start Your Transformation</p>
@@ -1159,6 +1114,20 @@ function ApplicationForm() {
                 <Field label="Message (optional)" id="message" wide>
                   <textarea id="message" rows="4" value={values.message} onChange={update("message")} placeholder="Tell us about your goals, challenges, and why you want to transform now." />
                 </Field>
+
+                {/* Honeypot: hidden from real users; bots that auto-fill it are dropped server-side. */}
+                <div className="hp-field" aria-hidden="true">
+                  <label htmlFor="company">Company (leave this empty)</label>
+                  <input
+                    id="company"
+                    name="company"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={values.company}
+                    onChange={update("company")}
+                  />
+                </div>
 
                 {serverError && (
                   <div className="form-status err" role="alert"><Icon.X /> {serverError}</div>
@@ -1379,7 +1348,6 @@ export default function App() {
         <Coach />
         <Certifications />
         <Testimonials />
-        <SocialProof />
         <FAQ />
         <ApplicationForm />
       </main>
