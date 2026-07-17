@@ -3,7 +3,8 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { useTheme } from "./theme/ThemeContext.jsx";
 import { Icon } from "./components/icons.jsx";
-import TransformationComparisonCard from "./components/TransformationComparisonCard.jsx";
+// No longer used — transformations are single combined images now (no slider).
+// import TransformationComparisonCard from "./components/TransformationComparisonCard.jsx";
 
 /* assets */
 import heroImage from "./assets/1.webp";
@@ -15,26 +16,24 @@ import r1 from "./assets/4_1.webp";
 import r2 from "./assets/4_2.webp";
 import r3 from "./assets/4_3.webp";
 
-// TEMPORARILY DISABLED
-// Real Client Proof section is hidden for now.
-// Do not delete. This section will be re-enabled in the future.
-// (Data for the Real Client Proof section — commented out so lint stays clean.)
-/* Auto-detect every before/after transformation pair (2_N_before / 2_N_after). */
-/*
-const baModules = import.meta.glob("./assets/2_*_{before,after}.webp", { eager: true, import: "default" });
-const transformationPairs = (() => {
-  const map = {};
-  for (const [key, url] of Object.entries(baModules)) {
-    const m = key.match(/2_(\d+)_(before|after)\.webp$/);
-    if (!m) continue;
-    const id = Number(m[1]);
-    (map[id] ||= { id })[m[2]] = url;
-  }
-  return Object.values(map)
-    .filter((p) => p.before && p.after)
-    .sort((a, b) => a.id - b.id);
-})();
-*/
+/* Transformation showcase — each image already contains the complete
+   Before + After comparison, so no slider logic is needed. WebP derivatives
+   of 2_N.png (generated with the repo's sharp pipeline settings). */
+import t1 from "./assets/2_1.webp";
+import t2 from "./assets/2_2.webp";
+import t3 from "./assets/2_3.webp";
+import t4 from "./assets/2_4.webp";
+import t5 from "./assets/2_5.webp";
+import t6 from "./assets/2_6.webp";
+
+const transformationImages = [
+  { id: 1, src: t1 },
+  { id: 2, src: t2 },
+  { id: 3, src: t3 },
+  { id: 4, src: t4 },
+  { id: 5, src: t5 },
+  { id: 6, src: t6 },
+];
 
 /* certification logos (flat src/assets location) */
 import certAce from "./assets/ace-logo.webp";
@@ -277,9 +276,7 @@ function SectionHead({ eyebrow, title, lede, align = "center" }) {
    ===================================================================== */
 
 const navLinks = [
-  // TEMPORARILY DISABLED
-  // Transformation section will be enabled again later.
-  // { href: "#transformations", label: "Transformations" },
+  { href: "#transformations", label: "Transformations" },
   { href: "#method", label: "Method" },
   { href: "#pathways", label: "Pathways" },
   { href: "#coach", label: "Coach" },
@@ -458,7 +455,7 @@ function Hero() {
             transition={{ delay: 0.62, duration: 0.6 }}
           >
             <div className="stat-num">100+</div>
-            <div className="stat-label">Real transformations<br />across 6 countries</div>
+            <div className="stat-label">Real transformations<br />globally</div>
           </motion.div>
         </motion.div>
       </div>
@@ -483,10 +480,6 @@ function Hero() {
    Transformations
    ===================================================================== */
 
-// TEMPORARILY DISABLED
-// Real Client Proof section is hidden for now.
-// Do not delete. This section will be re-enabled in the future.
-/*
 function useMediaQuery(query) {
   const [matches, setMatches] = useState(
     () => typeof window !== "undefined" && window.matchMedia(query).matches
@@ -501,11 +494,10 @@ function useMediaQuery(query) {
 }
 
 function Transformations() {
-  const n = transformationPairs.length;
+  const n = transformationImages.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const resumeRef = useRef(null);
-  const comparingRef = useRef(false);
   const swipeRef = useRef(null);
   const isMobile = useMediaQuery("(max-width: 680px)");
   const isCompact = useMediaQuery("(max-width: 1024px)");
@@ -529,22 +521,14 @@ function Transformations() {
 
   useEffect(() => () => clearTimeout(resumeRef.current), []);
 
-  // Pause while comparing (dragging the slider); resume shortly after.
-  const onCardDrag = (dragging) => {
-    if (dragging) { comparingRef.current = true; setPaused(true); clearTimeout(resumeRef.current); }
-    else { pauseFor(); }
-  };
-
-  // Swipe-to-navigate. Capture phase resets the comparing flag at gesture start;
-  // if a card then begins a compare-drag it sets the flag and we skip navigation.
+  // Swipe-to-navigate.
   const onStageDownCapture = (e) => {
-    comparingRef.current = false;
     swipeRef.current = { x: e.clientX, t: Date.now() };
   };
   const onStageUp = (e) => {
     const s = swipeRef.current;
     swipeRef.current = null;
-    if (!s || comparingRef.current) return; // a compare-drag, not a swipe
+    if (!s) return;
     const dx = e.clientX - s.x;
     if (Math.abs(dx) > 55 && Date.now() - s.t < 800) (dx < 0 ? next() : prev());
   };
@@ -552,11 +536,13 @@ function Transformations() {
   // Render ONLY three cards: previous, active, next. Explicit role-based
   // transforms + z-index — no hidden cards, no overlap, no ghosting.
   const sideX = isMobile ? 90 : isCompact ? 80 : 104;
-  const sideScale = isMobile ? 0.82 : isCompact ? 0.86 : 0.9;
-  const sideOpacity = isMobile ? 0.3 : isCompact ? 0.5 : 0.6;
+  // Side cards ~12% smaller than before and slightly more transparent, so the
+  // center transformation reads as the clear primary focus.
+  const sideScale = isMobile ? 0.72 : isCompact ? 0.76 : 0.79;
+  const sideOpacity = isMobile ? 0.28 : isCompact ? 0.45 : 0.5;
   const ROLE = {
     prev:   { x: `-${sideX}%`, scale: sideScale, opacity: sideOpacity, z: 20 },
-    active: { x: "0%",         scale: 1,          opacity: 1,           z: 30 },
+    active: { x: "0%",         scale: 1.04,       opacity: 1,           z: 30 },
     next:   { x: `${sideX}%`,  scale: sideScale,  opacity: sideOpacity, z: 20 },
   };
 
@@ -564,11 +550,11 @@ function Transformations() {
   const nextIndex = (active + 1) % n;
   const visible =
     n <= 1
-      ? [{ pair: transformationPairs[active], role: "active" }]
+      ? [{ pair: transformationImages[active], role: "active" }]
       : [
-          { pair: transformationPairs[prevIndex], role: "prev" },
-          { pair: transformationPairs[active], role: "active" },
-          { pair: transformationPairs[nextIndex], role: "next" },
+          { pair: transformationImages[prevIndex], role: "prev" },
+          { pair: transformationImages[active], role: "active" },
+          { pair: transformationImages[nextIndex], role: "next" },
         ];
 
   return (
@@ -596,21 +582,24 @@ function Transformations() {
                 return (
                   <motion.div
                     key={pair.id}
-                    className="cover-card"
+                    className={`cover-card is-${role}`}
                     style={{ zIndex: t.z }}
                     initial={{ x: t.x, y: "-50%", scale: t.scale, opacity: 0 }}
                     animate={{ x: t.x, y: "-50%", scale: t.scale, opacity: t.opacity }}
                     exit={{ opacity: 0, transition: { duration: 0.3 } }}
                     transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <TransformationComparisonCard
-                      before={pair.before}
-                      after={pair.after}
-                      alt={`Athlix client ${pair.id} transformation`}
-                      onActiveChange={onCardDrag}
-                      featured={role === "active"}
-                      dragFromHandleOnly={isMobile && role === "active"}
-                    />
+                    <div className="ba-card">
+                      <div className="ba-frame">
+                        <img
+                          className="ba-img"
+                          src={pair.src}
+                          alt={`Athlix client ${pair.id} transformation — before and after`}
+                          loading="lazy"
+                          draggable="false"
+                        />
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}
@@ -625,7 +614,6 @@ function Transformations() {
     </section>
   );
 }
-*/
 
 /* =====================================================================
    Problem vs Solution
@@ -683,7 +671,7 @@ function CoachingMethod() {
         <SectionHead
           eyebrow="The Framework"
           title={
-            <span className="method-title-row">
+            <span className="method-title-stack">
               <img src={logoMark} alt="" className="method-logo" />
               <span>The Athlix <span className="accent">Coaching Method</span></span>
             </span>
@@ -1200,6 +1188,8 @@ function Footer() {
         <nav className="footer-links" aria-label="Footer">
           <a href="#top">Home</a>
           <span className="dot" aria-hidden="true">•</span>
+          <a href="#transformations">Transformations</a>
+          <span className="dot" aria-hidden="true">•</span>
           <a href="#method">Method</a>
           <span className="dot" aria-hidden="true">•</span>
           <a href="#pathways">Pathways</a>
@@ -1365,10 +1355,7 @@ export default function App() {
       <Header />
       <main>
         <Hero />
-        {/* TEMPORARILY DISABLED
-            Real Client Proof section is hidden for now.
-            Do not delete. This section will be re-enabled in the future. */}
-        {/* <Transformations /> */}
+        <Transformations />
         <ProblemSolution />
         <CoachingMethod />
         <Pathways />

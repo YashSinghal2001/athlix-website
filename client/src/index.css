@@ -682,11 +682,13 @@ p {
   max-width: none;
 }
 
-.method-title-row {
+/* Logo stacked centered above the heading text, inside the same h2 (so both
+   share the heading's reveal animation). */
+.method-title-stack {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .method-logo {
@@ -694,7 +696,6 @@ p {
   width: 60px;
   height: auto;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .nav-center {
@@ -1279,7 +1280,8 @@ body.cursor-active .cursor-glow {
 
 /* 3-card coverflow showcase */
 .show-wrap {
-  --cardw: clamp(240px, 22vw, 330px);
+  /* landscape cards (was portrait): wider so the visual mass stays similar */
+  --cardw: clamp(300px, 34vw, 470px);
   position: relative;
   max-width: 1180px;
   margin: 0 auto;
@@ -1289,7 +1291,7 @@ body.cursor-active .cursor-glow {
 
 .cover-stage {
   position: relative;
-  height: calc(var(--cardw) * 1.333); /* matches the 3/4 card frame */
+  height: calc(var(--cardw) * 0.82); /* matches the landscape card frame (1135/1386) */
   margin: 0 auto;
   touch-action: pan-y; /* allow vertical page scroll, capture horizontal */
 }
@@ -1304,31 +1306,58 @@ body.cursor-active .cursor-glow {
   will-change: transform, opacity;
 }
 
+/* Side cards recede: slightly dimmed + desaturated, with a subtle dark scrim,
+   so the center transformation stays the primary focus. The filter/overlay
+   transitions match the carousel's slide timing for a smooth role handoff. */
+.cover-card .ba-card {
+  position: relative;
+  transition: filter 0.55s var(--ease);
+}
+
+.cover-card .ba-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: rgba(8, 9, 12, 0.22);
+  opacity: 0;
+  transition: opacity 0.55s var(--ease);
+  pointer-events: none;
+}
+
+.cover-card.is-prev .ba-card,
+.cover-card.is-next .ba-card {
+  filter: brightness(0.85) saturate(0.82);
+}
+
+.cover-card.is-prev .ba-card::after,
+.cover-card.is-next .ba-card::after {
+  opacity: 1;
+}
+
 /* Side navigation — circular glass buttons, vertically centered beside cards */
+/* Always-visible dark glass buttons — high contrast against the light
+   transformation photos in BOTH themes. */
 .show-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 40;
-  width: 54px;
-  height: 54px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: var(--text-strong);
+  background: rgba(8, 9, 12, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), 0 4px 18px rgba(0, 0, 0, 0.3);
   transition: transform 0.25s var(--ease), background-color 0.25s var(--ease),
     color 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
-}
-
-[data-theme="light"] .show-nav {
-  background: rgba(255, 255, 255, 0.7);
-  border-color: var(--border);
 }
 
 .show-nav.prev { left: 0; }
@@ -1339,11 +1368,11 @@ body.cursor-active .cursor-glow {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
-  box-shadow: 0 12px 30px rgba(47, 107, 255, 0.45);
+  box-shadow: 0 12px 30px rgba(47, 107, 255, 0.45), 0 6px 22px rgba(0, 0, 0, 0.35);
 }
 
 .show-nav:active { transform: translateY(-50%) scale(0.96); }
-.show-nav svg { width: 22px; height: 22px; }
+.show-nav svg { width: 24px; height: 24px; }
 
 .ba-card {
   border-radius: var(--radius-lg);
@@ -1363,12 +1392,12 @@ body.cursor-active .cursor-glow {
 .ba-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  /* Combined Before+After images are landscape (~1386×1135) */
+  aspect-ratio: 1386 / 1135;
   overflow: hidden;
   border-radius: var(--radius-lg);
   background: var(--bg-sunken);
-  cursor: ew-resize;
-  touch-action: none; /* enables pointer-drag without triggering page scroll */
+  touch-action: pan-y; /* vertical page scroll passes through; horizontal swipes navigate */
   user-select: none;
   -webkit-user-select: none;
 }
@@ -1383,91 +1412,6 @@ body.cursor-active .cursor-glow {
   pointer-events: none;
   -webkit-user-drag: none;
   user-select: none;
-}
-
-.ba-before {
-  position: absolute;
-  inset: 0;
-  will-change: clip-path;
-}
-
-.ba-tag {
-  position: absolute;
-  top: 14px;
-  z-index: 3;
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #fff;
-  background: rgba(8, 9, 12, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  pointer-events: none;
-}
-
-.ba-tag-before { left: 14px; }
-.ba-tag-after { right: 14px; }
-
-.ba-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: 4;
-  width: 2px;
-  margin-left: -1px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
-}
-
-.ba-handle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--accent);
-  color: #fff;
-  border: 3px solid #fff;
-  box-shadow: 0 6px 20px rgba(47, 107, 255, 0.55);
-}
-
-.ba-handle svg {
-  width: 18px;
-  height: 18px;
-}
-
-.ba-card:hover .ba-handle {
-  box-shadow: 0 8px 26px rgba(47, 107, 255, 0.7);
-}
-
-/* Featured (single-showcase) variant — larger, more premium */
-.ba-card--featured {
-  box-shadow: var(--shadow-lg);
-}
-
-.ba-card--featured .ba-handle {
-  width: 56px;
-  height: 56px;
-  border-width: 3px;
-}
-
-.ba-card--featured .ba-handle svg {
-  width: 22px;
-  height: 22px;
-}
-
-.ba-card--featured .ba-tag {
-  font-size: 0.72rem;
-  padding: 7px 14px;
 }
 
 
@@ -2914,7 +2858,7 @@ body.cursor-active .cursor-glow {
 /* Transformation showcase — compact controls on small screens */
 @media (max-width: 680px) {
   .show-wrap {
-    --cardw: min(74vw, 300px);
+    --cardw: min(84vw, 360px); /* landscape cards get a bit more width on phones */
     padding-inline: 0;
   }
   .show-nav {
