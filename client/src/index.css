@@ -646,6 +646,57 @@ p {
   color: var(--accent-text);
 }
 
+/* Image logo: 37px tall, with the same layout height as the old text logo
+   (≈34px line box) so the navbar height is unchanged. Width stays auto so the
+   aspect ratio is never distorted. */
+.logo-mark img {
+  display: block;
+  height: 37px;
+  width: auto;
+  object-fit: contain;
+  margin-block: -1.5px;
+}
+
+@media (max-width: 1024px) {
+  .logo-mark img {
+    height: 34px;
+    margin-block: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .logo-mark img {
+    height: 31px;
+  }
+}
+
+/* "The Athlix Coaching Method" heading: logo + title on one horizontal row.
+   Same pattern as #why — free the head from the 720px box so the row can sit
+   on one line, centered on the shell axis (the lede keeps its own max-width). */
+#method .section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: none;
+}
+
+.method-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.method-logo {
+  display: block;
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .nav-center {
   display: flex;
   align-items: center;
@@ -1085,7 +1136,7 @@ body.cursor-active .cursor-glow {
   z-index: 1;
   margin-top: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -1105,6 +1156,59 @@ body.cursor-active .cursor-glow {
   font-weight: 700;
   color: var(--text-strong);
   letter-spacing: -0.02em;
+}
+
+/* "Globally Served" card — outline globe icon centered in place of the number.
+   Icon is 52px at desktop (1.55em of the stat-number font) and scales with the
+   same clamp() as the digits, so the row height and label baselines stay level
+   with the other cards at every breakpoint. */
+.trust-cell-globe {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.trust-cell-globe .num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.6em; /* match the digits' line box so rows stay level */
+}
+
+.trust-cell-globe .num svg {
+  display: block;
+  width: 1.55em;  /* = 52px at the desktop stat font size */
+  height: 1.55em;
+}
+
+.trust-cell-globe:hover {
+  transform: translateY(-4px);
+  box-shadow: inset 0 0 0 1px var(--border-strong); /* border brightens */
+  z-index: 1;
+}
+
+.trust-cell-globe:hover .num svg {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .trust-cell-globe {
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+  }
+  .trust-cell-globe .num svg {
+    transition: transform 0.28s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-cell-globe:hover {
+    transform: none;
+  }
+  .trust-cell-globe:hover .num svg {
+    transform: none;
+  }
 }
 
 .trust-cell .lbl {
@@ -1798,24 +1902,43 @@ body.cursor-active .cursor-glow {
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: clamp(26px, 3vw, 36px);
   isolation: isolate;
   --card-glow: rgba(96, 165, 250, 0.15);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  /* layered depth: ambient shadow + faint blue glow + inner top highlight */
+  box-shadow:
+    var(--shadow-md),
+    0 0 24px rgba(96, 165, 250, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .pathway-card:hover {
   transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: var(--shadow-lg), 0 0 32px var(--card-glow);
-  border-color: var(--border-strong);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 36px var(--card-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-strong));
 }
 
-/* Featured (Hybrid) card: same surface as the others, only a subtle blue
-   border by default. The premium glow appears on hover (Linear/Stripe style). */
+@media (prefers-reduced-motion: reduce) {
+  .pathway-card:hover { transform: none !important; }
+  .pathway-card.featured:hover { transform: scale(1.03) !important; }
+}
+
+/* Featured (Hybrid) card: the resting focal point — slightly larger, brighter
+   blue border, ambient glow. (!important because the reveal animation writes
+   inline transforms.) */
 .pathway-card.featured {
-  border-color: rgba(59, 130, 246, 0.4);
+  transform: scale(1.03) !important;
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 40px rgba(59, 130, 246, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* (Featured top accent line is now handled by the unified .pathway-card::before
@@ -1833,18 +1956,19 @@ body.cursor-active .cursor-glow {
   border-radius: 50%;
   background: #3b82f6;
   filter: blur(46px);
-  opacity: 0;
+  opacity: 0.12;
   z-index: -1;
   pointer-events: none;
   transition: opacity 0.4s var(--ease);
 }
 
 .pathway-card.featured:hover {
-  transform: translateY(-8px) scale(1.02) !important;
+  transform: translateY(-8px) scale(1.05) !important;
   border-color: #3b82f6;
   box-shadow:
-    0 0 32px rgba(96, 165, 250, 0.15),
-    0 24px 60px rgba(0, 0, 0, 0.2);
+    0 0 40px rgba(96, 165, 250, 0.2),
+    0 24px 60px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .pathway-card.featured:hover::after { opacity: 0.2; }
@@ -1896,6 +2020,8 @@ body.cursor-active .cursor-glow {
   font-size: 0.95rem;
   color: var(--text-muted);
   line-height: 1.6;
+  /* reserve 3 lines so the comparison rows start level across all cards */
+  min-height: 4.8em;
 }
 
 .pathway-list {
@@ -1913,6 +2039,7 @@ body.cursor-active .cursor-glow {
   gap: 11px;
   font-size: 0.93rem;
   font-weight: 500;
+  color: var(--text-strong);
 }
 
 .pathway-list svg {
@@ -1920,6 +2047,16 @@ body.cursor-active .cursor-glow {
   height: 17px;
   flex-shrink: 0;
   color: var(--accent-text);
+}
+
+/* Features not included in a tier: same row height, faded into the surface. */
+.pathway-list li.excluded {
+  color: var(--text-faint);
+  opacity: 0.4;
+}
+
+.pathway-list li.excluded svg {
+  color: var(--text-faint);
 }
 
 /* CTA — dark by default, premium blue gradient on hover */
@@ -1986,43 +2123,6 @@ body.cursor-active .cursor-glow {
 }
 
 /* subtle gradient at the bottom for readability of the floating stat card */
-.coach-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 52%, rgba(8, 9, 12, 0.55));
-}
-
-.coach-photo .float {
-  position: absolute;
-  z-index: 2;
-  left: 20px;
-  bottom: 20px;
-  right: 20px;
-  background: var(--surface-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  display: flex;
-  gap: 24px;
-}
-
-.coach-photo .float div strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  color: var(--text-strong);
-}
-
-.coach-photo .float div span {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-}
-
 .coach-copy p {
   font-size: 1.02rem;
   line-height: 1.7;
@@ -2031,7 +2131,7 @@ body.cursor-active .cursor-glow {
 
 .coach-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin: 30px 0;
   padding: 24px 0;
@@ -2052,30 +2152,19 @@ body.cursor-active .cursor-glow {
   margin-top: 4px;
 }
 
-.spec-row {
+/* "Globally Served" stat: outline globe in place of the number, sized to the
+   digits' visual weight and box-matched to their line height so all three
+   labels stay level. */
+.coach-stats .globe .num {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
-.spec-chip {
-  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 15px;
-  border-radius: 100px;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text);
+  min-height: 1.6em;
 }
 
-.spec-chip svg {
-  width: 15px;
-  height: 15px;
-  color: var(--accent-text);
+.coach-stats .globe .num svg {
+  display: block;
+  width: 0.95em;
+  height: 0.95em;
 }
 
 /* ----------------------------- Certifications wall ----------------------------- */
@@ -2200,11 +2289,18 @@ body.cursor-active .cursor-glow {
 }
 
 /* ----------------------------- Testimonials ----------------------------- */
+/* Marquee viewport. The old 8% edge mask swallowed ~a third of the first card;
+   a fixed 24px fade (matching the 24px side padding) keeps every card fully
+   visible while still softening the clip edge. Vertical padding (offset by a
+   negative margin, so section spacing is unchanged) gives hover lift + shadows
+   room inside the overflow clip. */
 .tst-track-wrap {
   position: relative;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  padding: 32px 24px;
+  margin-block: -32px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
 }
 
 .tst-track {
@@ -2227,11 +2323,15 @@ body.cursor-active .cursor-glow {
   width: 360px;
   flex-shrink: 0;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 18px;
   padding: 28px;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  /* layered depth: ambient shadow + faint blue glow + inner top highlight */
+  box-shadow:
+    var(--shadow-md),
+    0 0 24px rgba(96, 165, 250, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
   /* barely-there float so the row feels alive (paused on hover via the lift) */
   animation: tst-float 6s ease-in-out infinite;
 }
@@ -2251,12 +2351,20 @@ body.cursor-active .cursor-glow {
 
 @media (prefers-reduced-motion: reduce) {
   .tst-card { animation: none; }
+  .tst-card:hover { transform: none !important; }
+  .tst-card:hover .tst-avatar { transform: none; }
 }
 
+/* 3D hover: lift + slight tilt. --rx/--ry are fed by the card's mousemove
+   handler (±4deg max); the 4deg/3deg fallbacks apply until the cursor moves. */
 .tst-card:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-lg), 0 0 32px rgba(96, 165, 250, 0.15);
+  transform: perspective(900px) translateY(-8px) scale(1.02)
+    rotateX(var(--rx, 4deg)) rotateY(var(--ry, 3deg)) !important;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+  box-shadow:
+    var(--shadow-lg),
+    0 18px 48px rgba(96, 165, 250, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .tst-stars {
@@ -2269,6 +2377,7 @@ body.cursor-active .cursor-glow {
 .tst-stars svg {
   width: 16px;
   height: 16px;
+  filter: drop-shadow(0 0 3px rgba(245, 166, 35, 0.4)); /* static tiny glow */
 }
 
 .tst-card blockquote {
@@ -2297,6 +2406,15 @@ body.cursor-active .cursor-glow {
   background: linear-gradient(140deg, var(--accent), var(--accent-strong));
   flex-shrink: 0;
   overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.28);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.tst-card:hover .tst-avatar {
+  transform: scale(1.06);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.45);
 }
 
 .tst-avatar img {
@@ -2571,83 +2689,60 @@ body.cursor-active .cursor-glow {
 }
 
 /* ----------------------------- Footer ----------------------------- */
+/* Compact, centered, single-column footer (Stripe/Linear style). */
 .footer {
   background: var(--bg-subtle);
   border-top: 1px solid var(--border);
-  padding-block: clamp(48px, 6vw, 72px) 32px;
+  padding-block: clamp(28px, 4vw, 44px) 24px;
 }
 
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr;
-  gap: 40px;
-  padding-bottom: 40px;
-  border-bottom: 1px solid var(--border);
-}
-
-.footer-brand p {
-  margin-top: 16px;
-  max-width: 340px;
-  font-size: 0.92rem;
-  line-height: 1.6;
-}
-
-.footer-socials {
+.footer-stack {
   display: flex;
-  gap: 10px;
-  margin-top: 22px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
 }
 
-.footer-socials a {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  display: inline-flex;
+.footer-tagline {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease);
-}
-
-.footer-socials a:hover {
-  color: var(--text-strong);
-  border-color: var(--border-strong);
-  transform: translateY(-2px);
-}
-
-.footer-socials svg {
-  width: 18px;
-  height: 18px;
-}
-
-.footer-col h4 {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 16px;
-}
-
-.footer-col a {
-  display: block;
-  padding: 7px 0;
+  gap: 6px 12px;
   font-size: 0.92rem;
-  color: var(--text-muted);
-  transition: color 0.2s var(--ease);
 }
 
-.footer-col a:hover {
+.footer-links a {
+  color: var(--text-muted);
+  opacity: 0.85;
+  transition: color 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+
+.footer-links a:hover {
   color: var(--text-strong);
+  opacity: 1;
+}
+
+.footer-links .dot {
+  color: var(--text-faint);
+  user-select: none;
 }
 
 .footer-bottom {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: space-between;
-  padding-top: 26px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
   font-size: 0.84rem;
   color: var(--text-faint);
 }
@@ -2760,9 +2855,6 @@ body.cursor-active .cursor-glow {
   .timeline::before {
     display: none;
   }
-  .pathway-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 680px) {
@@ -2772,16 +2864,15 @@ body.cursor-active .cursor-glow {
   .trust-bar {
     grid-template-columns: repeat(2, 1fr);
   }
+  .trust-cell:last-child {
+    grid-column: 1 / -1;
+  }
   .apply-form {
     grid-template-columns: 1fr;
   }
   .field.wide,
   .field {
     grid-column: 1 / -1;
-  }
-  .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 32px;
   }
   .cert-wall {
     grid-template-columns: repeat(2, 1fr);
@@ -2850,5 +2941,44 @@ body.cursor-active .cursor-glow {
   }
   .tst-track {
     animation: none;
+  }
+}
+
+/* --------------- Pathways comparison — responsive --------------- */
+/* Tablet: keep the three-column comparison, compact the cards to fit. */
+@media (max-width: 1024px) {
+  .pathway-grid {
+    gap: 14px;
+  }
+  .pathway-card {
+    padding: 20px 16px;
+  }
+  .pathway-card h3 {
+    font-size: 1.2rem;
+  }
+  .pathway-list li {
+    font-size: 0.85rem;
+    gap: 8px;
+  }
+}
+
+/* Phones: stack vertically, restore roomy card padding. */
+@media (max-width: 720px) {
+  .pathway-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .pathway-card {
+    padding: 26px 22px;
+  }
+  .pathway-card h3 {
+    font-size: 1.4rem;
+  }
+  .pathway-list li {
+    font-size: 0.93rem;
+    gap: 11px;
+  }
+  .pathway-desc {
+    min-height: 0;
   }
 }

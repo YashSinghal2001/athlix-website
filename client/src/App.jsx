@@ -7,6 +7,7 @@ import TransformationComparisonCard from "./components/TransformationComparisonC
 
 /* assets */
 import heroImage from "./assets/1.webp";
+import logoMark from "./assets/logo-mark.png"; // trimmed web copy of logo.png
 import coachImage from "./assets/images/Coach.webp"; // optimized from Images/Coach.jpg
 import blueTick from "./assets/Blue_tick.png";
 
@@ -14,7 +15,12 @@ import r1 from "./assets/4_1.webp";
 import r2 from "./assets/4_2.webp";
 import r3 from "./assets/4_3.webp";
 
+// TEMPORARILY DISABLED
+// Real Client Proof section is hidden for now.
+// Do not delete. This section will be re-enabled in the future.
+// (Data for the Real Client Proof section — commented out so lint stays clean.)
 /* Auto-detect every before/after transformation pair (2_N_before / 2_N_after). */
+/*
 const baModules = import.meta.glob("./assets/2_*_{before,after}.webp", { eager: true, import: "default" });
 const transformationPairs = (() => {
   const map = {};
@@ -28,6 +34,7 @@ const transformationPairs = (() => {
     .filter((p) => p.before && p.after)
     .sort((a, b) => a.id - b.id);
 })();
+*/
 
 /* certification logos (flat src/assets location) */
 import certAce from "./assets/ace-logo.webp";
@@ -50,8 +57,7 @@ import certEcna from "./assets/ecna-logo.png";
 const trustMetrics = [
   { num: "18+", lbl: "Years Experience" },
   { num: "100+", lbl: "Transformations" },
-  { num: "6", lbl: "Countries Served" },
-  { num: "ACE", lbl: "Certified Coach" },
+  { num: <Icon.Globe aria-hidden="true" />, lbl: "Globally Served", globe: true },
 ];
 
 const problems = [
@@ -96,18 +102,30 @@ const methodStages = [
   },
 ];
 
+/* Comparison matrix: every existing feature (unchanged wording), ordered
+   basic → premium. Each pathway includes a prefix of this list, so the tiers
+   read as a staircase: Online (4) ⊂ Hybrid (8) ⊂ Offline (all 12). */
+const pathwayFeatures = [
+  "Personalized Programming",
+  "Remote Coaching",
+  "Weekly Reviews",
+  "App Support",
+  "Best of Online + Offline",
+  "Faster Communication",
+  "Greater Accountability",
+  "Continuous Support",
+  "Face To Face Coaching",
+  "Direct Assessments",
+  "In-Gym Guidance",
+  "Personal Support",
+];
+
 const pathways = [
   {
     icon: <Icon.Monitor />,
     title: "Online Coaching",
     desc: "A structured remote transformation experience with expert direction from anywhere in the world.",
-    items: ["Remote Coaching", "Weekly Reviews", "App Support", "Personalized Programming"],
-  },
-  {
-    icon: <Icon.MapPin />,
-    title: "Offline Coaching",
-    desc: "Hands-on, face-to-face coaching for clients who want direct support inside the training environment.",
-    items: ["Face To Face Coaching", "Direct Assessments", "In-Gym Guidance", "Personal Support"],
+    includes: 4,
   },
   {
     icon: <Icon.Layers />,
@@ -115,18 +133,21 @@ const pathways = [
     featured: true,
     badge: "Most Recommended",
     desc: "Program designed personally by Coach Abhishek. Daily follow-ups, accountability, and support handled by the Athlix Assistant Team.",
-    items: ["Best of Online + Offline", "Faster Communication", "Greater Accountability", "Continuous Support"],
+    includes: 8,
+  },
+  {
+    icon: <Icon.MapPin />,
+    title: "Offline Coaching",
+    desc: "Hands-on, face-to-face coaching for clients who want direct support inside the training environment.",
+    includes: pathwayFeatures.length,
   },
 ];
 
 const coachStats = [
   { num: "18+", lbl: "Years Experience" },
   { num: "100+", lbl: "Transformations" },
-  { num: "6", lbl: "Countries Served" },
-  { num: "ACE", lbl: "Certified" },
+  { num: <Icon.Globe aria-hidden="true" />, lbl: "Globally Served", globe: true },
 ];
-
-const specializations = ["Fat Loss", "Body Recomposition", "Lifestyle Transformation", "Sustainable Coaching"];
 
 const certifications = [
   { logo: certAce, name: "ACE", full: "American Council on Exercise", year: "Certified PT" },
@@ -256,7 +277,9 @@ function SectionHead({ eyebrow, title, lede, align = "center" }) {
    ===================================================================== */
 
 const navLinks = [
-  { href: "#transformations", label: "Transformations" },
+  // TEMPORARILY DISABLED
+  // Transformation section will be enabled again later.
+  // { href: "#transformations", label: "Transformations" },
   { href: "#method", label: "Method" },
   { href: "#pathways", label: "Pathways" },
   { href: "#coach", label: "Coach" },
@@ -267,7 +290,7 @@ const navLinks = [
 function Logo() {
   return (
     <a href="#top" className="logo-mark" aria-label="Athlix home">
-      ATH<span className="accent">LIX</span>
+      <img src={logoMark} alt="Athlix" />
     </a>
   );
 }
@@ -379,11 +402,6 @@ function Hero() {
       <div className="shell hero-grid">
         <RevealGroup>
           <Reveal group>
-            <span className="hero-badge">
-              <span className="pip" /> Premium Transformation Coaching
-            </span>
-          </Reveal>
-          <Reveal group>
             <h1 className="hero-title">
               <span className="line">Transform Your Body.</span>
               <span className="line">Rebuild Your Lifestyle.</span>
@@ -449,7 +467,7 @@ function Hero() {
         <Reveal delay={0.2}>
           <div className="trust-bar">
             {trustMetrics.map((m) => (
-              <div className="trust-cell" key={m.lbl}>
+              <div className={m.globe ? "trust-cell trust-cell-globe" : "trust-cell"} key={m.lbl}>
                 <div className="num">{m.num}</div>
                 <div className="lbl">{m.lbl}</div>
               </div>
@@ -465,6 +483,10 @@ function Hero() {
    Transformations
    ===================================================================== */
 
+// TEMPORARILY DISABLED
+// Real Client Proof section is hidden for now.
+// Do not delete. This section will be re-enabled in the future.
+/*
 function useMediaQuery(query) {
   const [matches, setMatches] = useState(
     () => typeof window !== "undefined" && window.matchMedia(query).matches
@@ -603,6 +625,7 @@ function Transformations() {
     </section>
   );
 }
+*/
 
 /* =====================================================================
    Problem vs Solution
@@ -659,7 +682,12 @@ function CoachingMethod() {
       <div className="shell">
         <SectionHead
           eyebrow="The Framework"
-          title={<>The Athlix <span className="accent">Coaching Method</span></>}
+          title={
+            <span className="method-title-row">
+              <img src={logoMark} alt="" className="method-logo" />
+              <span>The Athlix <span className="accent">Coaching Method</span></span>
+            </span>
+          }
           lede="A dynamic coaching framework that adapts as your body, lifestyle, and goals evolve."
         />
 
@@ -721,9 +749,14 @@ function Pathways() {
               <h3>{p.title}</h3>
               <p className="pathway-desc">{p.desc}</p>
               <ul className="pathway-list">
-                {p.items.map((it) => (
-                  <li key={it}><Icon.Check /> {it}</li>
-                ))}
+                {pathwayFeatures.map((f, fi) => {
+                  const included = fi < p.includes;
+                  return (
+                    <li key={f} className={included ? undefined : "excluded"}>
+                      {included ? <Icon.Check /> : <Icon.X />} {f}
+                    </li>
+                  );
+                })}
               </ul>
               <a className="btn btn-lg pathway-cta" href="#apply">
                 Apply For Coaching <Icon.Arrow />
@@ -747,16 +780,6 @@ function Coach() {
         <RevealGroup className="coach-grid">
           <Reveal group className="coach-photo">
             <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
-            <div className="float">
-              <div>
-                <strong>18+</strong>
-                <span>Years coaching</span>
-              </div>
-              <div>
-                <strong>100+</strong>
-                <span>Clients transformed</span>
-              </div>
-            </div>
           </Reveal>
 
           <Reveal group className="coach-copy">
@@ -775,16 +798,10 @@ function Coach() {
 
             <div className="coach-stats">
               {coachStats.map((s) => (
-                <div key={s.lbl}>
+                <div key={s.lbl} className={s.globe ? "globe" : undefined}>
                   <div className="num">{s.num}</div>
                   <div className="lbl">{s.lbl}</div>
                 </div>
-              ))}
-            </div>
-
-            <div className="spec-row">
-              {specializations.map((sp) => (
-                <span className="spec-chip" key={sp}><Icon.Shield /> {sp}</span>
               ))}
             </div>
 
@@ -832,8 +849,23 @@ function Certifications() {
    ===================================================================== */
 
 function TestimonialCard({ t }) {
+  const reduce = useReducedMotion();
+  // Subtle mouse-follow tilt (±4deg). Writes CSS vars straight onto the
+  // element — no state, no re-renders.
+  const onMouseMove = (e) => {
+    if (reduce) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    e.currentTarget.style.setProperty("--ry", `${(px * 8).toFixed(2)}deg`);
+    e.currentTarget.style.setProperty("--rx", `${(-py * 8).toFixed(2)}deg`);
+  };
+  const onMouseLeave = (e) => {
+    e.currentTarget.style.setProperty("--rx", "0deg");
+    e.currentTarget.style.setProperty("--ry", "0deg");
+  };
   return (
-    <div className="tst-card">
+    <div className="tst-card" onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <span className="tst-tag">{t.type}</span>
       <div className="tst-stars" aria-label="5 out of 5">
         {Array.from({ length: 5 }).map((_, i) => <Icon.Star key={i} />)}
@@ -1162,36 +1194,28 @@ function Field({ label, id, error, wide, children }) {
 function Footer() {
   return (
     <footer className="footer">
-      <div className="shell">
-        <div className="footer-grid">
-          <div className="footer-brand">
-            <Logo />
-            <p>
-              Athlix is a premium international transformation coaching company helping ambitious
-              people transform their bodies, lifestyles, and confidence — built on a proven,
-              adaptive coaching method.
-            </p>
-            <div className="footer-socials">
-              <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer" aria-label="Instagram"><Icon.Instagram /></a>
-              <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer" aria-label="WhatsApp"><Icon.WhatsApp /></a>
-              <a href="mailto:hello@athlix.co" aria-label="Email"><Icon.Mail /></a>
-            </div>
-          </div>
-          <div className="footer-col">
-            <h4>Explore</h4>
-            <a href="#top">Home</a>
-            <a href="#transformations">Transformations</a>
-            <a href="#method">Method</a>
-            <a href="#coach">Coach</a>
-            <a href="#testimonials">Testimonials</a>
-            <a href="#apply">Apply</a>
-          </div>
-          <div className="footer-col">
-            <h4>Connect</h4>
-            <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer">WhatsApp</a>
-            <a href="mailto:hello@athlix.co">hello@athlix.co</a>
-          </div>
+      <div className="shell footer-stack">
+        <Logo />
+        <p className="footer-tagline">Premium International Transformation Coaching</p>
+        <nav className="footer-links" aria-label="Footer">
+          <a href="#top">Home</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="#method">Method</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="#pathways">Pathways</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="#coach">Coach</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="#testimonials">Testimonials</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div className="footer-links">
+          <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer">Instagram</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer">WhatsApp</a>
+          <span className="dot" aria-hidden="true">•</span>
+          <a href="mailto:hello@athlix.co">hello@athlix.co</a>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Athlix. All rights reserved.</span>
@@ -1341,7 +1365,10 @@ export default function App() {
       <Header />
       <main>
         <Hero />
-        <Transformations />
+        {/* TEMPORARILY DISABLED
+            Real Client Proof section is hidden for now.
+            Do not delete. This section will be re-enabled in the future. */}
+        {/* <Transformations /> */}
         <ProblemSolution />
         <CoachingMethod />
         <Pathways />
