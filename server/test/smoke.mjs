@@ -3,7 +3,7 @@
 import { createApp } from "../src/app.js";
 
 process.env.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-// no LEAD_WEBHOOK_URL => forwarder logs + succeeds
+// no GOOGLE_SHEETS_*/SMTP_* configured => lead delivery is skipped, logged, and succeeds (dev mode)
 // High limit for functional scenarios; the rate-limit scenario overrides to 5.
 process.env.RATE_LIMIT_MAX = "1000";
 
@@ -121,6 +121,41 @@ const post = (port, body) =>
   srv.close();
 }
 
+// ── Cloudflare Turnstile verification (fresh app, TURNSTILE_SECRET_KEY set) ─
+{
+  process.env.TURNSTILE_SECRET_KEY = "test-secret";
+  // Stub only the Cloudflare siteverify call; pass everything else (incl.
+  // this test's own requests to the local server) through to the real fetch.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => {
+    if (String(url).includes("challenges.cloudflare.com/turnstile")) {
+      const params = new URLSearchParams(opts.body);
+      const good = params.get("response") === "good-token";
+      return {
+        ok: true,
+        json: async () => (good ? { success: true } : { success: false, "error-codes": ["invalid-input-response"] }),
+      };
+    }
+    return realFetch(url, opts);
+  };
+
+  const { srv, port } = await listen(createApp());
+
+  const good = await post(port, validBody({ email: "ts-good@example.com", phone: "+919333330001", turnstileToken: "good-token" }));
+  ok("turnstile good token -> 200", good.status === 200);
+
+  const bad = await post(port, validBody({ email: "ts-bad@example.com", phone: "+919333330002", turnstileToken: "bad-token" }));
+  const badjson = await bad.json();
+  ok("turnstile bad token -> 403", bad.status === 403 && !!badjson.error);
+
+  const missing = await post(port, validBody({ email: "ts-missing@example.com", phone: "+919333330003" }));
+  ok("turnstile missing token -> 403", missing.status === 403);
+
+  srv.close();
+  globalThis.fetch = realFetch;
+  delete process.env.TURNSTILE_SECRET_KEY;
+}
+
 // ── Suspicious-request logging (#8) ─────────────────────────────────────────
 console.log("  --- suspicious request logging ---");
 console.log("    events captured:", JSON.stringify([...new Set(securityEvents.map((e) => e.event))]));
@@ -130,6 +165,7 @@ ok("logged duplicate", loggedEvent("duplicate"));
 ok("logged rate_limited", loggedEvent("rate_limited"));
 ok("logged bad_json", loggedEvent("bad_json"));
 ok("logged payload_too_large", loggedEvent("payload_too_large"));
+ok("logged turnstile_failed", loggedEvent("turnstile_failed"));
 ok("security logs include ip + userAgent + path", securityEvents.every((e) => "ip" in e && "userAgent" in e && "path" in e));
 ok("security logs contain NO raw PII (no full email/phone/name keys)",
   securityEvents.every((e) => !("email" in e) && !("phone" in e) && !("name" in e) && !("message" in e)));

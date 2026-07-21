@@ -1,8 +1,17 @@
+import { createRequire } from "node:module";
 import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import * as Sentry from "@sentry/node";
 import { createApplyRouter } from "./routes/apply.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
+
+// Version reported by /health. Prefer an env override (e.g. a CI-injected
+// git SHA or release tag) so a deploy's exact build is identifiable; fall
+// back to package.json for local dev. Never derived from anything secret.
+const require = createRequire(import.meta.url);
+const { version: packageVersion } = require("../package.json");
+const APP_VERSION = process.env.APP_VERSION || packageVersion;
 
 export function createApp() {
   const app = express();
@@ -35,11 +44,27 @@ export function createApp() {
   // Body parsing with a tight size cap to blunt payload-based abuse.
   app.use(express.json({ limit: "16kb" }));
 
-  // Liveness probe.
-  app.get("/health", (_req, res) => res.json({ ok: true }));
+  // Liveness probe. Deliberately minimal: process status/uptime/version only
+  // — no config, no env values, no internals that could leak anything.
+  app.get("/health", (_req, res) => {
+    res.json({
+      status: "ok",
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      version: APP_VERSION,
+    });
+  });
 
   // API routes.
   app.use("/api", createApplyRouter());
+
+  // Reports unhandled errors to Sentry (a no-op if Sentry wasn't initialized
+  // — see instrument.js). Registered after the routes so it sees anything
+  // they throw/pass to next(err); its default filter only reports
+  // 500-shaped errors, so the deliberately-handled 413/400 cases below never
+  // reach it. Must come before our own error handler so it can inspect the
+  // error before that handler shapes the response.
+  Sentry.setupExpressErrorHandler(app);
 
   // 404 + centralized error handler (must be last).
   app.use(notFound);

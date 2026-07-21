@@ -423,7 +423,14 @@ function Hero() {
           <Reveal group>
             <div className="cta-row">
               <a className="btn btn-primary btn-lg" href="#apply">Fill Your Application <Icon.Arrow /></a>
-              <a className="btn btn-secondary btn-lg" href="#apply">Book Consultation</a>
+              <a
+                className="btn btn-secondary btn-lg"
+                href="https://wa.me/919030153337?text=Hi%20Coach%20Abhishek,%0A%0AI%20visited%20the%20Athlix%20website%20and%20would%20like%20to%20book%20a%20consultation%20regarding%20transformation%20coaching.%0A%0APlease%20let%20me%20know%20the%20next%20steps.%0A%0AThank%20you."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Book Consultation
+              </a>
             </div>
           </Reveal>
         </RevealGroup>
@@ -438,7 +445,7 @@ function Hero() {
             <motion.img
               src={heroImage}
               alt="Athlix transformation coaching client"
-              fetchpriority="high"
+              fetchPriority="high"
               initial={reduce ? false : { opacity: 0, scale: 1.1, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -989,6 +996,111 @@ function FAQ() {
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const APPLY_ENDPOINT = `${API_BASE}/api/apply`;
 
+// Marketing attribution: first-touch capture. Read once, from the exact URL
+// this page load landed on, then persisted so it still applies even if the
+// visitor browses/scrolls for a while (e.g. down to #apply) before applying
+// — without this, a later read would see whatever the URL looks like at
+// submit time, not the campaign that actually brought them here.
+const ATTRIBUTION_STORAGE_KEY = "athlix_attribution";
+
+function captureAttribution() {
+  try {
+    const stored = sessionStorage.getItem(ATTRIBUTION_STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    // sessionStorage unavailable (private browsing, etc.) — fall through and
+    // capture fresh; the submission still works, just without persistence.
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const attribution = {
+    utm_source: params.get("utm_source") || "",
+    utm_medium: params.get("utm_medium") || "",
+    utm_campaign: params.get("utm_campaign") || "",
+    utm_content: params.get("utm_content") || "",
+    referrer: document.referrer || "",
+    landingPage: window.location.pathname + window.location.search,
+  };
+
+  try {
+    sessionStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution));
+  } catch {
+    // ignore — non-fatal
+  }
+
+  return attribution;
+}
+
+// Captured once, at script load — the earliest and most accurate point to
+// see the URL/referrer the visitor actually arrived on.
+const attribution = captureAttribution();
+
+// Cloudflare Turnstile: bot verification for the application form. Rendered
+// fully invisibly (size: "invisible") — it never adds any visible UI, so
+// the form's design is unaffected. Skipped entirely (resolves to an empty
+// token) if no site key is configured, or if the script never loads (e.g.
+// blocked by an ad blocker) — the backend is the actual source of truth: it
+// verifies the token independently and only enforces this once
+// TURNSTILE_SECRET_KEY is set server-side (see server/src/lib/turnstile.js).
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+const TURNSTILE_SCRIPT_WAIT_MS = 5000;
+const TURNSTILE_TOKEN_TIMEOUT_MS = 10000;
+
+let turnstileWidgetId = null;
+let turnstileContainer = null;
+
+function waitForTurnstile(timeoutMs) {
+  return new Promise((resolve) => {
+    if (window.turnstile) return resolve(true);
+    const start = Date.now();
+    const poll = setInterval(() => {
+      if (window.turnstile) {
+        clearInterval(poll);
+        resolve(true);
+      } else if (Date.now() - start > timeoutMs) {
+        clearInterval(poll);
+        resolve(false);
+      }
+    }, 100);
+  });
+}
+
+async function getTurnstileToken() {
+  if (!TURNSTILE_SITE_KEY) return "";
+  if (!(await waitForTurnstile(TURNSTILE_SCRIPT_WAIT_MS))) return "";
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (token) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(token || "");
+    };
+    const timer = setTimeout(() => finish(""), TURNSTILE_TOKEN_TIMEOUT_MS);
+
+    try {
+      if (turnstileWidgetId == null) {
+        turnstileContainer = document.createElement("div");
+        document.body.appendChild(turnstileContainer);
+        turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+          sitekey: TURNSTILE_SITE_KEY,
+          size: "invisible",
+          execution: "execute",
+          callback: (token) => finish(token),
+          "error-callback": () => finish(""),
+          "timeout-callback": () => finish(""),
+        });
+      } else {
+        window.turnstile.reset(turnstileWidgetId);
+      }
+      window.turnstile.execute(turnstileWidgetId);
+    } catch {
+      finish("");
+    }
+  });
+}
+
 const pathwayOptions = ["Online Coaching", "Offline Coaching", "Hybrid Coaching", "Not Sure Yet"];
 const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
 
@@ -1045,10 +1157,17 @@ function ApplicationForm() {
     inFlightRef.current = true;
     setSubmitting(true);
     try {
+      const turnstileToken = await getTurnstileToken();
       const res = await fetch(APPLY_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, source: "athlix-website", submittedAt: new Date().toISOString() }),
+        body: JSON.stringify({
+          ...values,
+          ...attribution,
+          turnstileToken,
+          source: "athlix-website",
+          submittedAt: new Date().toISOString(),
+        }),
       });
 
       if (res.ok) {

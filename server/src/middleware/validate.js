@@ -47,6 +47,16 @@ const applicationSchema = z.object({
 
   // Message: optional, capped at 2000 chars.
   message: z.string().max(2000, "Message is too long.").optional().default(""),
+
+  // Marketing attribution: optional, free-form (set by ad platforms / the
+  // browser, not user input in a form field), so just capped — no format
+  // enforcement. Never surfaced to the applicant; used for lead reporting.
+  utm_source: z.string().max(200).optional().default(""),
+  utm_medium: z.string().max(200).optional().default(""),
+  utm_campaign: z.string().max(200).optional().default(""),
+  utm_content: z.string().max(200).optional().default(""),
+  referrer: z.string().max(500).optional().default(""),
+  landingPage: z.string().max(500).optional().default(""),
 });
 
 /**

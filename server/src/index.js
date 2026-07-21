@@ -1,4 +1,5 @@
-import "dotenv/config";
+// Must be the very first import — see instrument.js for why.
+import "./instrument.js";
 import { createApp } from "./app.js";
 
 const app = createApp();

@@ -1,10 +1,12 @@
 import React from "react";
+import * as Sentry from "@sentry/react";
 
 /**
  * Catches uncaught render errors anywhere below it and shows a friendly,
  * generic fallback UI. Technical details (error + component stack) are logged
- * to the internal channel ONLY (console / your monitoring hook) and are NEVER
- * rendered to the user — no stack traces, file paths, or internal messages.
+ * to the internal channel ONLY (console + Sentry, when configured — see
+ * lib/sentry.js) and are NEVER rendered to the user — no stack traces, file
+ * paths, or internal messages.
  */
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -19,9 +21,10 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Internal-only logging. Replace/extend with Sentry, LogRocket, etc.
-    // eslint-disable-next-line no-console
+    // Internal-only logging.
     console.error("[ui-error]", error, info?.componentStack);
+    // No-op if Sentry wasn't initialized (dev, or no VITE_SENTRY_DSN) — see lib/sentry.js.
+    Sentry.captureException(error, { contexts: { react: { componentStack: info?.componentStack } } });
   }
 
   handleReload = () => {

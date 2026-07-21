@@ -6,7 +6,7 @@ Clean, modern React landing page starter with Tailwind CSS v4, ready for mobile-
 
 ```
 athlix/
-├── client/          # React + Vite + Tailwind CSS
+├── client/          # React + Vite + Tailwind CSS (the public site)
 │   ├── src/
 │   │   ├── App.jsx       # Main component
 │   │   ├── main.jsx      # React entry point
@@ -16,6 +16,12 @@ athlix/
 │   ├── postcss.config.js
 │   ├── vite.config.js
 │   └── package.json
+│
+├── server/          # Express API — validates + delivers the application form
+│   ├── src/
+│   ├── .env.example      # every required/optional env var, commented
+│   ├── README.md         # API reference + security controls
+│   └── DEPLOYMENT.md     # production deployment guide
 │
 └── README.md
 ```
@@ -252,9 +258,20 @@ Tailwind's default breakpoints:
 | `xl`       | 1280px    | `@media (min-width: 1280px)` |
 | `2xl`      | 1536px    | `@media (min-width: 1536px)` |
 
+## 🔌 Backend API
+
+The "Apply For Coaching" form posts to a separate Express API in `server/`
+that validates, rate-limits, and delivers each lead to Google Sheets and by
+email. It has its own environment variables, README, and deployment guide —
+see [`server/README.md`](./server/README.md) and
+[`server/DEPLOYMENT.md`](./server/DEPLOYMENT.md). It is deployed
+independently from the client (different process, different env vars).
+
 ## 🚀 Deployment
 
-### Build for Production
+The client (static site) and server (API) are deployed separately.
+
+### Client: Build for Production
 
 ```bash
 cd client
@@ -263,7 +280,7 @@ npm run build
 
 Output will be in `client/dist/`
 
-### Deploy to Vercel
+### Client: Deploy to Vercel
 
 ```bash
 npm install -g vercel
@@ -271,13 +288,21 @@ cd client
 vercel
 ```
 
-### Deploy to Netlify
+### Client: Deploy to Netlify
 
 ```bash
 cd client
 npm run build
 # Drag and drop the 'dist' folder to Netlify
 ```
+
+### Server: Deploy the API
+
+See [`server/DEPLOYMENT.md`](./server/DEPLOYMENT.md) for the full
+production checklist (required env vars, secrets handling, reverse proxy /
+TLS, scaling notes). At minimum, set `CLIENT_ORIGIN` on the server to the
+client's production origin, and set `VITE_API_URL` on the client if the API
+is hosted on a different origin (see `client/.env.example`).
 
 ## 📚 Resources
 
