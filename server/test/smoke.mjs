@@ -29,8 +29,8 @@ function listen(app) {
   });
 }
 const validBody = (over = {}) => ({
-  name: "Jane Doe", phone: "+91 90000 00000", email: "jane@example.com",
-  age: "28", gender: "Female", currentWeight: "72", goal: "Fat Loss",
+  name: "Jane Doe", phone: "+919000000000", email: "jane@example.com",
+  gender: "Female", currentWeight: "72",
   pathway: "Hybrid Coaching", message: "Hello", company: "", ...over,
 });
 const post = (port, body) =>
@@ -58,10 +58,6 @@ const post = (port, body) =>
   const bpjson = await badPhone.json();
   ok("invalid phone -> 400 fields.phone", badPhone.status === 400 && !!bpjson.fields?.phone);
 
-  const badAge = await post(port, validBody({ email: "a@example.com", age: "5" }));
-  const bajson = await badAge.json();
-  ok("invalid age -> 400 fields.age", badAge.status === 400 && !!bajson.fields?.age);
-
   const badWeight = await post(port, validBody({ email: "w@example.com", currentWeight: "abc" }));
   const bwjson = await badWeight.json();
   ok("invalid weight -> 400 fields.currentWeight", badWeight.status === 400 && !!bwjson.fields?.currentWeight);
@@ -70,9 +66,9 @@ const post = (port, body) =>
   const bnjson = await badName.json();
   ok("invalid name (url) -> 400 fields.name", badName.status === 400 && !!bnjson.fields?.name);
 
-  const badEnum = await post(port, validBody({ email: "v2@example.com", goal: "Hacking" }));
+  const badEnum = await post(port, validBody({ email: "v2@example.com", pathway: "Telepathic Coaching" }));
   const genjson = await badEnum.json();
-  ok("invalid enum (goal) -> 400 fields.goal", badEnum.status === 400 && !!genjson.fields?.goal);
+  ok("invalid enum (pathway) -> 400 fields.pathway", badEnum.status === 400 && !!genjson.fields?.pathway);
 
   // Safety: error responses must not leak internals or echo submitted values.
   const leak = JSON.stringify(bejson) + JSON.stringify(bnjson);
@@ -88,7 +84,7 @@ const post = (port, body) =>
 // ── Duplicate-submission protection (fresh app, own rate-limit counter) ─────
 {
   const { srv, port } = await listen(createApp());
-  const dupe = validBody({ email: "dupe@example.com", phone: "+91 91111 11111" });
+  const dupe = validBody({ email: "dupe@example.com", phone: "+919111111111" });
   const d1 = await post(port, dupe);
   const d2 = await post(port, dupe);
   const d2json = await d2.json();
@@ -116,7 +112,7 @@ const post = (port, body) =>
   const { srv, port } = await listen(createApp());
   const statuses = [];
   for (let i = 0; i < 6; i++) {
-    const r = await post(port, validBody({ email: `rl${i}@example.com`, phone: `+91 92222 0000${i}` }));
+    const r = await post(port, validBody({ email: `rl${i}@example.com`, phone: `+91922220000${i}` }));
     statuses.push(r.status);
   }
   console.log("    rate-limit statuses:", statuses.join(", "));

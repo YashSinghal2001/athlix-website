@@ -26,10 +26,8 @@ export function sanitizeApplication(body = {}) {
     name: cleanString(body.name, { maxLength: 100 }),
     phone: cleanString(body.phone, { maxLength: 30 }),
     email: cleanString(body.email, { maxLength: 254 }).toLowerCase(),
-    age: cleanString(body.age, { maxLength: 3 }),
     gender: cleanString(body.gender, { maxLength: 30 }),
     currentWeight: cleanString(body.currentWeight, { maxLength: 20 }),
-    goal: cleanString(body.goal, { maxLength: 60 }),
     pathway: cleanString(body.pathway, { maxLength: 60 }),
     message: cleanString(body.message, { maxLength: 2000 }),
     // honeypot — must be empty for real humans

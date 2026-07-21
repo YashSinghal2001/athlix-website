@@ -58,7 +58,7 @@ export async function forwardLead(application, meta) {
   if (targets.length === 0) {
     // No destination configured (e.g. local dev). Accept + log, don't leak PII verbosely.
     console.log(
-      `[apply] lead accepted (no destination configured): ${application.email} / goal=${application.goal}`
+      `[apply] lead accepted (no destination configured): ${application.email} / pathway=${application.pathway}`
     );
     return;
   }

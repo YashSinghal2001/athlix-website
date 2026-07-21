@@ -1,14 +1,12 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import { sanitizeApplication } from "../lib/sanitize.js";
 import { logSuspicious } from "../lib/securityLog.js";
 
 // Allow-lists mirror the frontend's select options. Anything else is rejected.
 // (These values are already public in the UI, so echoing them is not a leak.)
-const GOALS = ["Fat Loss", "Body Recomposition", "Muscle Gain", "Lifestyle Transformation", "General Fitness"];
 const PATHWAYS = ["Online Coaching", "Offline Coaching", "Hybrid Coaching", "Not Sure Yet"];
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
-
-const countDigits = (s) => (String(s).match(/\d/g) || []).length;
 
 // Strict, complete schema. Runs AFTER sanitization. We NEVER trust the client:
 // every field is independently validated here even though the UI also checks.
@@ -29,18 +27,13 @@ const applicationSchema = z.object({
     .max(254, "Email is too long.")
     .email("Enter a valid email address."),
 
-  // Phone: permissive characters but must carry 7–15 actual digits (E.164 range).
+  // Phone: full international number (E.164, with country code) coming from
+  // the frontend's country-select phone input. Validated per-country via
+  // libphonenumber-js rather than a generic digit-count regex.
   phone: z
     .string()
-    .regex(/^[+\d][\d\s-]{6,}$/, "Enter a valid phone number.")
-    .refine((v) => countDigits(v) >= 7 && countDigits(v) <= 15, { message: "Enter a valid phone number." }),
-
-  // Age: integer 14–99.
-  age: z.coerce
-    .number({ invalid_type_error: "Enter a valid age." })
-    .int("Enter a valid age.")
-    .min(14, "Enter a valid age.")
-    .max(99, "Enter a valid age."),
+    .min(1, "Phone number is required.")
+    .refine((v) => isValidPhoneNumber(v), { message: "Enter a valid phone number." }),
 
   // Weight (kg): numeric 20–500 (covers any realistic adult weight).
   currentWeight: z.coerce
@@ -48,9 +41,8 @@ const applicationSchema = z.object({
     .min(20, "Enter a valid weight.")
     .max(500, "Enter a valid weight."),
 
-  // Gender / Goal / Pathway: must be one of the allow-listed options.
+  // Gender / Pathway: must be one of the allow-listed options.
   gender: z.enum(GENDERS, { errorMap: () => ({ message: "Please select a valid option." }) }),
-  goal: z.enum(GOALS, { errorMap: () => ({ message: "Please select a goal." }) }),
   pathway: z.enum(PATHWAYS, { errorMap: () => ({ message: "Please select a pathway." }) }),
 
   // Message: optional, capped at 2000 chars.
@@ -87,4 +79,4 @@ export function validateApplication(req, res, next) {
 }
 
 // Exposed for tests / reuse.
-export { GOALS, PATHWAYS, GENDERS };
+export { PATHWAYS, GENDERS };

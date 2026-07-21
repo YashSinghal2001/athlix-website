@@ -24,17 +24,18 @@ With no `LEAD_WEBHOOK_URL` configured, submissions are accepted and logged
 ```json
 {
   "name": "Jane Doe",
-  "phone": "+91 90000 00000",
+  "phone": "+919000000000",
   "email": "jane@example.com",
-  "age": "28",
   "gender": "Female",
   "currentWeight": "72",
-  "goal": "Fat Loss",
   "pathway": "Hybrid Coaching",
   "message": "optional",
   "company": ""            // honeypot — must stay empty
 }
 ```
+
+`phone` is a full E.164 number (with country code) from the frontend's
+country-select phone input, validated with `libphonenumber-js`.
 
 Responses are intentionally **generic**:
 - `200 { ok: true }` — accepted (also returned for honeypot hits and duplicates)

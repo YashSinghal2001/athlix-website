@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 
 // Duplicate-submission protection.
 //
-// We fingerprint each submission (email + phone + goal) and remember it for a
+// We fingerprint each submission (email + phone) and remember it for a
 // TTL window. A repeat within the window is treated as a duplicate so we don't
 // forward the same lead twice (double-clicks, retries, refresh-resubmit).
 //
@@ -14,7 +14,7 @@ const TTL_MS = 60 * 60 * 1000; // 1 hour
 const seen = new Map(); // fingerprint -> expiry timestamp
 
 function fingerprint(app) {
-  const basis = `${app.email}|${app.phone}|${app.goal}`;
+  const basis = `${app.email}|${app.phone}`;
   return crypto.createHash("sha256").update(basis).digest("hex");
 }
 

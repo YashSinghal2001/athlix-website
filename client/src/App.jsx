@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Lenis from "lenis";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
+import "react-phone-number-input/style.css";
 
 import { useTheme } from "./theme/ThemeContext.jsx";
 import { Icon } from "./components/icons.jsx";
@@ -350,7 +353,7 @@ function Header() {
         </nav>
         <div className="nav-right">
           <ThemeToggle />
-          <a className="btn btn-primary btn-sm header-cta" href="#apply">Apply For Coaching</a>
+          <a className="btn btn-primary btn-sm header-cta" href="#apply">Fill Your Application</a>
           <button className="menu-btn" aria-label="Open menu" aria-expanded={open} onClick={() => setOpen(true)}>
             <Icon.Menu />
           </button>
@@ -370,7 +373,7 @@ function Header() {
           ))}
         </nav>
         <a className="btn btn-primary btn-lg btn-block" href="#apply" onClick={() => setOpen(false)}>
-          Apply For Coaching <Icon.Arrow />
+          Fill Your Application <Icon.Arrow />
         </a>
       </div>
     </>
@@ -419,7 +422,7 @@ function Hero() {
           </Reveal>
           <Reveal group>
             <div className="cta-row">
-              <a className="btn btn-primary btn-lg" href="#apply">Apply For Coaching <Icon.Arrow /></a>
+              <a className="btn btn-primary btn-lg" href="#apply">Fill Your Application <Icon.Arrow /></a>
               <a className="btn btn-secondary btn-lg" href="#apply">Book Consultation</a>
             </div>
           </Reveal>
@@ -760,7 +763,7 @@ function Pathways() {
                 })}
               </ul>
               <a className="btn btn-lg pathway-cta" href="#apply">
-                Apply For Coaching <Icon.Arrow />
+                Fill Your Application <Icon.Arrow />
               </a>
             </Reveal>
           ))}
@@ -986,25 +989,22 @@ function FAQ() {
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const APPLY_ENDPOINT = `${API_BASE}/api/apply`;
 
-const goalOptions = ["Fat Loss", "Body Recomposition", "Muscle Gain", "Lifestyle Transformation", "General Fitness"];
 const pathwayOptions = ["Online Coaching", "Offline Coaching", "Hybrid Coaching", "Not Sure Yet"];
 const genderOptions = ["Male", "Female", "Other", "Prefer not to say"];
 
 const initialForm = {
-  name: "", phone: "", email: "", age: "", gender: "",
-  currentWeight: "", goal: "", pathway: "", message: "",
+  name: "", phone: "", email: "", gender: "",
+  currentWeight: "", pathway: "", message: "",
   company: "", // honeypot — must stay empty; real users never see this field
 };
 
 function validate(values) {
   const e = {};
   if (!values.name.trim()) e.name = "Please enter your name";
-  if (!/^[+\d][\d\s-]{6,}$/.test(values.phone.trim())) e.phone = "Enter a valid phone number";
+  if (!values.phone || !isValidPhoneNumber(values.phone)) e.phone = "Enter a valid phone number";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) e.email = "Enter a valid email";
-  if (!values.age || Number(values.age) < 14 || Number(values.age) > 99) e.age = "Enter a valid age";
   if (!values.gender) e.gender = "Please select";
   if (!values.currentWeight.trim()) e.currentWeight = "Required";
-  if (!values.goal) e.goal = "Please select a goal";
   if (!values.pathway) e.pathway = "Please select a pathway";
   return e;
 }
@@ -1022,6 +1022,13 @@ function ApplicationForm() {
   const update = (key) => (ev) => {
     setValues((v) => ({ ...v, [key]: ev.target.value }));
     setErrors((er) => (er[key] ? { ...er, [key]: undefined } : er));
+  };
+
+  // PhoneInput's onChange hands back the value directly (E.164 string, or
+  // undefined when empty) rather than an input change event.
+  const updatePhone = (val) => {
+    setValues((v) => ({ ...v, phone: val || "" }));
+    setErrors((er) => (er.phone ? { ...er, phone: undefined } : er));
   };
 
   const onSubmit = async (ev) => {
@@ -1076,7 +1083,7 @@ function ApplicationForm() {
       <RevealGroup className="shell apply-grid">
         <Reveal group>
           <p className="eyebrow">Start Your Transformation</p>
-          <h2 className="section-title">Apply For Coaching</h2>
+          <h2 className="section-title">Fill Your Application</h2>
           <p className="section-lede" style={{ marginInline: 0 }}>
             Tell us about your goals. Our team personally reviews every application and reaches out
             within 48 hours to the best-fit applicants.
@@ -1120,29 +1127,31 @@ function ApplicationForm() {
                 <Field label="Full Name" id="name" error={errors.name}>
                   <input id="name" type="text" value={values.name} onChange={update("name")} placeholder="Your name" autoComplete="name" />
                 </Field>
-                <Field label="Phone" id="phone" error={errors.phone}>
-                  <input id="phone" type="tel" value={values.phone} onChange={update("phone")} placeholder="+91 00000 00000" autoComplete="tel" />
+                <Field label="Phone Number" id="phone" error={errors.phone}>
+                  <PhoneInput
+                    id="phone"
+                    international
+                    defaultCountry="IN"
+                    flags={flags}
+                    countryCallingCodeEditable={false}
+                    value={values.phone}
+                    onChange={updatePhone}
+                    placeholder="98765 43210"
+                    autoComplete="tel"
+                  />
                 </Field>
                 <Field label="Email" id="email" error={errors.email}>
                   <input id="email" type="email" value={values.email} onChange={update("email")} placeholder="you@email.com" autoComplete="email" />
                 </Field>
-                <Field label="Age" id="age" error={errors.age}>
-                  <input id="age" type="number" min="14" max="99" value={values.age} onChange={update("age")} placeholder="28" />
+                <Field label="Current Weight (kg)" id="currentWeight" error={errors.currentWeight}>
+                  <input id="currentWeight" type="text" value={values.currentWeight} onChange={update("currentWeight")} placeholder="e.g. 82" />
                 </Field>
                 <Field label="Gender" id="gender" error={errors.gender}>
                   <select id="gender" value={values.gender} onChange={update("gender")}>
                     <option value="" disabled>Select</option>
                     {genderOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
-                </Field>
-                <Field label="Current Weight (kg)" id="currentWeight" error={errors.currentWeight}>
-                  <input id="currentWeight" type="text" value={values.currentWeight} onChange={update("currentWeight")} placeholder="e.g. 82" />
-                </Field>
-                <Field label="Primary Goal" id="goal" error={errors.goal}>
-                  <select id="goal" value={values.goal} onChange={update("goal")}>
-                    <option value="" disabled>Select</option>
-                    {goalOptions.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <p className="field-hint">Women-friendly coaching environment.</p>
                 </Field>
                 <Field label="Preferred Coaching Pathway" id="pathway" error={errors.pathway}>
                   <select id="pathway" value={values.pathway} onChange={update("pathway")}>
@@ -1150,8 +1159,14 @@ function ApplicationForm() {
                     {pathwayOptions.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </Field>
-                <Field label="Message (optional)" id="message" wide>
-                  <textarea id="message" rows="4" value={values.message} onChange={update("message")} placeholder="Tell us about your goals, challenges, and why you want to transform now." />
+                <Field label="What challenges are you facing?" id="message" wide>
+                  <textarea
+                    id="message"
+                    rows="4"
+                    value={values.message}
+                    onChange={update("message")}
+                    placeholder="Tell us about your current challenges, fitness goals, previous attempts, injuries (if any), lifestyle, or anything you'd like Coach Abhishek to know before reviewing your application."
+                  />
                 </Field>
 
                 {/* Honeypot: hidden from real users; bots that auto-fill it are dropped server-side. */}
@@ -1173,7 +1188,7 @@ function ApplicationForm() {
                 )}
 
                 <button className="btn btn-primary btn-lg btn-block field wide" type="submit" disabled={submitting}>
-                  {submitting ? <><span className="spinner" /> Submitting…</> : "Submit Application"}
+                  {submitting ? <><span className="spinner" /> Submitting…</> : "Send Your Application"}
                 </button>
               </motion.form>
             )}
