@@ -31,7 +31,7 @@ const WRITERS = { info: console.log, warn: console.warn, error: console.error };
  * @param {"info"|"warn"|"error"} level
  * @param {string} event short machine-readable event name, e.g. "sheets_saved"
  * @param {object} [fields] structured context. Never pass secrets/credentials
- *   (SMTP passwords, service-account keys, tokens) — only lead/request context.
+ *   (API keys, service-account keys, tokens) — only lead/request context.
  */
 export function log(category, level, event, fields = {}) {
   const entry = {

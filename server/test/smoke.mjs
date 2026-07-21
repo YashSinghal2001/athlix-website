@@ -3,7 +3,7 @@
 import { createApp } from "../src/app.js";
 
 process.env.CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
-// no GOOGLE_SHEETS_*/SMTP_* configured => lead delivery is skipped, logged, and succeeds (dev mode)
+// no GOOGLE_SHEETS_*/RESEND_API_KEY configured => lead delivery is skipped, logged, and succeeds (dev mode)
 // High limit for functional scenarios; the rate-limit scenario overrides to 5.
 process.env.RATE_LIMIT_MAX = "1000";
 

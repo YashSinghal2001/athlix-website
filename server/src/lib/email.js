@@ -1,31 +1,15 @@
-// Sends lead emails via Hostinger SMTP: an internal notification to the team
+// Sends lead emails via the Resend API: an internal notification to the team
 // inbox, and a branded confirmation to the applicant.
 //
-// SECRETS LIVE HERE, SERVER-SIDE ONLY. The browser never sees SMTP_USER /
-// SMTP_PASS — it only ever talks to our own /api/apply route.
+// SECRETS LIVE HERE, SERVER-SIDE ONLY. The browser never sees RESEND_API_KEY
+// — it only ever talks to our own /api/apply route.
 //
 // Both templates share one dark-navy/blue "Athlix" shell (buildEmailShell)
 // so every outgoing email is visually consistent; the applicant email uses
 // the spacious/premium variant, the admin notification uses the compact one.
 
-import dns from "node:dns";
-import net from "node:net";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { log } from "./logger.js";
-
-const CONNECTION_TIMEOUT_MS = 10000;
-
-// Force the SMTP connection over IPv4 by default. Nodemailer resolves both
-// A and AAAA records for SMTP_HOST and then picks RANDOMLY between them
-// (see its lib/shared/index.js `formatDNSValue`) — on Render (and other
-// containerized platforms) the container reports a local IPv6-capable
-// interface even though there's no real outbound IPv6 route, so nodemailer
-// occasionally picks an unreachable IPv6 address and the connection fails
-// with `connect ENETUNREACH <ipv6>`. We resolve SMTP_HOST to an IPv4 literal
-// ourselves before handing it to nodemailer (see resolveConnectHost below),
-// sidestepping that random choice entirely. Set SMTP_FORCE_IPV4=false to
-// disable if a provider ever requires IPv6.
-const SMTP_FORCE_IPV4 = process.env.SMTP_FORCE_IPV4 !== "false";
 
 // ── Brand constants ─────────────────────────────────────────────────────────
 // Same palette as the public site (client/tailwind.config.js: athlix-navy /
@@ -50,125 +34,54 @@ const COACH_NAME = "Coach Abhishek";
 const WHATSAPP_DIGITS = "919030153337"; // +91 90301 53337, no "+", for wa.me
 const WHATSAPP_DISPLAY = "+91 90301 53337";
 
-// Resolves `host` to an IPv4 literal for nodemailer to connect to, while
-// returning the original hostname as `servername` so TLS SNI / certificate
-// hostname checks still validate against the real domain (a bare IP literal
-// has no meaningful servername of its own — see nodemailer's
-// smtp-connection `this.servername` derivation). Never throws: if IPv4
-// resolution fails (e.g. the provider genuinely has no A record), falls
-// back to the original hostname and lets nodemailer resolve it itself.
-async function resolveConnectHost(host) {
-  if (!SMTP_FORCE_IPV4 || net.isIP(host)) return { connectHost: host, servername: undefined };
-  try {
-    const { address } = await dns.promises.lookup(host, { family: 4 });
-    return { connectHost: address, servername: host };
-  } catch (err) {
-    log("email", "warn", "smtp_ipv4_lookup_failed", {
-      host,
-      error: err?.message || String(err),
-    });
-    return { connectHost: host, servername: undefined };
-  }
+// Cached lazily so a missing RESEND_API_KEY doesn't throw at import time —
+// local dev without email configured should still boot.
+let cachedResendClient = null;
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  if (!cachedResendClient) cachedResendClient = new Resend(apiKey);
+  return cachedResendClient;
 }
 
-// Best-effort classification of a failed transporter.verify() so Render logs
-// name the failing stage directly instead of just dumping a raw stack trace.
-// Nodemailer/smtp-connection don't guarantee a single stable error shape
-// across DNS/TCP/TLS/auth failures, so this inspects every field it's known
-// to set (code, cause.code, command, responseCode) rather than trusting one;
-// the raw fields are always logged alongside this label as a fallback.
-function classifySmtpVerifyError(err) {
-  const code = err?.code;
-  const causeCode = err?.cause?.code;
-  const message = err?.message || "";
-
-  if (code === "EAUTH" || err?.responseCode === 535) return "smtp_authentication";
-  if (causeCode === "ENOTFOUND" || causeCode === "EAI_AGAIN" || code === "EDNS") return "dns_resolution";
-  if (
-    causeCode === "ECONNREFUSED" ||
-    causeCode === "ENETUNREACH" ||
-    causeCode === "EHOSTUNREACH" ||
-    causeCode === "ECONNRESET" ||
-    (code === "ETIMEDOUT" && err?.command === "CONN")
-  ) {
-    return "tcp_connection";
-  }
-  if (code === "ESOCKET" || /tls|ssl|certificate|handshake/i.test(message)) return "tls_handshake";
-  if (code === "ETIMEDOUT") return "connection_timeout";
-  return "other";
-}
-
-async function verifyTransporter(transporter, context) {
-  try {
-    await transporter.verify();
-    log("email", "info", "smtp_verified", context);
-  } catch (err) {
-    log("email", "error", "smtp_verify_failed", {
-      ...context,
-      stage: classifySmtpVerifyError(err),
-      code: err?.code,
-      causeCode: err?.cause?.code,
-      command: err?.command,
-      responseCode: err?.responseCode,
-      response: err?.response,
-      message: err?.message,
-    });
-    throw err;
-  }
-}
-
-// Cached as a Promise (not the resolved transporter) so concurrent callers
-// before the first resolution completes share one in-flight DNS lookup
-// instead of racing to create duplicate transporters.
-let cachedTransporterPromise = null;
-
-// Exported (only) so the temporary /debug/smtp route (routes/debugSmtp.js)
-// can reuse the exact same transporter/verify path as normal sending instead
-// of duplicating transport-construction logic. Remove this export if/when
-// that route is removed and nothing else needs it.
-export async function getTransporter() {
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  if (!host || !user || !pass) return null;
-
-  if (!cachedTransporterPromise) {
-    cachedTransporterPromise = (async () => {
-      try {
-        const port = Number(process.env.SMTP_PORT) || 465;
-        const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== "false" : port === 465;
-        const { connectHost, servername } = await resolveConnectHost(host);
-
-        const transporter = nodemailer.createTransport({
-          host: connectHost,
-          port,
-          secure,
-          auth: { user, pass },
-          connectionTimeout: CONNECTION_TIMEOUT_MS,
-          greetingTimeout: CONNECTION_TIMEOUT_MS,
-          socketTimeout: CONNECTION_TIMEOUT_MS,
-          ...(servername ? { tls: { servername } } : {}),
-        });
-
-        await verifyTransporter(transporter, { host: connectHost, servername, port, secure, user });
-
-        return transporter;
-      } catch (err) {
-        // Don't cache a permanently-rejected promise — a transient failure
-        // (e.g. Render's network hiccuping during verify) would otherwise
-        // brick email sending for the rest of the process's lifetime, since
-        // every future getTransporter() call reuses this same promise.
-        cachedTransporterPromise = null;
-        throw err;
-      }
-    })();
-  }
-  return cachedTransporterPromise;
-}
-
-/** True once SMTP_* env vars are present (used for local-dev messaging only). */
+/** True once RESEND_API_KEY and EMAIL_FROM are present (used for local-dev messaging only). */
 export function isEmailConfigured() {
-  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+}
+
+/**
+ * Sends one email through the Resend API. Never swallows failures: throws
+ * with the Resend-provided error message (if any) so callers can log/handle
+ * it. Logs `email_sent` / `email_failed` for every attempt regardless of
+ * which higher-level email (admin notification vs. applicant confirmation)
+ * triggered it.
+ */
+async function sendViaResend({ to, subject, text, html, replyTo }) {
+  const client = getResendClient();
+  if (!client) {
+    throw new Error("Email is not configured (RESEND_API_KEY env var missing).");
+  }
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error("Email is not configured (EMAIL_FROM env var missing).");
+  }
+
+  const { data, error } = await client.emails.send({
+    from,
+    to,
+    subject,
+    text,
+    html,
+    ...(replyTo ? { replyTo } : {}),
+  });
+
+  if (error) {
+    log("email", "error", "email_failed", { to, subject, error: error.message || String(error) });
+    throw new Error(error.message || "Resend API error");
+  }
+
+  log("email", "info", "email_sent", { to, subject, id: data?.id });
 }
 
 function escapeHtml(value) {
@@ -509,30 +422,34 @@ function notificationContent(application, meta) {
 
 /**
  * Notify the team inbox of a new lead. Throws on failure (missing config,
- * SMTP error) so callers can decide how to handle it.
+ * Resend API error) so callers can decide how to handle it.
  * @param {object} application sanitized + validated fields
  * @param {object} [meta] { ip, userAgent, submittedAt }
  */
 export async function sendLeadNotification(application, meta = {}) {
-  const transporter = await getTransporter();
-  const to = process.env.LEAD_NOTIFICATION_EMAIL;
-  if (!transporter) {
-    throw new Error("Email is not configured (SMTP_* env vars missing).");
-  }
+  const to = process.env.ADMIN_EMAIL;
   if (!to) {
-    throw new Error("Email is not configured (LEAD_NOTIFICATION_EMAIL env var missing).");
+    throw new Error("Email is not configured (ADMIN_EMAIL env var missing).");
   }
 
   const { text, html } = notificationContent(application, meta);
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to,
-    replyTo: application.email,
-    subject: `New application: ${application.name} — ${application.pathway}`,
-    text,
-    html,
-  });
+  try {
+    await sendViaResend({
+      to,
+      replyTo: application.email,
+      subject: `New application: ${application.name} — ${application.pathway}`,
+      text,
+      html,
+    });
+    log("email", "info", "admin_notification_sent", { email: application.email });
+  } catch (err) {
+    log("email", "error", "admin_notification_failed", {
+      email: application.email,
+      error: err?.message || String(err),
+    });
+    throw err;
+  }
 }
 
 /**
@@ -540,20 +457,23 @@ export async function sendLeadNotification(application, meta = {}) {
  * @param {object} application sanitized + validated fields
  */
 export async function sendApplicantConfirmation(application) {
-  const transporter = await getTransporter();
-  if (!transporter) {
-    throw new Error("Email is not configured (SMTP_* env vars missing).");
-  }
-
   const { text, html } = confirmationContent(application);
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-    to: application.email,
-    subject: "We've received your application — Athlix",
-    text,
-    html,
-  });
+  try {
+    await sendViaResend({
+      to: application.email,
+      subject: "We've received your application — Athlix",
+      text,
+      html,
+    });
+    log("email", "info", "confirmation_sent", { email: application.email });
+  } catch (err) {
+    log("email", "error", "confirmation_failed", {
+      email: application.email,
+      error: err?.message || String(err),
+    });
+    throw err;
+  }
 }
 
 /**

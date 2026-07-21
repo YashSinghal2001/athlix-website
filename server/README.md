@@ -10,13 +10,13 @@ browser never sees any key.
 
 ```bash
 cd server
-cp .env.example .env      # fill in GOOGLE_SHEETS_* / SMTP_* for production
+cp .env.example .env      # fill in GOOGLE_SHEETS_* / RESEND_API_KEY for production
 npm install
 npm run dev               # http://localhost:8787  (or npm start)
 ```
 
-With no `GOOGLE_SHEETS_*` / `SMTP_*` configured, submissions are accepted and
-logged only (handy for local development).
+With no `GOOGLE_SHEETS_*` / `RESEND_API_KEY` configured, submissions are
+accepted and logged only (handy for local development).
 
 ## Environment variables
 
@@ -37,22 +37,17 @@ below is a quick summary. For a full production deployment walkthrough see
 | `GOOGLE_SHEETS_CLIENT_EMAIL` | For Sheets channel | Service account client email. |
 | `GOOGLE_SHEETS_PRIVATE_KEY` | For Sheets channel | Service account private key (PEM, `\n`-escaped). |
 | `GOOGLE_SHEETS_SHEET_NAME` | For Sheets channel | Sheet/tab name leads are appended to. |
-| `SMTP_HOST` | For email channel | SMTP server hostname (e.g. Hostinger's). |
-| `SMTP_PORT` | For email channel | SMTP port (465 or 587). |
-| `SMTP_SECURE` | For email channel | `true` for implicit TLS (465), `false` for STARTTLS (587). |
-| `SMTP_USER` | For email channel | SMTP auth username / mailbox address. |
-| `SMTP_PASS` | For email channel | SMTP auth password. |
-| `SMTP_FROM` | No | Overrides the `From` header; defaults to `SMTP_USER`. |
-| `SMTP_FORCE_IPV4` | No | Resolves `SMTP_HOST` to an IPv4 address before connecting. Default `true` — works around platforms (e.g. Render) that resolve an SMTP provider's AAAA record but have no outbound IPv6 route, causing `connect ENETUNREACH <ipv6>`. Set to `false` only if your SMTP provider requires IPv6. |
-| `LEAD_NOTIFICATION_EMAIL` | For notification email | Inbox that receives new-lead notifications. |
+| `RESEND_API_KEY` | For email channel | Resend API key (from the Resend dashboard). |
+| `EMAIL_FROM` | For email channel | Sender address for both emails, e.g. `info@athlix.in` (must be a verified Resend sender/domain). |
+| `ADMIN_EMAIL` | For notification email | Inbox that receives new-lead notifications. |
 | `TURNSTILE_SECRET_KEY` | No (but see below) | Enables server-side Cloudflare Turnstile verification. |
 
 "For Sheets channel" / "For email channel" means: that whole group must be
 set together to enable the channel; if any variable in the group is missing,
 the channel is skipped (not a failure) — see **Lead processing** below.
-`LEAD_NOTIFICATION_EMAIL` gates only the internal notification email; the
-applicant confirmation email still sends without it as long as the SMTP
-group is configured.
+`ADMIN_EMAIL` gates only the internal notification email; the applicant
+confirmation email still sends without it as long as `RESEND_API_KEY` /
+`EMAIL_FROM` are configured.
 
 **Never commit `.env`.** `CLIENT_ORIGIN` is the only value the browser needs
 to know indirectly (it must match where the client is hosted) — every other
@@ -148,7 +143,7 @@ reusable, side-effect-only module:
 | Module | Responsibility |
 |---|---|
 | `lib/googleSheets.js` | Appends the lead as a row to a Google Sheet (service account auth). |
-| `lib/email.js` | Sends a notification email to the team inbox + a branded confirmation email to the applicant, over Hostinger SMTP. |
+| `lib/email.js` | Sends a notification email to the team inbox + a branded confirmation email to the applicant, via the Resend API. |
 
 ### Google Sheets columns
 
@@ -239,8 +234,9 @@ media query, and an Outlook/MSO conditional wrapper) and use a table-based
 "bulletproof button" pattern so CTAs render as solid, tappable buttons across
 Gmail, Apple Mail, and Outlook. The site's WhatsApp number and `athlix.in`
 URL are brand-identity constants in `lib/email.js` (same number as the
-site's own "Book Consultation" CTA), not environment variables — Hostinger
-SMTP delivery itself is unchanged and still fully configured via `SMTP_*`.
+site's own "Book Consultation" CTA), not environment variables — email
+delivery itself goes through the Resend API, configured via
+`RESEND_API_KEY` / `EMAIL_FROM` / `ADMIN_EMAIL`.
 
 Fault tolerance rules (so **one failing integration never loses a lead**):
 - Each channel is attempted only if its env vars are configured; an
@@ -275,25 +271,24 @@ Events emitted, mapped to the six required log areas:
 | Form submission | `submission_received`, `submission_accepted`, `submission_failed` | info / info / error |
 | Validation failure | `validation_failed` (field names only, never values) | warn |
 | Google Sheets | `sheets_saved`, `sheets_failed` | info / error |
-| Email | `email_notification_sent`, `email_notification_failed`, `email_confirmation_sent`, `email_confirmation_failed`, `smtp_ipv4_lookup_failed` | info / error / info / error / warn |
+| Email | `email_sent`, `email_failed`, `admin_notification_sent`, `admin_notification_failed`, `confirmation_sent`, `confirmation_failed` | info / error / info / error / info / error |
 | Duplicate detection | `duplicate` | info |
 | Rate limiting | `rate_limited` | warn |
 | Bot protection | `turnstile_failed` (`security` category, not `submission`) | warn |
 
 If both Sheets and email fail for the same submission, `submission_failed`'s
 own message names each configured channel and its underlying error (e.g.
-`All configured lead delivery channels failed (sheets: ...; email: connect
-ENETUNREACH ...)`) — no need to cross-reference the earlier `sheets_failed`/
-`email_notification_failed` lines to tell which channel(s) caused it.
-Turnstile failures never reach this path (they 403 immediately and are only
-ever logged as `turnstile_failed`), so a `submission_failed` line is always a
-Sheets and/or SMTP failure.
+`All configured lead delivery channels failed (sheets: ...; email: ...)`) —
+no need to cross-reference the earlier `sheets_failed`/`admin_notification_failed`
+lines to tell which channel(s) caused it. Turnstile failures never reach this
+path (they 403 immediately and are only ever logged as `turnstile_failed`), so
+a `submission_failed` line is always a Sheets and/or email (Resend) failure.
 
 Both logging modules **never log secrets**: `lib/logger.js` redacts any
 field whose name looks credential-shaped (`pass`, `secret`, `token`,
 `*_key`, `authorization`) before writing the line, as a defense-in-depth
 backstop on top of call sites simply never passing credentials in. Neither
-module ever logs `SMTP_PASS`, `GOOGLE_SHEETS_PRIVATE_KEY`, or any other
+module ever logs `RESEND_API_KEY`, `GOOGLE_SHEETS_PRIVATE_KEY`, or any other
 `.env` value.
 
 ## Error monitoring (Sentry)

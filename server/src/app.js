@@ -4,7 +4,6 @@ import helmet from "helmet";
 import cors from "cors";
 import * as Sentry from "@sentry/node";
 import { createApplyRouter } from "./routes/apply.js";
-import { createDebugSmtpRouter } from "./routes/debugSmtp.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 // Version reported by /health. Prefer an env override (e.g. a CI-injected
@@ -69,12 +68,6 @@ export function createApp() {
 
   // API routes.
   app.use("/api", createApplyRouter());
-
-  // TEMPORARY DEBUG ENDPOINT — REMOVE BEFORE PRODUCTION
-  // GET /debug/smtp — see routes/debugSmtp.js. Gated behind DEBUG_SMTP_TOKEN;
-  // 404s when that env var isn't set. Delete this line + the import above +
-  // routes/debugSmtp.js once the Render SMTP issue is diagnosed.
-  app.use(createDebugSmtpRouter());
 
   // Reports unhandled errors to Sentry (a no-op if Sentry wasn't initialized
   // — see instrument.js). Registered after the routes so it sees anything

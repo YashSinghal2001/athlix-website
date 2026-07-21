@@ -30,20 +30,11 @@ skipped entirely (treated as "not configured", not as a failure).
 
 ### Required to enable email (notification + applicant confirmation)
 
-`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` — all five,
-together, from your SMTP provider (Hostinger or otherwise). `SMTP_FROM` is
-optional (defaults to `SMTP_USER`). `LEAD_NOTIFICATION_EMAIL` is required
-specifically for the internal notification email — without it, that one
-email is skipped/logged as a failure but the applicant confirmation email
-still sends normally.
-
-By default the server resolves `SMTP_HOST` to an IPv4 address before
-connecting (`SMTP_FORCE_IPV4`, default `true`). This matters on platforms
-like Render: the container reports a local IPv6-capable interface but has no
-real outbound IPv6 route, so if the SMTP provider's hostname also has an
-AAAA record, nodemailer's own DNS resolution can pick it at random and fail
-with `connect ENETUNREACH <ipv6-address>`. Only set `SMTP_FORCE_IPV4=false`
-if your provider requires IPv6.
+`RESEND_API_KEY` and `EMAIL_FROM` — both together, from your
+[Resend](https://resend.com) account. `EMAIL_FROM` must be a verified
+sender/domain in Resend. `ADMIN_EMAIL` is required specifically for the
+internal notification email — without it, that one email is skipped/logged
+as a failure but the applicant confirmation email still sends normally.
 
 ### Optional tuning
 
@@ -74,9 +65,9 @@ roll over.
   Vercel/Render/Railway "Environment Variables", a `.env` file that is
   **git-ignored** and deployed out-of-band, or a secrets manager like AWS
   Secrets Manager / Doppler / 1Password). Never commit `.env`.
-- `GOOGLE_SHEETS_PRIVATE_KEY` and `SMTP_PASS` are credentials — treat them
-  with the same care as a database password. Rotate them if they are ever
-  pasted into a chat, ticket, or log.
+- `GOOGLE_SHEETS_PRIVATE_KEY` and `RESEND_API_KEY` are credentials — treat
+  them with the same care as a database password. Rotate them if they are
+  ever pasted into a chat, ticket, or log.
 - Nothing server-side is ever sent to the browser. The only thing the
   frontend needs to know is the API's origin (`VITE_API_URL` in
   `client/.env`, itself optional if the API is same-origin behind a reverse
@@ -149,8 +140,8 @@ All lead-processing events are structured, one-line JSON (`[category]
 the full event/category table. In production, point your platform's log
 drain (Vercel log drains, CloudWatch, Datadog, a `docker logs` collector,
 etc.) at stdout/stderr; no file-based logging is used, so there's nothing
-else to configure. Nothing written to these logs is a secret — SMTP
-passwords and the Google service-account private key are never logged, and
+else to configure. Nothing written to these logs is a secret — the Resend
+API key and the Google service-account private key are never logged, and
 `lib/logger.js` redacts any accidentally-passed credential-shaped field as a
 backstop.
 
@@ -161,8 +152,9 @@ backstop.
 - [ ] At least one of Google Sheets or email fully configured (ideally both).
 - [ ] Google Sheet shared with the service account email (Editor access);
       the sheet has a tab named exactly `GOOGLE_SHEETS_SHEET_NAME`.
-- [ ] SMTP credentials verified with a real test send (`npm run dev` locally
-      with production SMTP creds in a scratch `.env`, submit a test lead).
+- [ ] Resend credentials verified with a real test send (`npm run dev`
+      locally with production `RESEND_API_KEY`/`EMAIL_FROM` in a scratch
+      `.env`, submit a test lead).
 - [ ] `TURNSTILE_SECRET_KEY` set server-side and `VITE_TURNSTILE_SITE_KEY`
       set at client build time (both, or neither — a mismatch means every
       submission gets rejected with `403`). See `server/README.md`'s

@@ -121,7 +121,7 @@ export function createApplyRouter() {
             } else {
               log("email", "info", "email_confirmation_sent", { email: application.email });
             }
-            // Both fail together in the common-cause case (SMTP host/auth
+            // Both fail together in the common-cause case (Resend API/auth
             // down entirely), so either error is representative; prefer the
             // notification error since it fails first in Promise.allSettled.
             if (!result.sent) {
@@ -145,9 +145,9 @@ export function createApplyRouter() {
         // lead would otherwise be lost, so fail loudly and let the client
         // retry. Named per-channel reasons here (rather than a bare generic
         // message) so the "submission_failed" log line alone is enough to
-        // tell Google Sheets, SMTP, and Turnstile failures apart — Turnstile
+        // tell Google Sheets, email, and Turnstile failures apart — Turnstile
         // never reaches this point (it 403s earlier), so its absence here is
-        // itself informative: this is always a Sheets and/or SMTP failure.
+        // itself informative: this is always a Sheets and/or email failure.
         const reasons = [];
         if (sheetsConfigured) reasons.push(`sheets: ${sheetsError?.message || "unknown error"}`);
         if (emailConfigured) reasons.push(`email: ${emailError?.message || "unknown error"}`);
