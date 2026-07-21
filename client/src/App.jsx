@@ -1300,8 +1300,19 @@ function ApplicationForm() {
                   <div className="form-status err" role="alert"><Icon.X /> {serverError}</div>
                 )}
 
-                <button className="btn btn-primary btn-lg btn-block field wide" type="submit" disabled={submitting}>
-                  {submitting ? <><span className="spinner" /> Submitting…</> : "Send Your Application"}
+                <button
+                  className="btn btn-primary btn-lg btn-block apply-submit-btn"
+                  type="submit"
+                  disabled={submitting}
+                  aria-busy={submitting}
+                >
+                  {submitting ? (
+                    <span className="btn-loading">
+                      <span className="spinner" aria-hidden="true" /> Submitting…
+                    </span>
+                  ) : (
+                    "Send Your Application"
+                  )}
                 </button>
               </motion.form>
             )}

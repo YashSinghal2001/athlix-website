@@ -2651,6 +2651,16 @@ body.cursor-active .cursor-glow {
   grid-column: 1 / -1;
 }
 
+/* Apply form's submit button: spans both grid columns like .field.wide, but
+   deliberately its own rule (not `.field`) — `.field` sets
+   `display: flex; flex-direction: column`, which on a button overrides
+   `.btn`'s own `display: inline-flex` (later in the cascade wins at equal
+   specificity) and stacks the loading spinner + text vertically instead of
+   inline, changing the button's box between the idle and loading states. */
+.apply-submit-btn {
+  grid-column: 1 / -1;
+}
+
 .field label {
   font-size: 0.84rem;
   font-weight: 600;
@@ -2799,6 +2809,17 @@ body.cursor-active .cursor-glow {
   border: 2px solid rgba(255, 255, 255, 0.35);
   border-top-color: #fff;
   animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Sole child of .btn while submitting (mirrors the plain text node used in
+   the idle state) — keeps the spinner + "Submitting…" on one row, centered,
+   without letting them influence the button's own fixed width/height. */
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
 }
 
 @keyframes spin {
