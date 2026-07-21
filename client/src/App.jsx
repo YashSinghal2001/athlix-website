@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import Lenis from "lenis";
 
 import { useTheme } from "./theme/ThemeContext.jsx";
 import { Icon } from "./components/icons.jsx";
@@ -173,14 +174,14 @@ const testimonials = [
 ];
 
 const faqs = [
-  { q: "How is Athlix different from a normal gym or diet plan?", a: "Athlix is not a downloadable plan — it is a coaching relationship. We combine personalized programming, weekly accountability, and lifestyle design to produce results that actually last." },
-  { q: "What is the Athlix Coaching Method?", a: "A dynamic three-stage framework — Reset, Rebuild, Rise — that adapts as your body, lifestyle, and goals evolve. The process is never fixed; it changes with your progress." },
-  { q: "Do I need gym access to start?", a: "No. Your program is built around your access — home, hotel, or full gym — based on your training history, equipment, and goals." },
-  { q: "How does Hybrid Coaching work?", a: "Coach Abhishek designs your overall strategy personally. The Athlix Assistant Team handles daily follow-ups, accountability, and support so nothing falls through the cracks." },
+  { q: "How is Athlix different from a normal gym or diet plan?", a: "Athlix is not a downloadable plan it is a coaching relationship. We combine personalized programming, weekly accountability, and lifestyle design to produce results that actually last." },
+  { q: "What is the Athlix Coaching Method?", a: "A dynamic three stage framework  Reset, Rebuild, Rise  that adapts as your body, lifestyle, and goals evolve. The process is never fixed; it changes with your progress." },
+  { q: "Do I need gym access to start?", a: "No. Your program is built around your access  home, hotel, or full gym  based on your training history, equipment, and goals." },
+  { q: "How does Hybrid Coaching work?", a: "Coach Abhishek designs your overall strategy personally. The Athlix Assistant Team handles daily follow ups, accountability, and support so nothing falls through the cracks." },
   { q: "Is Athlix beginner friendly?", a: "Yes. The Reset stage is designed to help beginners build awareness and consistency before intensity increases. Every plan is scaled to your starting point." },
   { q: "How long does a transformation take?", a: "Most clients see meaningful change within 8–16 weeks of consistent execution. A complete, sustainable transformation is typically a 6–12 month journey." },
-  { q: "Do you work with international clients?", a: "Yes. Athlix coaches clients across 6 countries — fully online, with optional in-person support for hybrid clients." },
-  { q: "What happens after I apply?", a: "We personally review your application, invite the best-fit applicants to a consultation, and align on goals before building your personalized roadmap." },
+  { q: "Do you work with international clients?", a: "Yes. Athlix coaches clients across 6 countries  fully online, with optional in-person support for hybrid clients." },
+  { q: "What happens after I apply?", a: "We personally review your application, invite the best fit applicants to a consultation, and align on goals before building your personalized roadmap." },
 ];
 
 /* =====================================================================
@@ -211,8 +212,13 @@ function Reveal({ children, delay = 0, y = REVEAL_Y, className, as = "div", styl
     const variants = reduce
       ? undefined
       : {
-          hidden: { opacity: 0, y },
-          show: { opacity: 1, y: 0, transition: { duration: REVEAL_DURATION, ease: REVEAL_EASE } },
+          hidden: { opacity: 0, y, filter: "blur(8px)" },
+          show: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            transition: { duration: REVEAL_DURATION, ease: REVEAL_EASE },
+          },
         };
     return (
       <MotionTag className={className} style={style} variants={variants} {...rest}>
@@ -226,8 +232,8 @@ function Reveal({ children, delay = 0, y = REVEAL_Y, className, as = "div", styl
     <MotionTag
       className={className}
       style={style}
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { opacity: 0, y, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={REVEAL_VIEWPORT}
       transition={{ duration: REVEAL_DURATION, ease: REVEAL_EASE, delay }}
       {...rest}
@@ -598,6 +604,13 @@ function Transformations() {
                           loading="lazy"
                           draggable="false"
                         />
+                        {/* decorative — the alt text already says before/after */}
+                        <span className="ba-pill ba-pill-before" aria-hidden="true">
+                          <span className="pip" />BEFORE
+                        </span>
+                        <span className="ba-pill ba-pill-after" aria-hidden="true">
+                          <span className="pip" />AFTER
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -762,20 +775,26 @@ function Pathways() {
    ===================================================================== */
 
 function Coach() {
+  // Coach image temporarily hidden. Restore this block when new image is available.
+  const SHOW_COACH_IMAGE = false;
+
   return (
     <section id="coach" className="section">
       <div className="shell">
-        <RevealGroup className="coach-grid">
-          <Reveal group className="coach-photo">
-            <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
-          </Reveal>
+        <RevealGroup className={`coach-grid${SHOW_COACH_IMAGE ? "" : " coach-grid--no-image"}`}>
+          {SHOW_COACH_IMAGE && (
+            // Coach image temporarily hidden. Restore this block when new image is available.
+            <Reveal group className="coach-photo">
+              <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
+            </Reveal>
+          )}
 
           <Reveal group className="coach-copy">
             <p className="eyebrow">Founder-Led Coaching</p>
             <h2 className="section-title">Meet Coach Abhishek</h2>
             <p>
               Coach Abhishek leads Athlix as a premium transformation coaching practice for people
-              who want sustainable fat loss, stronger bodies, and higher confidence — without the
+              who want sustainable fat loss, stronger bodies, and higher confidence without the
               extreme, short-term approaches that always fail.
             </p>
             <p>
@@ -1184,7 +1203,6 @@ function Footer() {
     <footer className="footer">
       <div className="shell footer-stack">
         <Logo />
-        <p className="footer-tagline">Premium International Transformation Coaching</p>
         <nav className="footer-links" aria-label="Footer">
           <a href="#top">Home</a>
           <span className="dot" aria-hidden="true">•</span>
@@ -1261,7 +1279,13 @@ function ScrollProgress() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return <div className="scroll-progress" style={{ width: `${w}%` }} aria-hidden="true" />;
+  return (
+    <div
+      className="scroll-progress"
+      style={{ width: `${w}%`, opacity: w > 0.3 ? 1 : 0 }}
+      aria-hidden="true"
+    />
+  );
 }
 
 /* Global cursor-follow spotlight (Linear.dev feel): a soft, heavily blurred
@@ -1312,10 +1336,37 @@ function CursorGlow() {
    ===================================================================== */
 
 export default function App() {
+  // Lenis smooth scrolling (rAF-driven, wheel input). Touch stays native —
+  // platform momentum scrolling already feels right, and hijacking it is what
+  // makes sites feel floaty. Skipped entirely under prefers-reduced-motion;
+  // scroll events still fire normally, so ScrollProgress/StickyMobileCTA and
+  // the header work unchanged.
+  const lenisRef = useRef(null);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    lenisRef.current = lenis;
+    let raf = requestAnimationFrame(function loop(t) {
+      lenis.raf(t);
+      raf = requestAnimationFrame(loop);
+    });
+    return () => {
+      cancelAnimationFrame(raf);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
+
   // Smooth in-page navigation with a dynamically-measured navbar offset.
   // Scrolls past each section's top padding so the heading lands right under
   // the fixed navbar — consistent on every screen size, no hardcoded values.
   useEffect(() => {
+    // Route programmatic scrolls through Lenis when active so anchor
+    // navigation uses the same easing as wheel scrolling.
+    const smoothTo = (top) => {
+      if (lenisRef.current) lenisRef.current.scrollTo(top, { duration: 0.95 });
+      else window.scrollTo({ top, behavior: "smooth" });
+    };
     const onClick = (e) => {
       const a = e.target.closest('a[href^="#"]');
       if (!a) return;
@@ -1333,7 +1384,7 @@ export default function App() {
       const GAP = 14; // small breathing space below the navbar
 
       if (id === "top") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        smoothTo(0);
         history.replaceState(null, "", window.location.pathname + window.location.search);
         return;
       }
@@ -1341,7 +1392,7 @@ export default function App() {
       // Land at the section's content (after its top padding), under the navbar.
       const padTop = parseFloat(getComputedStyle(el).paddingTop) || 0;
       const y = window.scrollY + el.getBoundingClientRect().top + padTop - headerH - GAP;
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      smoothTo(Math.max(0, y));
       history.replaceState(null, "", `#${id}`);
     };
     document.addEventListener("click", onClick);
