@@ -13,7 +13,7 @@ import { Icon } from "./components/icons.jsx";
 /* assets */
 import heroImage from "./assets/1.webp";
 import logoMark from "./assets/logo-mark.png"; // trimmed web copy of logo.png
-import coachImage from "./assets/images/Coach.webp"; // optimized from Images/Coach.jpg
+import coachImage from "./assets/Coach.png";
 import blueTick from "./assets/Blue_tick.png";
 
 import r1 from "./assets/4_1.webp";
@@ -785,19 +785,13 @@ function Pathways() {
    ===================================================================== */
 
 function Coach() {
-  // Coach image temporarily hidden. Restore this block when new image is available.
-  const SHOW_COACH_IMAGE = false;
-
   return (
     <section id="coach" className="section">
       <div className="shell">
-        <RevealGroup className={`coach-grid${SHOW_COACH_IMAGE ? "" : " coach-grid--no-image"}`}>
-          {SHOW_COACH_IMAGE && (
-            // Coach image temporarily hidden. Restore this block when new image is available.
-            <Reveal group className="coach-photo">
-              <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
-            </Reveal>
-          )}
+        <RevealGroup className="coach-grid">
+          <Reveal group className="coach-photo">
+            <img src={coachImage} alt="Coach Abhishek — Athlix founder and transformation coach" loading="lazy" />
+          </Reveal>
 
           <Reveal group className="coach-copy">
             <p className="eyebrow">Founder-Led Coaching</p>

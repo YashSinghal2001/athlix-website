@@ -2160,14 +2160,6 @@ body.cursor-active .cursor-glow {
   align-items: center;
 }
 
-/* Coach image temporarily hidden. Restore this block when new image is available.
-   While hidden, let the text column take the full width and stay centered. */
-.coach-grid--no-image {
-  grid-template-columns: 1fr;
-  max-width: 960px;
-  margin-inline: auto;
-}
-
 .coach-photo {
   position: relative;
   border-radius: var(--radius-xl);
