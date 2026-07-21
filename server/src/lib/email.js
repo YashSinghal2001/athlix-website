@@ -8,9 +8,24 @@
 // so every outgoing email is visually consistent; the applicant email uses
 // the spacious/premium variant, the admin notification uses the compact one.
 
+import dns from "node:dns";
+import net from "node:net";
 import nodemailer from "nodemailer";
+import { log } from "./logger.js";
 
 const CONNECTION_TIMEOUT_MS = 10000;
+
+// Force the SMTP connection over IPv4 by default. Nodemailer resolves both
+// A and AAAA records for SMTP_HOST and then picks RANDOMLY between them
+// (see its lib/shared/index.js `formatDNSValue`) — on Render (and other
+// containerized platforms) the container reports a local IPv6-capable
+// interface even though there's no real outbound IPv6 route, so nodemailer
+// occasionally picks an unreachable IPv6 address and the connection fails
+// with `connect ENETUNREACH <ipv6>`. We resolve SMTP_HOST to an IPv4 literal
+// ourselves before handing it to nodemailer (see resolveConnectHost below),
+// sidestepping that random choice entirely. Set SMTP_FORCE_IPV4=false to
+// disable if a provider ever requires IPv6.
+const SMTP_FORCE_IPV4 = process.env.SMTP_FORCE_IPV4 !== "false";
 
 // ── Brand constants ─────────────────────────────────────────────────────────
 // Same palette as the public site (client/tailwind.config.js: athlix-navy /
@@ -35,30 +50,60 @@ const COACH_NAME = "Coach Abhishek";
 const WHATSAPP_DIGITS = "919030153337"; // +91 90301 53337, no "+", for wa.me
 const WHATSAPP_DISPLAY = "+91 90301 53337";
 
-let cachedTransporter = null;
+// Resolves `host` to an IPv4 literal for nodemailer to connect to, while
+// returning the original hostname as `servername` so TLS SNI / certificate
+// hostname checks still validate against the real domain (a bare IP literal
+// has no meaningful servername of its own — see nodemailer's
+// smtp-connection `this.servername` derivation). Never throws: if IPv4
+// resolution fails (e.g. the provider genuinely has no A record), falls
+// back to the original hostname and lets nodemailer resolve it itself.
+async function resolveConnectHost(host) {
+  if (!SMTP_FORCE_IPV4 || net.isIP(host)) return { connectHost: host, servername: undefined };
+  try {
+    const { address } = await dns.promises.lookup(host, { family: 4 });
+    return { connectHost: address, servername: host };
+  } catch (err) {
+    log("email", "warn", "smtp_ipv4_lookup_failed", {
+      host,
+      error: err?.message || String(err),
+    });
+    return { connectHost: host, servername: undefined };
+  }
+}
 
-function getTransporter() {
+// Cached as a Promise (not the resolved transporter) so concurrent callers
+// before the first resolution completes share one in-flight DNS lookup
+// instead of racing to create duplicate transporters.
+let cachedTransporterPromise = null;
+
+async function getTransporter() {
   const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   if (!host || !user || !pass) return null;
 
-  if (!cachedTransporter) {
-    const port = Number(process.env.SMTP_PORT) || 465;
-    cachedTransporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== "false" : port === 465,
-      auth: { user, pass },
-      connectionTimeout: CONNECTION_TIMEOUT_MS,
-    });
+  if (!cachedTransporterPromise) {
+    cachedTransporterPromise = (async () => {
+      const port = Number(process.env.SMTP_PORT) || 465;
+      const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== "false" : port === 465;
+      const { connectHost, servername } = await resolveConnectHost(host);
+
+      return nodemailer.createTransport({
+        host: connectHost,
+        port,
+        secure,
+        auth: { user, pass },
+        connectionTimeout: CONNECTION_TIMEOUT_MS,
+        ...(servername ? { tls: { servername } } : {}),
+      });
+    })();
   }
-  return cachedTransporter;
+  return cachedTransporterPromise;
 }
 
 /** True once SMTP_* env vars are present (used for local-dev messaging only). */
 export function isEmailConfigured() {
-  return Boolean(getTransporter());
+  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
 function escapeHtml(value) {
@@ -404,7 +449,7 @@ function notificationContent(application, meta) {
  * @param {object} [meta] { ip, userAgent, submittedAt }
  */
 export async function sendLeadNotification(application, meta = {}) {
-  const transporter = getTransporter();
+  const transporter = await getTransporter();
   const to = process.env.LEAD_NOTIFICATION_EMAIL;
   if (!transporter) {
     throw new Error("Email is not configured (SMTP_* env vars missing).");
@@ -430,7 +475,7 @@ export async function sendLeadNotification(application, meta = {}) {
  * @param {object} application sanitized + validated fields
  */
 export async function sendApplicantConfirmation(application) {
-  const transporter = getTransporter();
+  const transporter = await getTransporter();
   if (!transporter) {
     throw new Error("Email is not configured (SMTP_* env vars missing).");
   }

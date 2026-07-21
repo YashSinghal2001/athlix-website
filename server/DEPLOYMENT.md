@@ -37,10 +37,22 @@ specifically for the internal notification email — without it, that one
 email is skipped/logged as a failure but the applicant confirmation email
 still sends normally.
 
+By default the server resolves `SMTP_HOST` to an IPv4 address before
+connecting (`SMTP_FORCE_IPV4`, default `true`). This matters on platforms
+like Render: the container reports a local IPv6-capable interface but has no
+real outbound IPv6 route, so if the SMTP provider's hostname also has an
+AAAA record, nodemailer's own DNS resolution can pick it at random and fail
+with `connect ENETUNREACH <ipv6-address>`. Only set `SMTP_FORCE_IPV4=false`
+if your provider requires IPv6.
+
 ### Optional tuning
 
 `TRUST_PROXY`, `RATE_LIMIT_MAX`, `RATE_LIMIT_WINDOW_MS` — sane defaults exist
 in code; only set these to override them. See `.env.example` for defaults.
+`TRUST_PROXY` defaults to `1` automatically on Render (detected via Render's
+own `RENDER=true` environment variable) since Render's edge always sits
+exactly one hop in front of the app — set `TRUST_PROXY` explicitly (including
+`0`) to override.
 
 ### Optional: error monitoring (Sentry)
 
@@ -107,7 +119,13 @@ If you do put this server behind a reverse proxy, set `TRUST_PROXY` to `1`
 (or the correct hop count) so `req.ip` reflects the real client IP and rate
 limiting can't be trivially bypassed by spoofing `X-Forwarded-For`. Only do
 this when you control the proxy — never set it when the server is exposed
-directly to the internet.
+directly to the internet. On Render this is automatic (`app.js` detects
+Render's own `RENDER=true` variable and defaults `TRUST_PROXY` to `1`),
+since Render's edge is always exactly one trusted hop away; leaving it unset
+elsewhere without a reverse proxy correctly fails closed. Without this,
+Render's edge injects `X-Forwarded-For` on every request while Express's
+`trust proxy` is disabled by default, and `express-rate-limit` refuses to
+start with `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR`.
 
 ## 5. Scaling notes
 
@@ -149,7 +167,8 @@ backstop.
       set at client build time (both, or neither — a mismatch means every
       submission gets rejected with `403`). See `server/README.md`'s
       **Bot protection** section.
-- [ ] `TRUST_PROXY` set correctly for your topology (see section 4).
+- [ ] `TRUST_PROXY` set correctly for your topology (see section 4; automatic
+      on Render).
 - [ ] (Optional) `SENTRY_DSN` **and** `NODE_ENV=production` both set if you
       want backend error monitoring — neither alone sends events. See
       **Error monitoring (Sentry)** in `server/README.md`.

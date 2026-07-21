@@ -71,6 +71,14 @@ export function createApplyRouter() {
 
       let sheetsOk = false;
       let emailOk = false;
+      // Captured only for the "every configured channel failed" aggregate
+      // error below — the specific per-channel error is already logged (and
+      // sent to Sentry) at the point it happens, but without this the final
+      // 502's own log line ("submission_failed") only ever said "All
+      // configured lead delivery channels failed", forcing a manual
+      // cross-reference against earlier lines to find out *why*.
+      let sheetsError = null;
+      let emailError = null;
       const deliveries = [];
 
       if (sheetsConfigured) {
@@ -81,6 +89,7 @@ export function createApplyRouter() {
               log("sheets", "info", "sheets_saved", { email: application.email });
             })
             .catch((err) => {
+              sheetsError = err;
               log("sheets", "error", "sheets_failed", {
                 email: application.email,
                 error: err?.message || String(err),
@@ -112,6 +121,12 @@ export function createApplyRouter() {
             } else {
               log("email", "info", "email_confirmation_sent", { email: application.email });
             }
+            // Both fail together in the common-cause case (SMTP host/auth
+            // down entirely), so either error is representative; prefer the
+            // notification error since it fails first in Promise.allSettled.
+            if (!result.sent) {
+              emailError = result.notificationError || result.confirmationError;
+            }
           })
         );
       }
@@ -127,8 +142,16 @@ export function createApplyRouter() {
         });
       } else if (!sheetsOk && !emailOk) {
         // Every configured channel failed — this is the one case where the
-        // lead would otherwise be lost, so fail loudly and let the client retry.
-        throw new Error("All configured lead delivery channels failed.");
+        // lead would otherwise be lost, so fail loudly and let the client
+        // retry. Named per-channel reasons here (rather than a bare generic
+        // message) so the "submission_failed" log line alone is enough to
+        // tell Google Sheets, SMTP, and Turnstile failures apart — Turnstile
+        // never reaches this point (it 403s earlier), so its absence here is
+        // itself informative: this is always a Sheets and/or SMTP failure.
+        const reasons = [];
+        if (sheetsConfigured) reasons.push(`sheets: ${sheetsError?.message || "unknown error"}`);
+        if (emailConfigured) reasons.push(`email: ${emailError?.message || "unknown error"}`);
+        throw new Error(`All configured lead delivery channels failed (${reasons.join("; ")})`);
       } else {
         log("submission", "info", "submission_accepted", {
           email: application.email,

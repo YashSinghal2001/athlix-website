@@ -19,7 +19,18 @@ export function createApp() {
   // Behind a trusted proxy? Set TRUST_PROXY so req.ip reflects the real client
   // for rate limiting. Only enable when actually behind a proxy you control,
   // otherwise clients could spoof X-Forwarded-For to bypass the limiter.
-  const trustProxy = process.env.TRUST_PROXY;
+  //
+  // Render always fronts the app with its own edge proxy exactly one hop
+  // away, which sets X-Forwarded-For on every request; with `trust proxy`
+  // left at Express's default (disabled), express-rate-limit refuses to
+  // start (ERR_ERL_UNEXPECTED_X_FORWARDED_FOR) because it looks like a
+  // possible spoofing setup. Render sets RENDER=true on every service, so we
+  // can safely default to trusting one hop there without weakening the
+  // "fails closed" default anywhere else. An explicit TRUST_PROXY always
+  // wins (including TRUST_PROXY=0 to opt back out on Render).
+  const trustProxyEnv = process.env.TRUST_PROXY;
+  const trustProxy =
+    trustProxyEnv !== undefined ? trustProxyEnv : process.env.RENDER === "true" ? "1" : undefined;
   if (trustProxy && trustProxy !== "0") {
     app.set("trust proxy", Number.isNaN(Number(trustProxy)) ? trustProxy : Number(trustProxy));
   }

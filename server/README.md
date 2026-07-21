@@ -29,7 +29,7 @@ below is a quick summary. For a full production deployment walkthrough see
 |---|---|---|
 | `PORT` | Yes | Port the API listens on. |
 | `CLIENT_ORIGIN` | Yes | Comma-separated allowed browser origin(s) for CORS. Empty = block all cross-origin requests. |
-| `TRUST_PROXY` | No | Set when behind a reverse proxy, so rate limiting sees the real client IP. |
+| `TRUST_PROXY` | No | Set when behind a reverse proxy, so rate limiting sees the real client IP. Defaults to `1` automatically on Render (`RENDER=true`); set explicitly (including `0`) to override. |
 | `RATE_LIMIT_MAX` | No | Max submissions per IP per window. Default `5`. |
 | `RATE_LIMIT_WINDOW_MS` | No | Rate-limit window in ms. Default `3600000` (1h). |
 | `APP_VERSION` | No | Version string reported by `GET /health`. Defaults to `package.json`'s `version`. Not a secret. |
@@ -43,6 +43,7 @@ below is a quick summary. For a full production deployment walkthrough see
 | `SMTP_USER` | For email channel | SMTP auth username / mailbox address. |
 | `SMTP_PASS` | For email channel | SMTP auth password. |
 | `SMTP_FROM` | No | Overrides the `From` header; defaults to `SMTP_USER`. |
+| `SMTP_FORCE_IPV4` | No | Resolves `SMTP_HOST` to an IPv4 address before connecting. Default `true` — works around platforms (e.g. Render) that resolve an SMTP provider's AAAA record but have no outbound IPv6 route, causing `connect ENETUNREACH <ipv6>`. Set to `false` only if your SMTP provider requires IPv6. |
 | `LEAD_NOTIFICATION_EMAIL` | For notification email | Inbox that receives new-lead notifications. |
 | `TURNSTILE_SECRET_KEY` | No (but see below) | Enables server-side Cloudflare Turnstile verification. |
 
@@ -274,9 +275,19 @@ Events emitted, mapped to the six required log areas:
 | Form submission | `submission_received`, `submission_accepted`, `submission_failed` | info / info / error |
 | Validation failure | `validation_failed` (field names only, never values) | warn |
 | Google Sheets | `sheets_saved`, `sheets_failed` | info / error |
-| Email | `email_notification_sent`, `email_notification_failed`, `email_confirmation_sent`, `email_confirmation_failed` | info / error |
+| Email | `email_notification_sent`, `email_notification_failed`, `email_confirmation_sent`, `email_confirmation_failed`, `smtp_ipv4_lookup_failed` | info / error / info / error / warn |
 | Duplicate detection | `duplicate` | info |
 | Rate limiting | `rate_limited` | warn |
+| Bot protection | `turnstile_failed` (`security` category, not `submission`) | warn |
+
+If both Sheets and email fail for the same submission, `submission_failed`'s
+own message names each configured channel and its underlying error (e.g.
+`All configured lead delivery channels failed (sheets: ...; email: connect
+ENETUNREACH ...)`) — no need to cross-reference the earlier `sheets_failed`/
+`email_notification_failed` lines to tell which channel(s) caused it.
+Turnstile failures never reach this path (they 403 immediately and are only
+ever logged as `turnstile_failed`), so a `submission_failed` line is always a
+Sheets and/or SMTP failure.
 
 Both logging modules **never log secrets**: `lib/logger.js` redacts any
 field whose name looks credential-shaped (`pass`, `secret`, `token`,
@@ -338,7 +349,7 @@ checklist (hosting options, secrets management, reverse-proxy setup, and a
 pre-launch checklist). Summary:
 
 - Set `TRUST_PROXY=1` only when behind a proxy you control (so rate limiting
-  uses the real client IP).
+  uses the real client IP) — this is automatic on Render.
 - Set `CLIENT_ORIGIN` to your site origin(s) for CORS.
 - Duplicate protection is in-memory (per process). For multiple instances,
   back `lib/dedupe.js` with Redis (`SETEX`) — same interface.
