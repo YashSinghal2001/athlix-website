@@ -338,7 +338,6 @@ function attributionRows(application) {
   const campaign = formatCampaign(application);
   if (campaign) rows.push(["Campaign", campaign]);
   if (application.referrer) rows.push(["Referrer", application.referrer]);
-  if (application.landingPage) rows.push(["Landing Page", application.landingPage]);
   return rows;
 }
 

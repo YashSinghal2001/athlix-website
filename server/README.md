@@ -171,10 +171,10 @@ on first use if it doesn't already exist, and writes this exact header row
   Update it per-row in the sheet as a lead moves through the pipeline — the
   dropdown (Sheets data validation, `strict: true`) prevents typos/other
   values from being entered in that column.
-- **UTM Source/Medium/Campaign/Content, Referrer, Landing Page, and IP are
-  no longer written to the sheet.** They're still captured client-side and
-  used for marketing-attribution rows in the internal notification email
-  (see **Email design** below) — this schema is Sheets-specific.
+- **UTM Source/Medium/Campaign/Content, Referrer, and IP are no longer
+  written to the sheet.** They're still captured client-side and used for
+  marketing-attribution rows in the internal notification email (see
+  **Email design** below) — this schema is Sheets-specific.
 - Headers are only ever written via a fixed-range overwrite, never an
   insert/append, so a header row can never be duplicated — concurrent
   first-requests are safe.
@@ -224,9 +224,9 @@ The two templates differ in weight, not branding:
   `GOOGLE_SHEETS_SPREADSHEET_ID` is set — a "View in Google Sheet" link.
   Marketing attribution (see above) only adds rows when there's something to
   show: a combined "Campaign" row (`source=..., medium=..., campaign=...,
-  content=...`) plus "Referrer" and "Landing Page" rows, each omitted
-  individually when empty — direct/organic leads (the common case) don't
-  grow the email at all. The applicant confirmation never includes any of
+  content=...`) plus a "Referrer" row, each omitted individually when empty
+  — direct/organic leads (the common case) don't grow the email at all. The
+  applicant confirmation never includes any of
   this.
 
 Both are responsive (fluid width, a `max-width:600px` container, a mobile

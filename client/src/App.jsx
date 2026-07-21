@@ -1013,7 +1013,6 @@ function captureAttribution() {
     utm_campaign: params.get("utm_campaign") || "",
     utm_content: params.get("utm_content") || "",
     referrer: document.referrer || "",
-    landingPage: window.location.pathname + window.location.search,
   };
 
   try {

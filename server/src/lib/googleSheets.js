@@ -360,9 +360,9 @@ export async function appendLeadToSheet(application) {
 
   const { country, countryCode, mobileNumber } = splitPhone(application.phone);
 
-  // Order must match SHEET_HEADERS exactly. UTM/Referrer/Landing Page/IP are
+  // Order must match SHEET_HEADERS exactly. UTM/Referrer/IP are
   // intentionally not written here — they're no longer part of this schema
-  // (still used for email attribution, see lib/email.js).
+  // (Referrer/UTM are still used for email attribution, see lib/email.js).
   const row = [
     formatIstDate(),
     application.name,

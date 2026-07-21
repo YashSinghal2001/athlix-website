@@ -37,7 +37,6 @@ export function sanitizeApplication(body = {}) {
     utm_campaign: cleanString(body.utm_campaign, { maxLength: 200 }),
     utm_content: cleanString(body.utm_content, { maxLength: 200 }),
     referrer: cleanString(body.referrer, { maxLength: 500 }),
-    landingPage: cleanString(body.landingPage, { maxLength: 500 }),
     // honeypot — must be empty for real humans
     company: cleanString(body.company, { maxLength: 100 }),
   };

@@ -56,7 +56,6 @@ const applicationSchema = z.object({
   utm_campaign: z.string().max(200).optional().default(""),
   utm_content: z.string().max(200).optional().default(""),
   referrer: z.string().max(500).optional().default(""),
-  landingPage: z.string().max(500).optional().default(""),
 });
 
 /**
