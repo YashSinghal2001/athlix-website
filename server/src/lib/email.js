@@ -122,7 +122,11 @@ async function verifyTransporter(transporter, context) {
 // instead of racing to create duplicate transporters.
 let cachedTransporterPromise = null;
 
-async function getTransporter() {
+// Exported (only) so the temporary /debug/smtp route (routes/debugSmtp.js)
+// can reuse the exact same transporter/verify path as normal sending instead
+// of duplicating transport-construction logic. Remove this export if/when
+// that route is removed and nothing else needs it.
+export async function getTransporter() {
   const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
