@@ -46,7 +46,7 @@ export default class ErrorBoundary extends React.Component {
             </button>
             <p className="app-error-contact">
               Still need help? Reach us on{" "}
-              <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer">WhatsApp</a>.
+              <a href="https://wa.me/919030153337" target="_blank" rel="noreferrer">WhatsApp</a>.
             </p>
           </div>
         </div>

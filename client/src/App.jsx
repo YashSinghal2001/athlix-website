@@ -13,7 +13,7 @@ import { Icon } from "./components/icons.jsx";
 /* assets */
 import heroImage from "./assets/1.webp";
 import logoMark from "./assets/logo-mark.png"; // trimmed web copy of logo.png
-import coachImage from "./assets/Coach.png";
+import coachImage from "./assets/images/Coach.webp";
 import blueTick from "./assets/Blue_tick.png";
 
 import r1 from "./assets/4_1.webp";
@@ -1359,9 +1359,9 @@ function Footer() {
         <div className="footer-links">
           <a href="https://www.instagram.com/coachavk" target="_blank" rel="noreferrer">Instagram</a>
           <span className="dot" aria-hidden="true">•</span>
-          <a href="https://wa.me/910000000000" target="_blank" rel="noreferrer">WhatsApp</a>
+          <a href="https://wa.me/919030153337" target="_blank" rel="noreferrer">WhatsApp</a>
           <span className="dot" aria-hidden="true">•</span>
-          <a href="mailto:hello@athlix.co">hello@athlix.co</a>
+          <a href="mailto:info@athlix.in">info@athlix.in</a>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Athlix. All rights reserved.</span>

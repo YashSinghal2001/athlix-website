@@ -124,6 +124,14 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Hard horizontal clip at the root. `overflow-x: hidden` on <body> alone is
+     propagated to the viewport (leaving body itself unclipped), so any content
+     wider than the screen makes mobile browsers expand the layout viewport —
+     the page then renders "zoomed out" with a dead strip on the right.
+     Clipping <html> stops that expansion; `clip` (where supported) avoids
+     creating a scroll container at all, `hidden` is the fallback. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -407,9 +415,12 @@ p {
   }
 }
 
-/* Apply heading stays left-aligned, just never breaks to two lines */
-#apply .section-title {
-  white-space: nowrap;
+/* Apply heading stays left-aligned, just never breaks to two lines — desktop
+   only; on phones the nowrap title is wider than the screen. */
+@media (min-width: 1280px) {
+  #apply .section-title {
+    white-space: nowrap;
+  }
 }
 
 .muted {
@@ -1314,6 +1325,16 @@ body.cursor-active .cursor-glow {
 
 .ba-carousel {
   display: none;
+}
+
+/* The coverflow's prev/next cards are translated ±~90% past the stage, far
+   beyond the viewport. Clip them at the section (the section spans the full
+   viewport width, so the visible result is identical to the old viewport-edge
+   clip) — without this the document grows to ~156vw and mobile browsers
+   expand the layout viewport to fit. Horizontal clip only: vertical overflow
+   (card hover lift, shadows) stays visible. */
+#transformations {
+  overflow-x: clip;
 }
 
 /* 3-card coverflow showcase */

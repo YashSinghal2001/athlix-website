@@ -38,8 +38,3 @@ export function isDuplicate(app) {
 export function remember(app) {
   seen.set(fingerprint(app), Date.now() + TTL_MS);
 }
-
-// Exposed for tests.
-export function _reset() {
-  seen.clear();
-}
