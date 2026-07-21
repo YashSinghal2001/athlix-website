@@ -71,6 +71,52 @@ async function resolveConnectHost(host) {
   }
 }
 
+// Best-effort classification of a failed transporter.verify() so Render logs
+// name the failing stage directly instead of just dumping a raw stack trace.
+// Nodemailer/smtp-connection don't guarantee a single stable error shape
+// across DNS/TCP/TLS/auth failures, so this inspects every field it's known
+// to set (code, cause.code, command, responseCode) rather than trusting one;
+// the raw fields are always logged alongside this label as a fallback.
+function classifySmtpVerifyError(err) {
+  const code = err?.code;
+  const causeCode = err?.cause?.code;
+  const message = err?.message || "";
+
+  if (code === "EAUTH" || err?.responseCode === 535) return "smtp_authentication";
+  if (causeCode === "ENOTFOUND" || causeCode === "EAI_AGAIN" || code === "EDNS") return "dns_resolution";
+  if (
+    causeCode === "ECONNREFUSED" ||
+    causeCode === "ENETUNREACH" ||
+    causeCode === "EHOSTUNREACH" ||
+    causeCode === "ECONNRESET" ||
+    (code === "ETIMEDOUT" && err?.command === "CONN")
+  ) {
+    return "tcp_connection";
+  }
+  if (code === "ESOCKET" || /tls|ssl|certificate|handshake/i.test(message)) return "tls_handshake";
+  if (code === "ETIMEDOUT") return "connection_timeout";
+  return "other";
+}
+
+async function verifyTransporter(transporter, context) {
+  try {
+    await transporter.verify();
+    log("email", "info", "smtp_verified", context);
+  } catch (err) {
+    log("email", "error", "smtp_verify_failed", {
+      ...context,
+      stage: classifySmtpVerifyError(err),
+      code: err?.code,
+      causeCode: err?.cause?.code,
+      command: err?.command,
+      responseCode: err?.responseCode,
+      response: err?.response,
+      message: err?.message,
+    });
+    throw err;
+  }
+}
+
 // Cached as a Promise (not the resolved transporter) so concurrent callers
 // before the first resolution completes share one in-flight DNS lookup
 // instead of racing to create duplicate transporters.
@@ -84,18 +130,33 @@ async function getTransporter() {
 
   if (!cachedTransporterPromise) {
     cachedTransporterPromise = (async () => {
-      const port = Number(process.env.SMTP_PORT) || 465;
-      const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== "false" : port === 465;
-      const { connectHost, servername } = await resolveConnectHost(host);
+      try {
+        const port = Number(process.env.SMTP_PORT) || 465;
+        const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== "false" : port === 465;
+        const { connectHost, servername } = await resolveConnectHost(host);
 
-      return nodemailer.createTransport({
-        host: connectHost,
-        port,
-        secure,
-        auth: { user, pass },
-        connectionTimeout: CONNECTION_TIMEOUT_MS,
-        ...(servername ? { tls: { servername } } : {}),
-      });
+        const transporter = nodemailer.createTransport({
+          host: connectHost,
+          port,
+          secure,
+          auth: { user, pass },
+          connectionTimeout: CONNECTION_TIMEOUT_MS,
+          greetingTimeout: CONNECTION_TIMEOUT_MS,
+          socketTimeout: CONNECTION_TIMEOUT_MS,
+          ...(servername ? { tls: { servername } } : {}),
+        });
+
+        await verifyTransporter(transporter, { host: connectHost, servername, port, secure, user });
+
+        return transporter;
+      } catch (err) {
+        // Don't cache a permanently-rejected promise — a transient failure
+        // (e.g. Render's network hiccuping during verify) would otherwise
+        // brick email sending for the rest of the process's lifetime, since
+        // every future getTransporter() call reuses this same promise.
+        cachedTransporterPromise = null;
+        throw err;
+      }
     })();
   }
   return cachedTransporterPromise;
