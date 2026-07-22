@@ -12,7 +12,8 @@ import { Icon } from "./components/icons.jsx";
 
 /* assets */
 import heroImage from "./assets/1.webp";
-import logoMark from "./assets/logo-mark.png"; // trimmed web copy of logo.png
+import logoBlack from "./assets/logo-black.png"; // shown on light theme
+import logoWhite from "./assets/logo-white.png"; // shown on dark theme
 import coachImage from "./assets/images/Coach.webp";
 import blueTick from "./assets/Blue_tick.png";
 
@@ -293,10 +294,22 @@ const navLinks = [
   { href: "#faq", label: "FAQ" },
 ];
 
+/* Pick the logo variant that stays visible on the active theme's background. */
+function useThemeLogo() {
+  const { resolvedTheme } = useTheme();
+  // Warm the cache for the other variant so switching themes doesn't flash.
+  useEffect(() => {
+    const img = new Image();
+    img.src = resolvedTheme === "dark" ? logoBlack : logoWhite;
+  }, [resolvedTheme]);
+  return resolvedTheme === "dark" ? logoWhite : logoBlack;
+}
+
 function Logo() {
+  const logo = useThemeLogo();
   return (
     <a href="#top" className="logo-mark" aria-label="Athlix home">
-      <img src={logoMark} alt="Athlix" />
+      <img src={logo} alt="Athlix" />
     </a>
   );
 }
@@ -687,6 +700,7 @@ function ProblemSolution() {
    ===================================================================== */
 
 function CoachingMethod() {
+  const logo = useThemeLogo();
   return (
     <section id="method" className="section has-mesh">
       <MeshBackground />
@@ -695,7 +709,7 @@ function CoachingMethod() {
           eyebrow="The Framework"
           title={
             <span className="method-title-stack">
-              <img src={logoMark} alt="" className="method-logo" />
+              <img src={logo} alt="" className="method-logo" />
               <span>The Athlix <span className="accent">Coaching Method</span></span>
             </span>
           }
