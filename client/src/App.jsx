@@ -14,7 +14,8 @@ import { Icon } from "./components/icons.jsx";
 import heroImage from "./assets/1.webp";
 import logoBlack from "./assets/logo-black.png"; // shown on light theme
 import logoWhite from "./assets/logo-white.png"; // shown on dark theme
-import coachImage from "./assets/images/Coach.webp";
+import coachImage from "./assets/images/Coach.png";
+import methodIcon from "./assets/icon.png";
 import blueTick from "./assets/Blue_tick.png";
 
 import r1 from "./assets/4_1.webp";
@@ -700,7 +701,6 @@ function ProblemSolution() {
    ===================================================================== */
 
 function CoachingMethod() {
-  const logo = useThemeLogo();
   return (
     <section id="method" className="section has-mesh">
       <MeshBackground />
@@ -709,7 +709,7 @@ function CoachingMethod() {
           eyebrow="The Framework"
           title={
             <span className="method-title-stack">
-              <img src={logo} alt="" className="method-logo" />
+              <img src={methodIcon} alt="" className="method-logo" />
               <span>The Athlix <span className="accent">Coaching Method</span></span>
             </span>
           }
